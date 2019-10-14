@@ -1,5 +1,10 @@
 # personal ignore
 data/*
+kmc_*
+count
+
+# snakemake
+.snakemake
 
 # Created by https://www.gitignore.io/api/jupyternotebooks
 # Edit at https://www.gitignore.io/?templates=jupyternotebooks
