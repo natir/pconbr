@@ -1,32 +1,84 @@
+###############################################################################
+# Manage input and output                                                     #
+###############################################################################
 inputs = {
-    "SRR8556426": ["data/SRR8556426.fasta"],
-    "ERR18779": ["data/ERR1877966.fasta", "data/ERR1877967.fasta", "data/ERR1877968.fasta", "data/ERR1877969.fasta", "data/ERR1877970.fasta"],
+    "s_pneumoniae": ["data/SRR8556426.fasta"],
+    "c_vartiovaarae": ["data/ERR1877966.fasta", "data/ERR1877967.fasta", "data/ERR1877968.fasta", "data/ERR1877969.fasta", "data/ERR1877970.fasta"],
 }
 
 outputs = {
-    "SRR8556426": "count/SRR8556426",
-    "ERR18779": "count/ERR18779",
+    "s_pneumoniae": "count/s_pneumoniae",
+    "c_vartiovaarae": "count/c_vartiovaarae",
 }
 
-fn generate_output(dataset, suffix) {
-    return [i + "." + suffix for i in outputs[dataset]]
-}
+def generate_output(dataset, suffix):
+    return outputs[dataset] + "." + suffix
 
-rule all:
+###############################################################################
+# Section SSIK                                                                #
+###############################################################################
+rule ssik:
     input:
-        all_ssik.output
-        all_kmc.output,
-        all_jellyfish.output,
+        lambda wildcards: inputs[wildcards.dataset_name]
+    output:
+        "count/{dataset_name}.ssik"
+    benchmark:
+        "benchmark/ssik/{dataset_name}.tsv"
+    shell:
+        "ssik count -i {input} -o {output} -k 17 -m 1"
 
 rule all_ssik:
     input:
-        generate_output("SRR8556426", "ssik")
-        generate_output("ERR18779", "ssik")
-        
-rule ssik:
+        generate_output("s_pneumoniae", "ssik"),
+        generate_output("c_vartiovaarae", "ssik"),
+
+###############################################################################
+# Section KMC                                                                 #
+###############################################################################
+rule kmc:
     input:
-        " ".join(inputs["SRR8556426"])
+        lambda wildcards: inputs[wildcards.dataset_name]
     output:
-        generate_output("SRR8556426", "ssik")
+        "count/{dataset_name}.kmc"
+    benchmark:
+        "benchmark/kmc/{dataset_name}.tsv"
     shell:
-        "ssik count -i {input} -o {output} -k 17 -m 1"
+        " && ".join([
+            "mkdir -p kmc_workdir/{wildcards.dataset_name}",
+            "mkdir -p kmc_file_input",
+            "echo {input} > kmc_file_input/{wildcards.dataset_name}.lst",
+            "sed -i 's/ /\\n/g' kmc_file_input/{wildcards.dataset_name}.lst",
+            "kmc -k17 -t1 -fa @kmc_file_input/{wildcards.dataset_name}.lst {output} kmc_workdir/{wildcards.dataset_name}",
+            ])
+
+rule all_kmc:
+    input:
+        generate_output("s_pneumoniae", "kmc"),
+        generate_output("c_vartiovaarae", "kmc"),
+
+###############################################################################
+# Section JELLYFISH                                                           #
+###############################################################################
+rule jellyfish:
+    input:
+        lambda wildcards: inputs[wildcards.dataset_name]
+    output:
+        "count/{dataset_name}.jellyfish"
+    benchmark:
+        "benchmark/jellyfish/{dataset_name}.tsv"
+    shell:
+        "jellyfish count -m17 -t1 -s10G -C -o {output} {input}"
+          
+rule all_jellyfish:
+    input:
+        generate_output("s_pneumoniae", "jellyfish"),
+        generate_output("c_vartiovaarae", "jellyfish"),
+
+        
+rule all:
+    input:
+        rules.all_ssik.input,
+        rules.all_kmc.input,
+        rules.all_jellyfish.input,
+
+
