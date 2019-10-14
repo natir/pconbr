@@ -1,0 +1,32 @@
+inputs = {
+    "SRR8556426": ["data/SRR8556426.fasta"],
+    "ERR18779": ["data/ERR1877966.fasta", "data/ERR1877967.fasta", "data/ERR1877968.fasta", "data/ERR1877969.fasta", "data/ERR1877970.fasta"],
+}
+
+outputs = {
+    "SRR8556426": "count/SRR8556426",
+    "ERR18779": "count/ERR18779",
+}
+
+fn generate_output(dataset, suffix) {
+    return [i + "." + suffix for i in outputs[dataset]]
+}
+
+rule all:
+    input:
+        all_ssik.output
+        all_kmc.output,
+        all_jellyfish.output,
+
+rule all_ssik:
+    input:
+        generate_output("SRR8556426", "ssik")
+        generate_output("ERR18779", "ssik")
+        
+rule ssik:
+    input:
+        " ".join(inputs["SRR8556426"])
+    output:
+        generate_output("SRR8556426", "ssik")
+    shell:
+        "ssik count -i {input} -o {output} -k 17 -m 1"

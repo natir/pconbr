@@ -1,0 +1,11 @@
+name: rutabaga
+
+channels:
+  - conda-forge
+  - bioconda
+
+dependencies:
+  - jupyterlab=1.1
+  - nb_conda=2.2
+  - snakemake=5.7
+  - seqtk=1.3
