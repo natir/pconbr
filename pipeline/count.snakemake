@@ -18,6 +18,9 @@ outputs = {
 def generate_output(dataset, suffix):
     return outputs[dataset] + "." + suffix
 
+def generate_all_output(suffix):
+    return [generate_output(dataset, suffix) for dataset in outputs.keys()]
+
 ###############################################################################
 # Section SSIK                                                                #
 ###############################################################################
@@ -33,10 +36,7 @@ rule ssik:
 
 rule all_ssik:
     input:
-        generate_output("s_pneumoniae", "ssik"),
-        generate_output("c_vartiovaarae", "ssik"),
-        generate_output("e_coli_ont", "ssik"),
-        generate_output("e_coli_pb", "ssik")
+        generate_all_output("ssik"),
         
 ###############################################################################
 # Section KMC                                                                 #
@@ -59,11 +59,8 @@ rule kmc:
 
 rule all_kmc:
     input:
-        generate_output("s_pneumoniae", "kmc.kmc_suf"),
-        generate_output("c_vartiovaarae", "kmc.kmc_suf"),
-        generate_output("e_coli_ont", "kmc.kmc_suf"),
-        generate_output("e_coli_pb", "kmc.kmc_suf"),
-        
+        generate_all_output("kmc.kmc_suf"),
+
 ###############################################################################
 # Section JELLYFISH                                                           #
 ###############################################################################
@@ -79,10 +76,7 @@ rule jellyfish:
           
 rule all_jellyfish:
     input:
-        generate_output("s_pneumoniae", "jellyfish"),
-        generate_output("c_vartiovaarae", "jellyfish"),
-        generate_output("e_coli_ont", "jellyfish"),
-        generate_output("e_coli_pb", "jellyfish"),
+        generate_all_output("jellyfish"),
         
 rule all:
     input:
