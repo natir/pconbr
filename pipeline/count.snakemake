@@ -42,7 +42,7 @@ rule kmc:
     input:
         lambda wildcards: inputs[wildcards.dataset_name]
     output:
-        "count/{dataset_name}.kmc"
+        "count/{dataset_name}.kmc.kmc_suf",
     benchmark:
         "benchmark/kmc/{dataset_name}.tsv"
     shell:
@@ -51,14 +51,14 @@ rule kmc:
             "mkdir -p kmc_file_input",
             "echo {input} > kmc_file_input/{wildcards.dataset_name}.lst",
             "sed -i 's/ /\\n/g' kmc_file_input/{wildcards.dataset_name}.lst",
-            "kmc -k17 -t1 -fa @kmc_file_input/{wildcards.dataset_name}.lst {output} kmc_workdir/{wildcards.dataset_name}",
+            "kmc -k17 -t1 -fa @kmc_file_input/{wildcards.dataset_name}.lst count/{wildcards.dataset_name}.kmc kmc_workdir/{wildcards.dataset_name}",
             ])
 
 rule all_kmc:
     input:
-        generate_output("s_pneumoniae", "kmc"),
-        generate_output("c_vartiovaarae", "kmc"),
-        generate_output("e_coli", "kmc"),
+        generate_output("s_pneumoniae", "kmc.kmc_suf"),
+        generate_output("c_vartiovaarae", "kmc.kmc_suf"),
+        generate_output("e_coli", "kmc.kmc_suf"),
 
 ###############################################################################
 # Section JELLYFISH                                                           #
