@@ -17,3 +17,7 @@ curl ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR849/000/SRR8494940/SRR8494940_1.fastq
 
 # Escherichia coli CFT073 Pacbio
 curl ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR849/001/SRR8494911/SRR8494911_subreads.fastq.gz | seqtk seq -A - > data/SRR8494911.fasta
+
+# Saccharomyces cerevisiae W303
+curl ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR215/004/SRR2157264/SRR2157264_1.fastq.gz | seqtk seq -A - > SRR2157264_1.fasta
+curl ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR215/004/SRR2157264/SRR2157264_2.fastq.gz | seqtk seq -A - > SRR2157264_2.fasta

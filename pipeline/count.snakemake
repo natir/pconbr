@@ -6,6 +6,7 @@ inputs = {
     "c_vartiovaarae": ["data/ERR1877966.fasta", "data/ERR1877967.fasta", "data/ERR1877968.fasta", "data/ERR1877969.fasta", "data/ERR1877970.fasta"],
     "e_coli_ont": ["data/SRR8494940.fasta"],
     "e_coli_pb": ["data/SRR8494911.fasta"],
+    "s_cerevisiae": ["data/SRR2157264_1.fasta", "data/SRR2157264_2.fasta"],
 }
 
 outputs = {
@@ -13,6 +14,7 @@ outputs = {
     "c_vartiovaarae": "count/c_vartiovaarae",
     "e_coli_ont": "count/e_coli_ont",
     "e_coli_pb": "count/e_coli_pb",
+    "s_cerevisiae": "count/s_cerevisiae",
 }
 
 def generate_output(dataset, suffix):
