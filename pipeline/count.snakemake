@@ -4,13 +4,15 @@
 inputs = {
     "s_pneumoniae": ["data/SRR8556426.fasta"],
     "c_vartiovaarae": ["data/ERR1877966.fasta", "data/ERR1877967.fasta", "data/ERR1877968.fasta", "data/ERR1877969.fasta", "data/ERR1877970.fasta"],
-    "e_coli": ["data/SRR8494940.fasta"],
+    "e_coli_ont": ["data/SRR8494940.fasta"],
+    "e_coli_pb": ["data/SRR8494911.fasta"],
 }
 
 outputs = {
     "s_pneumoniae": "count/s_pneumoniae",
     "c_vartiovaarae": "count/c_vartiovaarae",
-    "e_coli": "count/e_coli",
+    "e_coli_ont": "count/e_coli_ont",
+    "e_coli_pb": "count/e_coli_pb",
 }
 
 def generate_output(dataset, suffix):
@@ -33,7 +35,8 @@ rule all_ssik:
     input:
         generate_output("s_pneumoniae", "ssik"),
         generate_output("c_vartiovaarae", "ssik"),
-        generate_output("e_coli", "ssik"),
+        generate_output("e_coli_ont", "ssik"),
+        generate_output("e_coli_pb", "ssik")
         
 ###############################################################################
 # Section KMC                                                                 #
@@ -58,8 +61,9 @@ rule all_kmc:
     input:
         generate_output("s_pneumoniae", "kmc.kmc_suf"),
         generate_output("c_vartiovaarae", "kmc.kmc_suf"),
-        generate_output("e_coli", "kmc.kmc_suf"),
-
+        generate_output("e_coli_ont", "kmc.kmc_suf"),
+        generate_output("e_coli_pb", "kmc.kmc_suf"),
+        
 ###############################################################################
 # Section JELLYFISH                                                           #
 ###############################################################################
@@ -77,7 +81,8 @@ rule all_jellyfish:
     input:
         generate_output("s_pneumoniae", "jellyfish"),
         generate_output("c_vartiovaarae", "jellyfish"),
-        generate_output("e_coli", "jellyfish"),
+        generate_output("e_coli_ont", "jellyfish"),
+        generate_output("e_coli_pb", "jellyfish"),
         
 rule all:
     input:

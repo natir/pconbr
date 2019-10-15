@@ -3,6 +3,7 @@
 import os
 import csv
 
+from collections import defaultdict
 
 def __read_info(filename):
     with open(filename) as finput:
@@ -11,7 +12,7 @@ def __read_info(filename):
             return {"time": record["s"], "memory": record["max_rss"]}
 
 def __populate_entry(origin):
-    data = dict()
+    data = defaultdict(lambda: defaultdict(int))
 
     with os.scandir(origin.path) as it:
         for entry in it:
@@ -30,28 +31,15 @@ def read_bench_info():
 
     return data
 
-def get_memory():
+def get(value):
     data = read_bench_info()
 
-    table = """
-| counter | s_pneumoniae | c_vartiovaarae |
-|:--------|-------------:|---------------:|
-| Jellyfish | {} | {} |
-| Kmc | {} | {} |
-| Sssik | {} | {} |
-""".format(data["jellyfish"]["s_pneumoniae"]["memory"], data["jellyfish"]["c_vartiovaarae"]["memory"], data["kmc"]["s_pneumoniae"]["memory"], data["kmc"]["c_vartiovaarae"]["memory"], data["ssik"]["s_pneumoniae"]["memory"], data["ssik"]["c_vartiovaarae"]["memory"])
-    
-    return table
+    datasets = list(data["ssik"].keys())
+    header = "| | Jellyfish | Kmc | Ssik |\n|:-|-:|-:|-:|\n"
 
-def get_time():
-    data = read_bench_info()
-
-    table = """
-| counter | s_pneumoniae | c_vartiovaarae |
-|:--------|-------------:|---------------:|
-| Jellyfish | {} | {} |
-| Kmc | {} | {} |
-| Sssik | {} | {} |
-""".format(data["jellyfish"]["s_pneumoniae"]["time"], data["jellyfish"]["c_vartiovaarae"]["time"], data["kmc"]["s_pneumoniae"]["time"], data["kmc"]["c_vartiovaarae"]["time"], data["ssik"]["s_pneumoniae"]["time"], data["ssik"]["c_vartiovaarae"]["time"])
+    table = ""
+    for dataset in datasets:
+        table += "| {} | {} | {} | {} |\n".format(dataset, data["jellyfish"][dataset][value], data["kmc"][dataset][value], data["ssik"][dataset][value])
     
-    return table
+    return header + table
+
