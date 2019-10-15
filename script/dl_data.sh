@@ -11,3 +11,6 @@ curl ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR187/007/ERR1877967/ERR1877967.fastq.g
 curl ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR187/008/ERR1877968/ERR1877968.fastq.gz | seqtk seq -A - > data/ERR1877968.fasta
 curl ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR187/009/ERR1877969/ERR1877969.fastq.gz | seqtk seq -A - > data/ERR1877969.fasta
 curl ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR187/000/ERR1877970/ERR1877970.fastq.gz | seqtk seq -A - > data/ERR1877970.fasta
+
+# Escherichia coli CFT073
+curl ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR849/000/SRR8494940/SRR8494940_1.fastq.gz | seqtk seq -A - > data/SRR8494940.fasta
