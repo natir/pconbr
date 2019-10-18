@@ -24,21 +24,21 @@ def generate_all_output(suffix):
     return [generate_output(dataset, suffix) for dataset in outputs.keys()]
 
 ###############################################################################
-# Section SSIK                                                                #
+# Section PCON                                                                #
 ###############################################################################
-rule ssik:
+rule pcon:
     input:
         lambda wildcards: inputs[wildcards.dataset_name]
     output:
-        "count/{dataset_name}.ssik"
+        "count/{dataset_name}.pcon"
     benchmark:
-        "benchmark/ssik/{dataset_name}.tsv"
+        "benchmark/pcon/{dataset_name}.tsv"
     shell:
-        "ssik count -i {input} -o {output} -k 17 -m 1"
+        "pcon count -i {input} -o {output} -k 17 -m 1"
 
-rule all_ssik:
+rule all_pcon:
     input:
-        generate_all_output("ssik"),
+        generate_all_output("pcon"),
         
 ###############################################################################
 # Section KMC                                                                 #
@@ -82,7 +82,7 @@ rule all_jellyfish:
         
 rule all:
     input:
-        rules.all_ssik.input,
+        rules.all_pcon.input,
         rules.all_kmc.input,
         rules.all_jellyfish.input,
 

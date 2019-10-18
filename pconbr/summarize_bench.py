@@ -34,12 +34,12 @@ def read_bench_info():
 def get(value):
     data = read_bench_info()
 
-    datasets = list(data["ssik"].keys())
-    header = "| | Jellyfish | Kmc | Ssik |\n|:-|-:|-:|-:|\n"
+    datasets = list(data["pcon"].keys())
+    header = "| | Jellyfish | Kmc | Pconbr |\n|:-|-:|-:|-:|\n"
 
     table = ""
     for dataset in datasets:
-        table += "| {} | {} | {} | {} |\n".format(dataset, data["jellyfish"][dataset][value], data["kmc"][dataset][value], data["ssik"][dataset][value])
+        table += "| {} | {} | {} | {} |\n".format(dataset, data["jellyfish"][dataset][value], data["kmc"][dataset][value], data["pcon"][dataset][value])
     
     return header + table
 

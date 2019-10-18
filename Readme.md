@@ -1,10 +1,12 @@
 To reproduce this analysis run:
 
 ```
-cargo install --git https://github.com/natir/ssik --force
+cargo install --git https://github.com/natir/pcon --force
+cargo install --git https://github.com/natir/br --force
+
 conda env create -f conda_env.yml
-conda env activate rutabaga
-jupyter notebook rutabaga.ipynb
+conda env activate pconbr
+jupyter notebook pconbr.ipynb
 ```
 
-When you are in your jupyter notebook check your are in the good env Python conda env:rutabaga
+When you are in your jupyter notebook check your are in the good env Python conda env:pconbr
