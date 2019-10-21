@@ -1,6 +1,6 @@
 #!/bin/bash
 
-mkdir -p data
+mkdir -p reads
 
 # Streptococcus pneumoniae PRJNA521678
 curl ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR855/006/SRR8556426/SRR8556426_1.fastq.gz | seqtk seq -A - > data/SRR8556426.fasta

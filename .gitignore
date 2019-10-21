@@ -1,5 +1,6 @@
 # personal ignore
-data/*
+reads/*
+reference/*
 kmc_*
 count
 benchmark

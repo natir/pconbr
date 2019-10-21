@@ -2,11 +2,11 @@
 # Manage input and output                                                     #
 ###############################################################################
 inputs = {
-    "s_pneumoniae": ["data/SRR8556426.fasta"],
-    "c_vartiovaarae": ["data/ERR1877966.fasta", "data/ERR1877967.fasta", "data/ERR1877968.fasta", "data/ERR1877969.fasta", "data/ERR1877970.fasta"],
-    "e_coli_ont": ["data/SRR8494940.fasta"],
-    "e_coli_pb": ["data/SRR8494911.fasta"],
-    "s_cerevisiae": ["data/SRR2157264_1.fasta", "data/SRR2157264_2.fasta"],
+    "s_pneumoniae": ["reads/SRR8556426.fasta"],
+    "c_vartiovaarae": ["reads/ERR1877966.fasta", "reads/ERR1877967.fasta", "reads/ERR1877968.fasta", "reads/ERR1877969.fasta", "reads/ERR1877970.fasta"],
+    "e_coli_ont": ["reads/SRR8494940.fasta"],
+    "e_coli_pb": ["reads/SRR8494911.fasta"],
+    "s_cerevisiae": ["reads/SRR2157264_1.fasta", "reads/SRR2157264_2.fasta"],
 }
 
 outputs = {
