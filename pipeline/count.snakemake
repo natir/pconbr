@@ -77,7 +77,7 @@ rule jellyfish:
     benchmark:
         "benchmark/jellyfish/{dataset_name}.k{kmer_size}.tsv"
     shell:
-        "jellyfish count -m{wildcards.kmer_size} -t1 -s10G -C -o {output} {input}"
+        "jellyfish count -m{wildcards.kmer_size} -t1 -s6G -C -o {output} {input}"
           
 rule all_jellyfish:
     input:
