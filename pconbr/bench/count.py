@@ -36,7 +36,7 @@ def get(value):
     data = read_bench_info()
 
     datasets = list(data["pcon"].keys())
-    header = "| dataset | k | Jellyfish | Kmc | Pconbr |\n|:-|-:|-:|-:|\n"
+    header = "| dataset | k | Jellyfish | Kmc | Pconbr |\n|:-|:-|-:|-:|-:|\n"
 
     table = ""
     for dataset in datasets:
