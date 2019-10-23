@@ -5,7 +5,7 @@ cargo install --git https://github.com/natir/pcon --force
 cargo install --git https://github.com/natir/br --force
 
 conda env create -f conda_env.yml
-conda env activate pconbr
+conda activate pconbr
 jupyter notebook pconbr.ipynb
 ```
 
