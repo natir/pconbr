@@ -17,11 +17,14 @@ outputs = {
     "s_cerevisiae": "count/s_cerevisiae",
 }
 
-def generate_output(dataset, suffix):
-    return outputs[dataset] + "." + suffix
+def generate_output(dataset, k, suffix):
+    return outputs[dataset] + ".k" + k + "." + suffix
 
 def generate_all_output(suffix):
-    return [generate_output(dataset, suffix) for dataset in outputs.keys()]
+    for dataset in outputs.keys():
+        for k in range(13, 19, 2) :
+            yield generate_output(dataset, str(k), suffix)
+
 
 ###############################################################################
 # Section PCON                                                                #
@@ -30,15 +33,15 @@ rule pcon:
     input:
         lambda wildcards: inputs[wildcards.dataset_name]
     output:
-        "count/{dataset_name}.pcon"
+        "count/{dataset_name}.k{kmer_size}.pcon"
     benchmark:
-        "benchmark/pcon/{dataset_name}.tsv"
+        "benchmark/pcon/{dataset_name}.k{kmer_size}.tsv"
     shell:
-        "pcon count -i {input} -o {output} -k 17 -m 1"
+        "pcon count -i {input} -o {output} -k {wildcards.kmer_size} -m 1"
 
 rule all_pcon:
     input:
-        generate_all_output("pcon"),
+        list(generate_all_output("pcon")),
         
 ###############################################################################
 # Section KMC                                                                 #
@@ -47,16 +50,16 @@ rule kmc:
     input:
         lambda wildcards: inputs[wildcards.dataset_name]
     output:
-        "count/{dataset_name}.kmc.kmc_suf",
+        "count/{dataset_name}.k{kmer_size}.kmc.kmc_suf",
     benchmark:
-        "benchmark/kmc/{dataset_name}.tsv"
+        "benchmark/kmc/{dataset_name}.k{kmer_size}.tsv"
     shell:
         " && ".join([
             "mkdir -p kmc_workdir/{wildcards.dataset_name}",
             "mkdir -p kmc_file_input",
             "echo {input} > kmc_file_input/{wildcards.dataset_name}.lst",
             "sed -i 's/ /\\n/g' kmc_file_input/{wildcards.dataset_name}.lst",
-            "kmc -k17 -t1 -fa @kmc_file_input/{wildcards.dataset_name}.lst count/{wildcards.dataset_name}.kmc kmc_workdir/{wildcards.dataset_name}",
+            "kmc -k{wildcards.kmer_size} -t1 -fa @kmc_file_input/{wildcards.dataset_name}.lst count/{wildcards.dataset_name}.k{wildcards.kmer_size}.kmc kmc_workdir/{wildcards.dataset_name}",
             ])
 
 rule all_kmc:
@@ -70,11 +73,11 @@ rule jellyfish:
     input:
         lambda wildcards: inputs[wildcards.dataset_name]
     output:
-        "count/{dataset_name}.jellyfish"
+        "count/{dataset_name}.k{kmer_size}.jellyfish"
     benchmark:
-        "benchmark/jellyfish/{dataset_name}.tsv"
+        "benchmark/jellyfish/{dataset_name}.k{kmer_size}.tsv"
     shell:
-        "jellyfish count -m17 -t1 -s10G -C -o {output} {input}"
+        "jellyfish count -m{wildcards.kmer_size} -t1 -s10G -C -o {output} {input}"
           
 rule all_jellyfish:
     input:
