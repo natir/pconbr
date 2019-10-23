@@ -12,12 +12,13 @@ def __read_info(filename):
             return {"time": record["s"], "memory": record["max_rss"]}
 
 def __populate_entry(origin):
-    data = defaultdict(lambda: defaultdict(int))
+    data = defaultdict(lambda: defaultdict(lambda: defaultdict(int)))
 
     with os.scandir(origin.path) as it:
         for entry in it:
             if entry.is_file():
-                data[entry.name.split(".")[0]] = __read_info(entry.path)
+                dataset, k, *_ = entry.name.split(".")
+                data[dataset][k] = __read_info(entry.path)
 
     return data
 
@@ -35,11 +36,12 @@ def get(value):
     data = read_bench_info()
 
     datasets = list(data["pcon"].keys())
-    header = "| | Jellyfish | Kmc | Pconbr |\n|:-|-:|-:|-:|\n"
+    header = "| dataset | k | Jellyfish | Kmc | Pconbr |\n|:-|-:|-:|-:|\n"
 
     table = ""
     for dataset in datasets:
-        table += "| {} | {} | {} | {} |\n".format(dataset, data["jellyfish"][dataset][value], data["kmc"][dataset][value], data["pcon"][dataset][value])
+        for k in sorted(data["pcon"][dataset].keys()):
+            table += "| {} | {} | {} | {} | {} |\n".format(dataset, k, data["jellyfish"][dataset][k][value], data["kmc"][dataset][k][value], data["pcon"][dataset][k][value])
     
     return header + table
 
