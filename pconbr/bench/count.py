@@ -35,12 +35,11 @@ def read_bench_info():
 def get(value):
     data = read_bench_info()
 
-    datasets = list(data["pcon"].keys())
     header = "| dataset | k | Jellyfish | Kmc | Pconbr |\n|:-|:-|-:|-:|-:|\n"
 
     table = ""
-    for dataset in datasets:
-        for k in sorted(data["pcon"][dataset].keys()):
+    for dataset in sorted({dataset for tool in data.keys() for dataset in data[tool]}):
+        for k in sorted({k for tool in data.keys() for k in data[tool][dataset]}):
             table += "| {} | {} | {} | {} | {} |\n".format(dataset, k, data["jellyfish"][dataset][k][value], data["kmc"][dataset][k][value], data["pcon"][dataset][k][value])
     
     return header + table
