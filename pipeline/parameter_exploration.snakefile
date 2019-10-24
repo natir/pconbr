@@ -78,7 +78,7 @@ rule br_genetic:
 
 rule genomic_kmer:
     input:
-        ["genetic_kmer/simulated_reads.k{}.s{}.fasta".format(k, s) for k in range(9, 19, 2) for s in range(1, 10)]
+        ["genetic_kmer/simulated_reads.k{}.s{}.stats".format(k, s) for k in range(9, 19, 2) for s in range(1, 10)]
 
 ###############################################################################
 # Section genomic kmer                                                        #
@@ -94,5 +94,5 @@ rule br_read:
 
 rule read_kmer:
     input:
-        ["read_kmer/simulated_reads.k{}.a{}.s{}.fasta".format(k, a, s) for k in range(9, 19, 2) for a in range(1, 10) for s in range(1, 10)]
+        ["read_kmer/simulated_reads.k{}.a{}.s{}.stats".format(k, a, s) for k in range(9, 19, 2) for a in range(1, 10) for s in range(1, 10)]
 
