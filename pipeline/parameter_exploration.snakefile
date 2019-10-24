@@ -6,7 +6,7 @@ rule pcon:
     shell:
         " && ".join([
             "pcon count -i {input} -o {wildcards.path}/{wildcards.filename}.k{wildcards.kmer_size}.a{wildcards.abundance}.pcon -k {wildcards.kmer_size} -m 1",
-           "pcon dump -i {wildcards.path}/{wildcards.filename}.k{wildcards.kmer_size}.a{wildcards.abundance}.pcon -o {output} -a {wildcards.abundance} -m exist" 
+            "pcon dump -i {wildcards.path}/{wildcards.filename}.k{wildcards.kmer_size}.a{wildcards.abundance}.pcon -o {output} -a {wildcards.abundance} -m exist" 
         ])
 
 
@@ -23,19 +23,19 @@ rule generate_bad_read:
 ###############################################################################
 minimap_parameter = {
     "simulated_reads": "-a -x map-ont",
-    "s_pneumoniae": "-a -x map-ont",
+    "SRR8556426": "-a -x map-ont",
     "c_vartiovaarae": "-a -x map-ont",
-    "e_coli_ont": "-a -x map-ont",
-    "e_coli_pb": "-a -x map-pb",
+    "SRR8494940": "-a -x map-ont",
+    "SRR8494911": "-a -x map-pb",
     "s_cerevisiae": "-a -x map-ont",
 }
 
 reference_path = {
     "simulated_reads": "references/CP028309.fasta",
-    "s_pneumoniae": "references/CP026549.fasta",
+    "SRR8556426": "references/CP026549.fasta",
     "c_vartiovaarae": None,
-    "e_coli_ont": "references/CP028309.fasta",
-    "e_coli_pb": "references/CP028309.fasta",
+    "SRR8494940": "references/CP028309.fasta",
+    "SRR8494911": "references/CP028309.fasta",
     "s_cerevisiae": "references/GCA_002163515.fasta",
 }
 
@@ -96,3 +96,8 @@ rule read_kmer:
     input:
         ["read_kmer/simulated_reads.k{}.a{}.s{}.stats".format(k, a, s) for k in range(13, 19, 2) for a in range(1, 10) for s in range(1, 10)]
 
+rule bacteria:
+    input:
+        ["read_kmer/SRR8494940.k{}.a{}.s{}.stats".format(k, a, s) for k in range(13, 19, 2) for a in range(1, 10) for s in range(1, 10)],
+        ["read_kmer/SRR8494911.k{}.a{}.s{}.stats".format(k, a, s) for k in range(13, 19, 2) for a in range(1, 10) for s in range(1, 10)],
+   
