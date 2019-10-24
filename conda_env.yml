@@ -12,6 +12,8 @@ dependencies:
   - n50=0.83
   - kmc=3.1
   - jellyfish=2.2
-  - pip>3
+  - minimap2=2.17
+  - samtools=1.9
+  - pip=3
   - pip:
     - "git+https://github.com/rrwick/Badread.git"
