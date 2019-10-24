@@ -5,6 +5,7 @@ kmc_*
 count
 benchmark
 genetic_kmer
+read_kmer
 
 # snakemake
 .snakemake
