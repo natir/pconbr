@@ -1,13 +1,19 @@
-rule pcon:
+rule pcon_count:
     input:
         "{path}/{filename}.fasta"
     output:
+        "{path}/{filename}.k{kmer_size}.pcon"
+    shell:
+        "pcon count -i {input} -o {output} -k {wildcards.kmer_size} -m 1",
+        
+        
+rule pcon_dump:
+    input:
+        "{path}/{filename}.k{kmer_size}.pcon"
+    output:
         "{path}/{filename}.k{kmer_size}.a{abundance}.exist"
     shell:
-        " && ".join([
-            "pcon count -i {input} -o {wildcards.path}/{wildcards.filename}.k{wildcards.kmer_size}.a{wildcards.abundance}.pcon -k {wildcards.kmer_size} -m 1",
-            "pcon dump -i {wildcards.path}/{wildcards.filename}.k{wildcards.kmer_size}.a{wildcards.abundance}.pcon -o {output} -a {wildcards.abundance} -m exist" 
-        ])
+        "pcon dump -i {input} -o {output} -a {wildcards.abundance} -m exist"
 
 
 rule generate_bad_read:
