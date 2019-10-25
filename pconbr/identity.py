@@ -55,13 +55,13 @@ def genomic_kmer():
 
     return table
 
-def read_kmer():
-    raw_error_rate = float(get_error_rate("reads/simulated_reads.stats"))
-        
+def read_kmer(filename):
+    raw_error_rate = float(get_error_rate("reads/{}.stats".format(filename)))
+
     data = defaultdict(lambda: defaultdict(lambda: defaultdict(float)))
     with os.scandir("./read_kmer/") as it:
         for entry in it:
-            if entry.is_file() and entry.name.endswith(".stats"):
+            if entry.is_file() and entry.name.startswith(filename) and entry.name.endswith(".stats"):
                 k, a, s = get_parameter(entry.name)
                 error_rate = get_error_rate(entry.path)
                 if error_rate is None:

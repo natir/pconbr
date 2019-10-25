@@ -98,6 +98,8 @@ rule read_kmer:
 
 rule bacteria:
     input:
+        "reads/SRR8494940.stats",
+        "reads/SRR8494911.stats",
         ["read_kmer/SRR8494940.k{}.a{}.s{}.stats".format(k, a, s) for k in range(13, 19, 2) for a in range(1, 10) for s in range(1, 10)],
         ["read_kmer/SRR8494911.k{}.a{}.s{}.stats".format(k, a, s) for k in range(13, 19, 2) for a in range(1, 10) for s in range(1, 10)],
    
