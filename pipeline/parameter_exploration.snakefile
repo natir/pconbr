@@ -20,7 +20,7 @@ rule generate_bad_read:
     input:
         "references/CP028309.fasta"
     output:
-        "genetic_kmer/simulated_reads.fasta"
+        "reads/simulated_reads.fasta"
     shell:
         "badread simulate --reference {input} --quantity 100x --identity 95,100,2 --error_model nanopore --seed 42 --start_adapter 0,0 --end_adapter 0,0 | seqtk seq -A - > reads/simulated_reads.fasta"
 
