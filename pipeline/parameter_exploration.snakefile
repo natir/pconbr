@@ -2,16 +2,16 @@ rule pcon_count:
     input:
         "{path}/{filename}.fasta"
     output:
-        "{path}/{filename}.k{kmer_size}.pcon"
+        "{path}/{filename}.k{kmer_size}.n{nb_bit}.pcon"
     shell:
-        "pcon count -i {input} -o {output} -k {wildcards.kmer_size} -m 1",
+        "pcon count -i {input} -o {output} -k {wildcards.kmer_size} -m 1 -n {wildcards.nb_bit}",
         
         
 rule pcon_dump:
     input:
-        "{path}/{filename}.k{kmer_size}.pcon"
+        "{path}/{filename}.k{kmer_size}.n{nb_bit}.pcon"
     output:
-        "{path}/{filename}.k{kmer_size}.a{abundance}.exist"
+        "{path}/{filename}.k{kmer_size}.n{nb_bit}.a{abundance}.exist"
     shell:
         "pcon dump -i {input} -o {output} -a {wildcards.abundance} -m exist"
 
@@ -76,15 +76,16 @@ rule generate_stat:
 rule br_genetic:
     input:
         filename="reads/{filename}.fasta",
-        exist="references/CP028309.k{kmer_size}.a1.exist"
+        exist="references/CP028309.k{kmer_size}.n{nb_bit}.a1.exist"
     output:
-        "genetic_kmer/{filename}.k{kmer_size}.s{solidity}.fasta"
+        "genetic_kmer/{filename}.k{kmer_size}.n{nb_bit}.s{solidity}.fasta"
     shell:
         "br -i {input.filename} -e {input.exist} -o {output} -s {wildcards.solidity}"
 
 rule genomic_kmer:
     input:
-        ["genetic_kmer/simulated_reads.k{}.s{}.stats".format(k, s) for k in range(9, 19, 2) for s in range(1, 10)]
+        ["genetic_kmer/simulated_reads.k{}.n8.pcon".format(k) for k en range(9, 19, 2)],
+        ["genetic_kmer/simulated_reads.k{}.n4.s{}.stats".format(k, s) for k in range(9, 19, 2) for s in range(1, 10)],
 
 ###############################################################################
 # Section genomic kmer                                                        #
@@ -100,12 +101,15 @@ rule br_read:
 
 rule read_kmer:
     input:
-        ["read_kmer/simulated_reads.k{}.a{}.s{}.stats".format(k, a, s) for k in range(13, 19, 2) for a in range(1, 10) for s in range(1, 10)]
+        ["genetic_kmer/simulated_reads.k{}.n8.pcon".format(k) for k en range(9, 19, 2)],
+        ["read_kmer/simulated_reads.k{}.n4.a{}.s{}.stats".format(k, a, s) for k in range(13, 19, 2) for a in range(1, 15) for s in range(1, 10)]
 
 rule bacteria:
     input:
         "reads/SRR8494940.stats",
         "reads/SRR8494911.stats",
-        ["read_kmer/SRR8494940.k{}.a{}.s{}.stats".format(k, a, s) for k in range(13, 19, 2) for a in range(1, 10) for s in range(1, 10)],
-        ["read_kmer/SRR8494911.k{}.a{}.s{}.stats".format(k, a, s) for k in range(13, 19, 2) for a in range(1, 10) for s in range(1, 10)],
+        ["read_kmer/SRR8494940.k{}.n8.pcon".format(k) for k in range(13, 19, 2)],
+        ["read_kmer/SRR8494911.k{}.n8.pcon".format(k) for k in range(13, 19, 2)],
+        ["read_kmer/SRR8494940.k{}.n4.a{}.s{}.stats".format(k, a, s) for k in range(13, 19, 2) for a in range(1, 15) for s in range(1, 10)],
+        ["read_kmer/SRR8494911.k{}.n4.a{}.s{}.stats".format(k, a, s) for k in range(13, 19, 2) for a in range(1, 15) for s in range(1, 10)],
    
