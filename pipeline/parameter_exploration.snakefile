@@ -20,7 +20,7 @@ rule generate_bad_read:
     input:
         "references/CP028309.fasta"
     output:
-        "genetic_kmer/simulated_reads.fasta"
+        "reads/simulated_reads.fasta"
     shell:
         "badread simulate --reference {input} --quantity 100x --identity 95,100,2 --error_model nanopore --seed 42 --start_adapter 0,0 --end_adapter 0,0 | seqtk seq -A - > reads/simulated_reads.fasta"
 
@@ -75,7 +75,7 @@ rule generate_stat:
 ###############################################################################
 rule br_genetic:
     input:
-        filename="genetic_kmer/{filename}.fasta",
+        filename="reads/{filename}.fasta",
         exist="references/CP028309.k{kmer_size}.n{nb_bit}.a1.exist"
     output:
         "genetic_kmer/{filename}.k{kmer_size}.n{nb_bit}.s{solidity}.fasta"
@@ -101,7 +101,7 @@ rule br_read:
 
 rule read_kmer:
     input:
-        ["genetic_kmer/simulated_reads.k{}.n8.pcon".format(k) for k in range(9, 19, 2)],
+        ["reads/simulated_reads.k{}.n8.pcon".format(k) for k n range(9, 19, 2)],
         ["read_kmer/simulated_reads.k{}.n4.a{}.s{}.stats".format(k, a, s) for k in range(13, 19, 2) for a in range(1, 15) for s in range(1, 10)]
 
 rule bacteria:
