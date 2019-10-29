@@ -22,7 +22,7 @@ rule generate_bad_read:
     output:
         "reads/simulated_reads.fasta"
     shell:
-        "badread simulate --reference {input} --quantity 100x --identity 95,100,2 --error_model nanopore --seed 42 --start_adapter 0,0 --end_adapter 0,0 | seqtk seq -A - > reads/simulated_reads.fasta"
+        "badread simulate --reference {input} --quantity 100x --identity 95,100,2 --error_model nanopore --seed 42 --start_adapter 0,0 --end_adapter 0,0 --junk_reads 0 --random_reads 0 --chimeras 0 --glitches 0,0,0 | seqtk seq -A - > reads/simulated_reads.fasta"
 
 ###############################################################################
 # Section evaluate read                                                       #
