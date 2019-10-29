@@ -84,7 +84,7 @@ rule br_genetic:
 
 rule genomic_kmer:
     input:
-        ["genetic_kmer/simulated_reads.k{}.n8.pcon".format(k) for k en range(9, 19, 2)],
+        ["genetic_kmer/simulated_reads.k{}.n8.pcon".format(k) for k in range(9, 19, 2)],
         ["genetic_kmer/simulated_reads.k{}.n4.s{}.stats".format(k, s) for k in range(9, 19, 2) for s in range(1, 10)],
 
 ###############################################################################
