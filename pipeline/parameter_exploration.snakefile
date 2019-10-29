@@ -4,7 +4,7 @@ rule pcon_count:
     output:
         "{path}/{filename}.k{kmer_size}.n{nb_bit}.pcon"
     shell:
-        "pcon count -i {input} -o {output} -k {wildcards.kmer_size} -m 1 -n {wildcards.nb_bit}",
+        "pcon count -i {input} -o {output} -k {wildcards.kmer_size} -m 1 -n {wildcards.nb_bit}"
         
         
 rule pcon_dump:
