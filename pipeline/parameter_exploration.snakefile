@@ -75,7 +75,7 @@ rule generate_stat:
 ###############################################################################
 rule br_genetic:
     input:
-        filename="reads/{filename}.fasta",
+        filename="genetic_kmer/{filename}.fasta",
         exist="references/CP028309.k{kmer_size}.n{nb_bit}.a1.exist"
     output:
         "genetic_kmer/{filename}.k{kmer_size}.n{nb_bit}.s{solidity}.fasta"
