@@ -7,12 +7,10 @@ import csv
 from collections import defaultdict
 
 def get_parameter(filename):
-    match = re.match(".+\.k(\d+)(\.a(\d+))?\.s(\d+).stats", filename)
+    match = re.match(".+\.k(?P<k>\d+)(\.n(?P<n>\d+))?(\.a(?P<a>\d+))?\.s(?P<s>\d+).stats", filename)
 
-    if match.group(2) is None:
-        return (int(match.group(1)), int(match.group(4)), None)
-    else:
-        return (int(match.group(1)), int(match.group(3)), int(match.group(4)))
+    ret = {k: int(v) for k, v in match.groupdict().items() if v is not None}
+    return ret
 
 def get_error_rate(filename):
     with open(filename) as finput:
@@ -28,7 +26,10 @@ def genomic_kmer():
     with os.scandir("./genetic_kmer/") as it:
         for entry in it:
             if entry.is_file() and entry.name.endswith(".stats"):
-                k, s, _ = get_parameter(entry.name)
+                param = get_parameter(entry.name)
+                k = param['k']
+                s = param['s']
+                
                 error_rate = get_error_rate(entry.path)
                 if error_rate is None:
                     data[k][s] = -1
@@ -62,7 +63,11 @@ def read_kmer(filename):
     with os.scandir("./read_kmer/") as it:
         for entry in it:
             if entry.is_file() and entry.name.startswith(filename) and entry.name.endswith(".stats"):
-                k, a, s = get_parameter(entry.name)
+                param = get_parameter(entry.name)
+                k = param["k"]
+                a = param["a"]
+                s = param["s"]
+                
                 error_rate = get_error_rate(entry.path)
                 if error_rate is None:
                     data[k][a][s] = -1
