@@ -108,7 +108,7 @@ rule read_kmer:
     input:
         "reads/simulated_reads.stats",
         ["reads/simulated_reads.k{}.n8.pcon".format(k) for k in range(9, 19, 2)],
-        ["read_kmer/simulated_reads.k{}.n4.a{}.s{}.stats".format(k, a, s) for k in range(13, 19, 2) for a in range(1, 15) for s in range(1, 10)]
+        ["read_kmer/simulated_reads.k{}.n4.a{}.s{}.stats".format(k, a, s) for k in range(13, 19, 2) for a in range(1, 16) for s in range(1, 10)]
 
 rule bacteria:
     input:
