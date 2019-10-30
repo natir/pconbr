@@ -114,8 +114,10 @@ rule bacteria:
     input:
         "reads/SRR8494940.stats",
         "reads/SRR8494911.stats",
+        "reads/SRR8556426.fasta",
         ["reads/SRR8494940.k{}.n8.pcon".format(k) for k in range(13, 19, 2)],
         ["reads/SRR8494911.k{}.n8.pcon".format(k) for k in range(13, 19, 2)],
-        ["read_kmer/SRR8494940.k{}.n4.a{}.s{}.stats".format(k, a, s) for k in range(13, 19, 2) for a in range(1, 15) for s in range(1, 10)],
-        ["read_kmer/SRR8494911.k{}.n4.a{}.s{}.stats".format(k, a, s) for k in range(13, 19, 2) for a in range(1, 15) for s in range(1, 10)],
-
+        ["reads/SRR8556426.k{}.n8.pcon".format(k) for k in range(13, 19, 2)],
+        ["read_kmer/SRR8494940.k{}.n4.a{}.s{}.stats".format(k, a, s) for k in range(13, 19, 2) for a in range(1, 16) for s in range(1, 10)],
+        ["read_kmer/SRR8494911.k{}.n4.a{}.s{}.stats".format(k, a, s) for k in range(13, 19, 2) for a in range(1, 16) for s in range(1, 10)],
+        ["read_kmer/SRR8556426.k{}.n4.a{}.s{}.stats".format(k, a, s) for k in range(13, 19, 2) for a in range(1, 16) for s in range(1, 10)],
