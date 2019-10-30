@@ -37,3 +37,17 @@ def get(filename, columns_name):
     df.sort_index(inplace=True)
 
     return df
+
+def generate_csv(inputs, output):
+    # Get data
+    df = pandas.DataFrame()
+    for (k, v) in inputs.items():
+        df = pandas.merge(df, get(v, k), how="outer", left_index=True, right_index=True)
+
+    # Clean up
+    df = df.fillna(0)
+    for c in df.columns:
+        df = df.astype({c: 'int64'})    
+
+    # Write result
+    df.to_csv(output)
