@@ -61,7 +61,7 @@ rule mapping:
         filename="[^.]+",
         parameter=".*",
     shell:
-        "minimap2 {params.options} {params.reference} {input} | samtools sort - > {output}"
+        "minimap2 -t 1 {params.options} {params.reference} {input} | samtools sort - > {output}"
 
 rule generate_stat:
     input:
