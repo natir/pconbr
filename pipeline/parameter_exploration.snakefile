@@ -114,7 +114,7 @@ rule bacteria:
     input:
         "reads/SRR8494940.stats",
         "reads/SRR8494911.stats",
-        "reads/SRR8556426.fasta",
+        "reads/SRR8556426.stats",
         ["reads/SRR8494940.k{}.n8.pcon".format(k) for k in range(13, 19, 2)],
         ["reads/SRR8494911.k{}.n8.pcon".format(k) for k in range(13, 19, 2)],
         ["reads/SRR8556426.k{}.n8.pcon".format(k) for k in range(13, 19, 2)],
