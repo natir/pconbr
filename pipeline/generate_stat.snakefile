@@ -34,3 +34,19 @@ rule kmer_spectrum_e_coli_ont:
     run:
         curve.generate_csv(input, output[0])
         
+rule kmer_spectrum_s_pneumoniae:
+    input:
+        k13 = "reads/SRR8556426.k13.n8.pcon",
+        k15 = "reads/SRR8556426.k15.n8.pcon",
+        k17 = "reads/SRR8556426.k17.n8.pcon",
+    output:
+        "stats/kmer_spectrum/s_pneumoniae.csv"
+    run:
+        curve.generate_csv(input, output[0])
+
+rule kmer_spectrum:
+    input:
+        "stats/kmer_spectrum/simulated_reads.csv",
+        "stats/kmer_spectrum/e_coli_ont.csv",
+        "stats/kmer_spectrum/e_coli_pb.csv",
+        "stats/kmer_spectrum/s_pneumoniae.csv",
