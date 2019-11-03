@@ -1,11 +1,12 @@
 # personal ignore
-reads/*
-references/*
+reads
+references
 kmc_*
 count
 benchmark
 genetic_kmer
 read_kmer
+stats
 
 # snakemake
 .snakemake

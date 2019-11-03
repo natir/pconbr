@@ -63,18 +63,14 @@ def count_true_false(filename, true_set, columns_name):
     for (i, v) in enumerate(read_pcon_file(filename)):
         count[i in true_set][v] += 1
 
-    df = pandas.DataFrame.from_dict(dict(count[True]),
-                                             orient='index',
-                                             columns=[columns_name + "_true"])
-    false_df = pandas.DataFrame.from_dict(dict(count[False]),
-                                             orient='index',
-                                             columns=[columns_name + "_false"])
+    df = pandas.DataFrame.from_dict(dict(count[True]), orient='index', columns=[columns_name + "_true"])
+    df.sort_index(inplace=True)
+    
+    false_df = pandas.DataFrame.from_dict(dict(count[False]), orient='index', columns=[columns_name + "_false"])
+    false_df.sort_index(inplace=True)
 
-    print(false_df)
-    df = pandas.merge(df,
-                  false_df,
-                  left_index=True, right_index=True)
-
+    df = pandas.merge(df, false_df, how="outer", left_index=True, right_index=True)
+    
     return df
 
 def generate_csv_true_false(inputs, output):

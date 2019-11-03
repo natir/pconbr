@@ -64,8 +64,52 @@ rule kmer_spectrum_true_false_simulated_reads:
     output:
         "stats/kmer_spectrum/simulated_reads_true_false.csv"
     run:
-        curve.generate_csv_true_false(input, output)
+        curve.generate_csv_true_false(input, output[0])
+
+rule kmer_spectrum_true_false_e_coli_pb:
+    input:
+        true_k13 = "references/CP028309.k13.n8.pcon",
+        k13 = "reads/SRR8494911.k13.n8.pcon",
+        true_k15 = "references/CP028309.k15.n8.pcon",
+        k15 = "reads/SRR8494911.k15.n8.pcon",
+        true_k17 = "references/CP028309.k17.n8.pcon",
+        k17 = "reads/SRR8494911.k17.n8.pcon",
+    output:
+        "stats/kmer_spectrum/e_coli_pb_true_false.csv"
+    run:
+        curve.generate_csv_true_false(input, output[0])
+        
+        
+rule kmer_spectrum_true_false_e_coli_ont:
+    input:
+        true_k13 = "references/CP028309.k13.n8.pcon",
+        k13 = "reads/SRR8494940.k13.n8.pcon",
+        true_k15 = "references/CP028309.k15.n8.pcon",
+        k15 = "reads/SRR8494940.k15.n8.pcon",
+        true_k17 = "references/CP028309.k17.n8.pcon",
+        k17 = "reads/SRR8494940.k17.n8.pcon",
+    output:
+        "stats/kmer_spectrum/e_coli_ont_true_false.csv"
+    run:
+        curve.generate_csv_true_false(input, output[0])
+
+rule kmer_spectrum_true_false_s_pneumoniae:
+    input:
+        true_k13 = "references/GCA_002163515.k13.n8.pcon",
+        k13 = "reads/SRR8556426.k13.n8.pcon",
+        true_k15 = "references/GCA_002163515.k15.n8.pcon",
+        k15 = "reads/SRR8556426.k15.n8.pcon",
+        true_k17 = "references/GCA_002163515.k17.n8.pcon",
+        k17 = "reads/SRR8556426.k17.n8.pcon",
+    output:
+        "stats/kmer_spectrum/s_pneumoniae_true_false.csv"
+    run:
+        curve.generate_csv_true_false(input, output[0])
+
         
 rule kmer_spectrum_true_false:
     input:
         "stats/kmer_spectrum/simulated_reads_true_false.csv",
+        "stats/kmer_spectrum/e_coli_pb_true_false.csv",
+        "stats/kmer_spectrum/e_coli_ont_true_false.csv",        
+        "stats/kmer_spectrum/s_pneumoniae_true_false.csv",        
