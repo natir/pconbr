@@ -37,7 +37,7 @@ rule pcon:
     benchmark:
         "benchmark/pcon/{dataset_name}.k{kmer_size}.tsv"
     resources:
-        mem_mb = lambda wcd: round((pow(2, 2 * wcd.kmer_size - 1)/2)/1000000)+10
+        mem_mb = lambda wcd: round((pow(2, 2 * int(wcd.kmer_size) - 1)/2)/1000000)+10
     shell:
         "pcon count -i {input} -o {output} -k {wildcards.kmer_size} -m 1"
 
