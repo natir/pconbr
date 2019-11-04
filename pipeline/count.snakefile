@@ -83,7 +83,7 @@ rule all_jellyfish:
     input:
         generate_all_output("jellyfish"),
         
-rule all:
+rule count_all:
     input:
         rules.all_pcon.input,
         rules.all_kmc.input,

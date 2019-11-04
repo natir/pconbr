@@ -5,9 +5,9 @@ rule generate_bad_read:
     input:
         "references/CP028309.fasta"
     output:
-        "reads/simulated_reads.fasta"
+        "reads/simulated_reads_{mean_id}.fasta"
     shell:
-        "badread simulate --reference {input} --quantity 100x --identity 95,100,2 --error_model nanopore --seed 42 --start_adapter 0,0 --end_adapter 0,0 --junk_reads 0 --random_reads 0 --chimeras 0 --glitches 0,0,0 | seqtk seq -A - > reads/simulated_reads.fasta"
+        "badread simulate --reference {input} --quantity 100x --identity {wildcards.mean_id},100,2 --error_model nanopore --seed 42 --start_adapter 0,0 --end_adapter 0,0 --junk_reads 0 --random_reads 0 --chimeras 0 --glitches 0,0,0 | seqtk seq -A - > reads/simulated_reads.fasta"
 
 ###############################################################################
 # Section count                                                               #
@@ -32,7 +32,8 @@ rule pcon_dump:
 # Section evaluate error rate                                                 #
 ###############################################################################
 minimap_parameter = {
-    "simulated_reads": "-a -x map-ont",
+    "simulated_reads_95": "-a -x map-ont",
+    "simulated_reads_90": "-a -x map-ont",
     "SRR8556426": "-a -x map-ont",
     "c_vartiovaarae": "-a -x map-ont",
     "SRR8494940": "-a -x map-ont",
@@ -41,7 +42,8 @@ minimap_parameter = {
 }
 
 reference_path = {
-    "simulated_reads": "references/CP028309.fasta",
+    "simulated_reads_95": "references/CP028309.fasta",
+    "simulated_reads_90": "references/CP028309.fasta",
     "SRR8556426": "references/CP026549.fasta",
     "c_vartiovaarae": None,
     "SRR8494940": "references/CP028309.fasta",
@@ -100,16 +102,24 @@ rule br_read:
 ###############################################################################
 rule genomic_kmer:
     input:
-        "reads/simulated_reads.stats",
-        ["reads/simulated_reads.k{}.n8.pcon".format(k) for k in range(9, 19, 2)],
-        ["genetic_kmer/simulated_reads.k{}.n4.s{}.stats".format(k, s) for k in range(9, 19, 2) for s in range(1, 10)],
+        "reads/simulated_reads_90.stats",
+        ["reads/simulated_reads_90.k{}.n8.pcon".format(k) for k in range(9, 21, 2)],
+        ["genetic_kmer/simulated_reads_90.k{}.n4.s{}.stats".format(k, s) for k in range(9, 21, 2) for s in range(1, 10)],
+        "reads/simulated_reads_95.stats",
+        ["reads/simulated_reads_95.k{}.n8.pcon".format(k) for k in range(9, 21, 2)],
+        ["genetic_kmer/simulated_reads_95.k{}.n4.s{}.stats".format(k, s) for k in range(9, 21, 2) for s in range(1, 10)],
 
+        
 rule read_kmer:
     input:
-        "reads/simulated_reads.stats",
-        ["reads/simulated_reads.k{}.n8.pcon".format(k) for k in range(9, 19, 2)],
-        ["read_kmer/simulated_reads.k{}.n4.a{}.s{}.stats".format(k, a, s) for k in range(13, 19, 2) for a in range(1, 16) for s in range(1, 10)]
+        "reads/simulated_reads_90.stats",
+        ["reads/simulated_reads_90.k{}.n8.pcon".format(k) for k in range(9, 19, 2)],
+        ["read_kmer/simulated_reads_90.k{}.n4.a{}.s{}.stats".format(k, a, s) for k in range(13, 21, 2) for a in range(1, 16) for s in range(1, 10)],
+        "reads/simulated_reads_95.stats",
+        ["reads/simulated_reads_95.k{}.n8.pcon".format(k) for k in range(9, 19, 2)],
+        ["read_kmer/simulated_reads_95.k{}.n4.a{}.s{}.stats".format(k, a, s) for k in range(13, 21, 2) for a in range(1, 16) for s in range(1, 10)],
 
+        
 rule bacteria:
     input:
         "reads/SRR8494940.stats",
@@ -118,6 +128,6 @@ rule bacteria:
         ["reads/SRR8494940.k{}.n8.pcon".format(k) for k in range(13, 19, 2)],
         ["reads/SRR8494911.k{}.n8.pcon".format(k) for k in range(13, 19, 2)],
         ["reads/SRR8556426.k{}.n8.pcon".format(k) for k in range(13, 19, 2)],
-        ["read_kmer/SRR8494940.k{}.n4.a{}.s{}.stats".format(k, a, s) for k in range(13, 19, 2) for a in range(1, 16) for s in range(1, 10)],
-        ["read_kmer/SRR8494911.k{}.n4.a{}.s{}.stats".format(k, a, s) for k in range(13, 19, 2) for a in range(1, 16) for s in range(1, 10)],
-        ["read_kmer/SRR8556426.k{}.n4.a{}.s{}.stats".format(k, a, s) for k in range(13, 19, 2) for a in range(1, 16) for s in range(1, 10)],
+        ["read_kmer/SRR8494940.k{}.n4.a{}.s{}.stats".format(k, a, s) for k in range(13, 21, 2) for a in range(1, 16) for s in range(1, 10)],
+        ["read_kmer/SRR8494911.k{}.n4.a{}.s{}.stats".format(k, a, s) for k in range(13, 21, 2) for a in range(1, 16) for s in range(1, 10)],
+        ["read_kmer/SRR8556426.k{}.n4.a{}.s{}.stats".format(k, a, s) for k in range(13, 21, 2) for a in range(1, 16) for s in range(1, 10)],
