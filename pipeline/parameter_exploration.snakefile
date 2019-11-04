@@ -17,6 +17,8 @@ rule pcon_count:
         "{path}/{filename}.fasta"
     output:
         "{path}/{filename}.k{kmer_size}.n{nb_bit}.pcon"
+    resources:
+        mem_mb = lambda wcd: round((pow(2, 2 * wcd.kmer_size - 1)/2)/1000000)+10
     shell:
         "pcon count -i {input} -o {output} -k {wildcards.kmer_size} -m 1 -n {wildcards.nb_bit}"
 

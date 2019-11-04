@@ -22,7 +22,7 @@ def generate_output(dataset, k, suffix):
 
 def generate_all_output(suffix):
     for dataset in outputs.keys():
-        for k in range(13, 19, 2) :
+        for k in range(13, 21, 2) :
             yield generate_output(dataset, str(k), suffix)
 
 
@@ -36,6 +36,8 @@ rule pcon:
         "count/{dataset_name}.k{kmer_size}.pcon"
     benchmark:
         "benchmark/pcon/{dataset_name}.k{kmer_size}.tsv"
+    resources:
+        mem_mb = lambda wcd: round((pow(2, 2 * wcd.kmer_size - 1)/2)/1000000)+10
     shell:
         "pcon count -i {input} -o {output} -k {wildcards.kmer_size} -m 1"
 
