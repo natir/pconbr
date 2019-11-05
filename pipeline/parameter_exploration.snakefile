@@ -83,8 +83,10 @@ rule mapping:
     wildcard_constraints:
         filename="[^.]+",
         parameter=".*",
+    threads:
+        8
     shell:
-        "minimap2 -t 1 {params.options} {input.ref} {input.reads} | samtools sort - > {output}"
+        "minimap2 -t {threads} {params.options} {input.ref} {input.reads} | samtools sort - > {output}"
 
 rule generate_stat:
     input:
