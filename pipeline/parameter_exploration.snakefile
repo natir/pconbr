@@ -34,13 +34,18 @@ rule pcon_dump:
 # Section evaluate error rate                                                 #
 ###############################################################################
 minimap_parameter = {
-    "simulated_reads_95": "-a -x map-ont",
-    "simulated_reads_90": "-a -x map-ont",
-    "SRR8556426": "-a -x map-ont",
-    "c_vartiovaarae": "-a -x map-ont",
-    "SRR8494940": "-a -x map-ont",
-    "SRR8494911": "-a -x map-pb",
-    "s_cerevisiae": "-a -x map-ont",
+    "ont": "-a -x map-ont",
+    "pb": "-a -x map-pb",
+}
+
+reads_type = {
+    "simulated_reads_95": "ont",
+    "simulated_reads_90": "ont",
+    "SRR8556426": "ont",
+    "c_vartiovaarae": "ont",
+    "SRR8494940": "ont",
+    "SRR8494911": "pb",
+    "s_cerevisiae": "ont",
 }
 
 reference_path = {
@@ -53,19 +58,33 @@ reference_path = {
     "s_cerevisiae": "references/GCA_002163515.fasta",
 }
 
+def build_index_name(filename):
+    return "{}.{}.mmi".format(reference_path[filename].split(".")[0], reads_type[filename])
+
+rule minimap_indexing:
+    input:
+        "{path}/{filename}.fasta"
+    output:
+        "{path}/{filename}.{reads_type}.mmi"
+    params:
+        options=lambda wcs: minimap_parameter[wcs.reads_type]
+    shell:
+        "minimap2 -t 1 {params.options} -d {output} {input}"
+
 rule mapping:
     input:
-        "{path}/{filename}.{parameter}fasta",
+        ref = lambda wcs: build_index_name(wcs.filename),
+        reads = "{path}/{filename}.{parameter}fasta",
     output:
         "{path}/{filename}.{parameter}bam",
     params:
         reference=lambda wcs: reference_path[wcs.filename],
-        options=lambda wcs: minimap_parameter[wcs.filename],
+        options=lambda wcs: minimap_parameter[reads_type[wcs.filename]],
     wildcard_constraints:
         filename="[^.]+",
         parameter=".*",
     shell:
-        "minimap2 -t 1 {params.options} {params.reference} {input} | samtools sort - > {output}"
+        "minimap2 -t 1 {params.options} {input.ref} {input.reads} | samtools sort - > {output}"
 
 rule generate_stat:
     input:
