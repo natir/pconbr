@@ -26,15 +26,19 @@ def main(args):
         args = sys.argv[1:]
 
     optimizer = BayesianOptimization(
-        f = evaluation,
+        f = None,
         pbounds = {"k": (7, 19), "s": (1, 15)},
+        verbose=2,
+        random_state=1,
     )
         
     utility = UtilityFunction(kind="ucb", kappa=2.5, xi=0.0)
     
     for _ in range(0, int(args[0])):
         parameters = normalize(**optimizer.suggest(utility))
-
+        while  parameters.values() in optimizer.space:
+            parameters = normalize(**optimizer.suggest(utility))
+            
         print(parameters)
         print(generate_filename(**parameters))
         snakemake.snakemake("pipeline/parameter_exploration.snakefile", targets=[generate_filename(**parameters)])
