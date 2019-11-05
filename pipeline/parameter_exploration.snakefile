@@ -7,7 +7,7 @@ rule generate_bad_read:
     output:
         "reads/simulated_reads_{mean_id}.fasta"
     shell:
-        "badread simulate --reference {input} --quantity 100x --identity {wildcards.mean_id},100,2 --error_model nanopore --seed 42 --start_adapter 0,0 --end_adapter 0,0 --junk_reads 0 --random_reads 0 --chimeras 0 --glitches 0,0,0 | seqtk seq -A - > reads/simulated_reads.fasta"
+        "badread simulate --reference {input} --quantity 100x --identity {wildcards.mean_id},100,2 --error_model nanopore --seed 42 --start_adapter 0,0 --end_adapter 0,0 --junk_reads 0 --random_reads 0 --chimeras 0 --glitches 0,0,0 | seqtk seq -A - > {output}"
 
 ###############################################################################
 # Section count                                                               #
@@ -120,7 +120,7 @@ rule br_read:
 
 ###############################################################################
 # Section global rules                                                        #
-###############################################################################
+###############################################################################        
 rule genomic_kmer:
     input:
         "reads/simulated_reads_90.stats",
