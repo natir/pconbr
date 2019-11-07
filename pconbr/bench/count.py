@@ -5,6 +5,8 @@ import csv
 
 from collections import defaultdict
 
+import pandas
+
 def __read_info(filename):
     with open(filename) as finput:
         reader = csv.DictReader(finput, delimiter='\t')
@@ -35,12 +37,15 @@ def read_bench_info():
 def get(value):
     data = read_bench_info()
 
-    header = "| dataset | k | Jellyfish | Kmc | Pconbr |\n|:-|:-|-:|-:|-:|\n"
+    datasets = sorted({dataset for tool in data.keys() for dataset in data[tool]})
+    all_k = sorted({k for dataset in datasets for k in data["pcon"][dataset]})
 
-    table = ""
-    for dataset in sorted({dataset for tool in data.keys() for dataset in data[tool]}):
-        for k in sorted({k for tool in data.keys() for k in data[tool][dataset]}):
-            table += "| {} | {} | {} | {} | {} |\n".format(dataset, k, data["jellyfish"][dataset][k][value], data["kmc"][dataset][k][value], data["pcon"][dataset][k][value])
+    index = pandas.MultiIndex.from_tuples([(d, k) for d in datasets for k in all_k], names=("dataset", "k"))
+    df = pandas.DataFrame(index=index)
+
+    df["jellyfish"] = [data["jellyfish"][dataset][k][value] for dataset in datasets for k in all_k]
+    df["kmc"]       = [data["kmc"][dataset][k][value] for dataset in datasets for k in all_k]
+    df["pcon"]      = [data["pcon"][dataset][k][value] for dataset in datasets for k in all_k]
     
-    return header + table
+    return df
 
