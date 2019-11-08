@@ -14,6 +14,8 @@ rule kmer_spectrum_simulated_reads_85:
         k19 = "reads/simulated_reads_85.k19.n8.pcon",
     output:
         "stats/kmer_spectrum/simulated_reads_85.csv"
+    resources:
+        mem_mb = lambda wcd: round((pow(2, 2 * 19 - 1)/2)/1000000)+10
     run:
         curve.generate_csv_count(input, output[0])
 
@@ -25,6 +27,8 @@ rule kmer_spectrum_simulated_reads_90:
         k19 = "reads/simulated_reads_90.k19.n8.pcon",
     output:
         "stats/kmer_spectrum/simulated_reads_90.csv"
+    resources:
+        mem_mb = lambda wcd: round((pow(2, 2 * 19 - 1)/2)/1000000)+10
     run:
         curve.generate_csv_count(input, output[0])
 
@@ -36,6 +40,8 @@ rule kmer_spectrum_simulated_reads_95:
         k19 = "reads/simulated_reads_95.k19.n8.pcon",
     output:
         "stats/kmer_spectrum/simulated_reads_95.csv"
+    resources:
+        mem_mb = lambda wcd: round((pow(2, 2 * 19 - 1)/2)/1000000)+10
     run:
         curve.generate_csv_count(input, output[0])
         
@@ -47,6 +53,8 @@ rule kmer_spectrum_e_coli_pb:
         k19 = "reads/SRR8494911.k19.n8.pcon",
     output:
         "stats/kmer_spectrum/e_coli_pb.csv"
+    resources:
+        mem_mb = lambda wcd: round((pow(2, 2 * 19 - 1)/2)/1000000)+10
     run:
         curve.generate_csv_count(input, output[0])
 
@@ -58,6 +66,8 @@ rule kmer_spectrum_e_coli_ont:
         k19 = "reads/SRR8494940.k19.n8.pcon",
     output:
         "stats/kmer_spectrum/e_coli_ont.csv"
+    resources:
+        mem_mb = lambda wcd: round((pow(2, 2 * 19 - 1)/2)/1000000)+10
     run:
         curve.generate_csv_count(input, output[0])
         
@@ -69,6 +79,8 @@ rule kmer_spectrum_s_pneumoniae:
         k19 = "reads/SRR8556426.k19.n8.pcon",
     output:
         "stats/kmer_spectrum/s_pneumoniae.csv"
+    resources:
+        mem_mb = lambda wcd: round((pow(2, 2 * 19 - 1)/2)/1000000)+10
     run:
         curve.generate_csv_count(input, output[0])
 
@@ -92,6 +104,8 @@ rule kmer_spectrum_true_false_simulated_reads_85:
         k19 = "reads/simulated_reads_85.k19.n8.pcon",
     output:
         "stats/kmer_spectrum/simulated_reads_85_true_false.csv"
+    resources:
+        mem_mb = lambda wcd: round((pow(2, 2 * 19 - 1)/2)/1000000)+10
     run:
         curve.generate_csv_true_false(input, output[0])
         
@@ -107,6 +121,8 @@ rule kmer_spectrum_true_false_simulated_reads_90:
         k19 = "reads/simulated_reads_90.k19.n8.pcon",
     output:
         "stats/kmer_spectrum/simulated_reads_90_true_false.csv"
+    resources:
+        mem_mb = lambda wcd: round((pow(2, 2 * 19 - 1)/2)/1000000)+10
     run:
         curve.generate_csv_true_false(input, output[0])
 
@@ -122,6 +138,8 @@ rule kmer_spectrum_true_false_simulated_reads_95:
         k19 = "reads/simulated_reads_95.k19.n8.pcon",
     output:
         "stats/kmer_spectrum/simulated_reads_95_true_false.csv"
+    resources:
+        mem_mb = lambda wcd: round((pow(2, 2 * 19 - 1)/2)/1000000)+10
     run:
         curve.generate_csv_true_false(input, output[0])
 
@@ -137,6 +155,8 @@ rule kmer_spectrum_true_false_e_coli_pb:
         k19 = "reads/SRR8494911.k19.n8.pcon",
     output:
         "stats/kmer_spectrum/e_coli_pb_true_false.csv"
+    resources:
+        mem_mb = lambda wcd: round((pow(2, 2 * 19 - 1)/2)/1000000)+10
     run:
         curve.generate_csv_true_false(input, output[0])
         
@@ -153,6 +173,8 @@ rule kmer_spectrum_true_false_e_coli_ont:
         k19 = "reads/SRR8494940.k19.n8.pcon",
     output:
         "stats/kmer_spectrum/e_coli_ont_true_false.csv"
+    resources:
+        mem_mb = lambda wcd: round((pow(2, 2 * 19 - 1)/2)/1000000)+10
     run:
         curve.generate_csv_true_false(input, output[0])
 
@@ -168,6 +190,8 @@ rule kmer_spectrum_true_false_s_pneumoniae:
         k19 = "reads/SRR8556426.k19.n8.pcon",
     output:
         "stats/kmer_spectrum/s_pneumoniae_true_false.csv"
+    resources:
+        mem_mb = lambda wcd: round((pow(2, 2 * 19 - 1)/2)/1000000)+10
     run:
         curve.generate_csv_true_false(input, output[0])
 

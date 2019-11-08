@@ -18,17 +18,24 @@ def buff_read(reader):
             yield b
 
 def read_pcon_file(filename):
-    with open(filename, 'rb') as reader:
-        k, nb_bit = struct.unpack('BB', reader.read(2))
-        for val in buff_read(reader):
-            if nb_bit == 4:
-                yield val & 0b1111
-                yield (val & 0b11110000) >> 4
-            elif nb_bit == 8:
-                yield val
-            else:
-                raise StopIteration
     
+    reader = open(filename, 'rb')
+    _, nb_bit = reader.read(2)
+    if nb_bit == 4:
+        return __read_pcon_file_full_4(reader)
+    elif nb_bit == 8:
+        return __read_pcon_file_full_8(reader)
+    else:
+        return None
+
+def __read_pcon_file_full_4(reader):
+    for val in reader.read():
+        yield val & 0b1111
+        yield (val & 0b11110000) >> 4
+        
+def __read_pcon_file_full_8(reader):
+    for val in reader.read():
+        yield val                    
 
 def count(filename, columns_name):
     count = dict(Counter(read_pcon_file(filename)))
