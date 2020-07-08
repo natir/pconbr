@@ -1,3 +1,42 @@
+
+import math
+
+def pcon_memory_usage(kmer_size, dump):
+    if dump:
+        if kmer_size >= 13:
+            return math.ceil(
+                1.1 *
+                (
+                    (1 << (kmer_size * 2 - 21)) +
+                    (1 << (kmer_size * 2 - 24))
+                )
+            )
+        else:
+            return 10
+    else:
+        if kmer_size >= 11:
+            return math.ceil(
+                1.1 *
+                (
+                    1 << (kmer_size * 2 - 21)
+                )
+            )
+        else:
+            return 3
+
+
+def br_memory_usage(kmer_size):
+    if kmer_size >= 13:
+        return math.ceil(
+            1.1 *
+            (
+                1 << (kmer_size * 2 - 24)
+            )
+        )
+    else:
+        return 3
+
+
 ###############################################################################
 # Section simulate read                                                       #
 ###############################################################################
@@ -22,7 +61,7 @@ rule pcon_count:
         "{path}/{filename}.k{kmer_size}.pcon"
         
     resources:
-        mem_mb = lambda wcd: (1 << (int(wcd.kmer_size) * 2 - 20)) * 8
+        mem_mb = lambda wcd: pcon_memory_usage(int(wcd.kmer_size), False)
         
     shell:
         "pcon count -i {input} -o {output} -k {wildcards.kmer_size}"
@@ -35,7 +74,7 @@ rule pcon_dump:
         "{path}/{filename}.k{kmer_size}.a{abundance}.solid"
 
     resources:
-        mem_mb = lambda wcd: ((1 << (int(wcd.kmer_size) * 2 - 20)) * 8) + (1 << (int(wcd.kmer_size) * 2 - 20))
+        mem_mb = lambda wcd: pcon_memory_usage(int(wcd.kmer_size), True)
 
     shell:
         "pcon dump -i {input} -a {wildcards.abundance} -s {output}"
@@ -134,7 +173,7 @@ rule br_genetic:
         "genetic_kmer/{filename}.k{kmer_size}.s{solidity}.fasta"
 
     resources:
-        mem_mb = lambda wcd: 1 << (int(wcd.kmer_size) * 2 - 20)
+        mem_mb = lambda wcd: br_memory_usage(int(wcd.kmer_size))
         
     shell:
         "br -i {input.filename} -s {input.solid} -c 2 -o {output}"
@@ -148,7 +187,7 @@ rule br_read:
         "read_kmer/{filename}.k{kmer_size}.a{abundance}.s{solidity}.fasta"
 
     resources:
-        mem_mb = lambda wcd: 1 << (int(wcd.kmer_size) * 2 - 20)
+        mem_mb = lambda wcd: br_memory_usage(int(wcd.kmer_size))
         
     shell:
         "br -i {input.filename} -s {input.solid} -c 2 -o {output}"
