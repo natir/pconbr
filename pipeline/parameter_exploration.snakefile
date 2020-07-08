@@ -97,13 +97,16 @@ rule mapping:
     params:
         reference = lambda wcs: reference_path[wcs.filename],
         options = lambda wcs: minimap_parameter[reads_type[wcs.filename]],
+
+    threads:
+        16
         
     wildcard_constraints:
         filename = "[^.]+",
         parameter = ".*",
         
     shell:
-        "minimap2 -t 1 {params.options} {input.ref} {input.reads} | samtools sort - > {output}"
+        "minimap2 -t {threads} {params.options} {input.ref} {input.reads} | samtools sort - > {output}"
 
 rule generate_stat:
     input:
