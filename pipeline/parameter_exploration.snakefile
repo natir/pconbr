@@ -128,7 +128,7 @@ rule generate_stat:
 rule br_genetic:
     input:
         filename = "reads/{filename}.fasta",
-        solid = "references/CP028309.k{kmer_size}.a1.solid"
+        solid = "references/CP028309.k{kmer_size}.a0.solid"
         
     output:
         "genetic_kmer/{filename}.k{kmer_size}.s{solidity}.fasta"
