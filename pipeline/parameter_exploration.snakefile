@@ -22,7 +22,7 @@ rule pcon_count:
         "{path}/{filename}.k{kmer_size}.pcon"
         
     resources:
-        mem_mb = lambda wcd: round((pow(2, 2 * int(wcd.kmer_size) - 1)/2)/1000000)+10
+        mem_mb = lambda wcd: (1 << (int(wcd.kmer_size) * 2 - 20)) * 8
         
     shell:
         "pcon count -i {input} -o {output} -k {wildcards.kmer_size}"
@@ -35,8 +35,8 @@ rule pcon_dump:
         "{path}/{filename}.k{kmer_size}.a{abundance}.solid"
 
     resources:
-        mem_mb = lambda wcd: round((pow(2, 2 * int(wcd.kmer_size) - 1)/2)/1000000)+10
-        
+        mem_mb = lambda wcd: ((1 << (int(wcd.kmer_size) * 2 - 20)) * 8) + (1 << (int(wcd.kmer_size) * 2 - 20))
+
     shell:
         "pcon dump -i {input} -a {wildcards.abundance} -s {output}"
 
@@ -129,6 +129,9 @@ rule br_genetic:
         
     output:
         "genetic_kmer/{filename}.k{kmer_size}.s{solidity}.fasta"
+
+    resources:
+        mem_mb = lambda wcd: 1 << (int(wcd.kmer_size) * 2 - 20)
         
     shell:
         "br -i {input.filename} -s {input.solid} -c 2 -o {output}"
@@ -140,6 +143,9 @@ rule br_read:
         
     output:
         "read_kmer/{filename}.k{kmer_size}.a{abundance}.s{solidity}.fasta"
+
+    resources:
+        mem_mb = lambda wcd: 1 << (int(wcd.kmer_size) * 2 - 20)
         
     shell:
         "br -i {input.filename} -s {input.solid} -c 2 -o {output}"
