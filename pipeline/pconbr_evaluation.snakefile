@@ -59,6 +59,9 @@ rule pcon_count:
         
     output:
         "{path}/{filename}.k{kmer_size}.pcon"
+
+    wildcard_constraints:
+        kmer_size = '\d+'
         
     resources:
         mem_mb = lambda wcd: pcon_memory_usage(int(wcd.kmer_size), False)
@@ -74,6 +77,9 @@ rule pcon_dump:
         csv = "{path}/{filename}.k{kmer_size}.a{abundance}.csv",
         solid = "{path}/{filename}.k{kmer_size}.a{abundance}.solid",
 
+    wildcard_constraints:
+        kmer_size = '\d+'
+        
     resources:
         mem_mb = lambda wcd: pcon_memory_usage(int(wcd.kmer_size), True)
 
@@ -86,6 +92,9 @@ rule pcon_dump_spectrum:
         
     output:
         spectrum = "{path}/{filename}.k{kmer_size}.spectrum",
+
+    wildcard_constraints:
+        kmer_size = '\d+'
 
     resources:
         mem_mb = lambda wcd: pcon_memory_usage(int(wcd.kmer_size), True)
@@ -191,6 +200,9 @@ rule br_genetic:
     output:
         "genetic_kmer/{filename}.k{kmer_size}.s{solidity}.fasta"
 
+    wildcard_constraints:
+        kmer_size = '\d+'
+
     resources:
         mem_mb = lambda wcd: br_memory_usage(int(wcd.kmer_size))
         
@@ -204,6 +216,9 @@ rule br_read:
         
     output:
         "read_kmer/{filename}.k{kmer_size}.a{abundance}.s{solidity}.fasta"
+
+    wildcard_constraints:
+        kmer_size = '\d+'
 
     resources:
         mem_mb = lambda wcd: br_memory_usage(int(wcd.kmer_size))
@@ -233,7 +248,7 @@ def sim_reads_input(error):
     for k in range(config["kmer_begin"], config["kmer_end"], 2):
         for a in range(config["abundance_begin"], config["abundance_end"]):
             for s in range(config["solidity_begin"], config["solidity_end"]):
-                yield f"genetic_kmer/simulated_reads_{error}.k{k}.a{a}.s{s}.stats"
+                yield f"read_kmer/simulated_reads_{error}.k{k}.a{a}.s{s}.stats"
 
          
 rule genomic_kmer:
