@@ -73,14 +73,25 @@ rule pcon_dump:
     output:
         csv = "{path}/{filename}.k{kmer_size}.a{abundance}.csv",
         solid = "{path}/{filename}.k{kmer_size}.a{abundance}.solid",
+
+    resources:
+        mem_mb = lambda wcd: pcon_memory_usage(int(wcd.kmer_size), True)
+
+    shell:
+        "pcon dump -i {input} -a {wildcards.abundance} -c {output.csv} -s {output.solid}"
+
+rule pcon_dump_spectrum:
+    input:
+        "{path}/{filename}.k{kmer_size}.pcon"
+        
+    output:
         spectrum = "{path}/{filename}.k{kmer_size}.spectrum",
 
     resources:
         mem_mb = lambda wcd: pcon_memory_usage(int(wcd.kmer_size), True)
 
     shell:
-        "pcon dump -i {input} -a {wildcards.abundance} -s {output.solid}, -S {output.spectrum}"
-
+        "pcon dump -i {input} -S {output.spectrum}"
 
         
 ###############################################################################

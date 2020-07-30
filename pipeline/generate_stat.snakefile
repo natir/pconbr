@@ -7,12 +7,12 @@ from pconbr.kmer_count import curve
 include: "pconbr_evaluation.snakefile"
 
 def kmer_spectrum_input(error, ext):
-    [yield f"reads/simulated_reads_{error}.k{k}.{ext}" for k in range(config["kmer_begin"], config["kmer_end"], 2)]
+    for k in range(config["kmer_begin"], config["kmer_end"], 2):
+        yield f"reads/simulated_reads_{error}.k{k}.{ext}"
 
 def true_kmes_input():
-    [yield "references/CP028309.k{k}.csv" for k in range(config["kmer_begin"], config["kmer_end"], 2)]
-
-
+    for k in range(config["kmer_begin"], config["kmer_end"], 2):
+        yield "references/CP028309.k{k}.csv"
     
 rule kmer_spectrum_simulated_reads:
     input:
@@ -26,14 +26,14 @@ rule kmer_spectrum_simulated_reads:
 
 rule kmer_spectrum:
     input:
-        [f"stats/kmer_spectrum/simulated_reads_{error}.csv" for error in range(config["error_begin"], config["error_end"])
+        [f"stats/kmer_spectrum/simulated_reads_{error}.csv" for error in range(config["error_begin"], config["error_end"])]
 
 
          
 rule kmer_spectrum_true_false_simulated_reads:
     input:
         true = lambda wlc: true_kmer_input(),
-        reads = lambda wlc: kmer_spectrum_input(wlc.error),
+        reads = lambda wlc: kmer_spectrum_input(wlc.error, "csv"),
     output:
         "stats/kmer_spectrum/simulated_reads_{error}_true_false.csv"
     run:
@@ -41,4 +41,4 @@ rule kmer_spectrum_true_false_simulated_reads:
         
 rule kmer_spectrum_true_false:
     input:
-         [f"stats/kmer_spectrum/simulated_reads_{error}_true_false.csv" for error in range(config["error_begin"], config["error_end"])
+         [f"stats/kmer_spectrum/simulated_reads_{error}_true_false.csv" for error in range(config["error_begin"], config["error_end"])]
