@@ -220,7 +220,7 @@ def sim_reads_input(error):
         yield f"reads/simulated_reads_{error}.k{k}.pcon"
         
     for k in range(config["kmer_begin"], config["kmer_end"], 2):
-        for a in range(config["abundance_begin"], config["abundance_end"]:
+        for a in range(config["abundance_begin"], config["abundance_end"]):
             for s in range(config["solidity_begin"], config["solidity_end"]):
                 yield f"genetic_kmer/simulated_reads_{error}.k{k}.a{a}.s{s}.stats"
 
