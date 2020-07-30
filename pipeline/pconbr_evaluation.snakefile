@@ -71,14 +71,18 @@ rule pcon_dump:
         "{path}/{filename}.k{kmer_size}.pcon"
         
     output:
-        "{path}/{filename}.k{kmer_size}.a{abundance}.solid"
+        csv = "{path}/{filename}.k{kmer_size}.a{abundance}.csv",
+        solid = "{path}/{filename}.k{kmer_size}.a{abundance}.solid",
+        spectrum = "{path}/{filename}.k{kmer_size}.spectrum",
 
     resources:
         mem_mb = lambda wcd: pcon_memory_usage(int(wcd.kmer_size), True)
 
     shell:
-        "pcon dump -i {input} -a {wildcards.abundance} -s {output}"
+        "pcon dump -i {input} -a {wildcards.abundance} -s {output.solid}, -S {output.spectrum}"
 
+
+        
 ###############################################################################
 # Section evaluate error rate                                                 #
 ###############################################################################
@@ -89,6 +93,8 @@ minimap_parameter = {
 
 reads_type = {
     "simulated_reads_95": "ont",
+    "simulated_reads_96": "ont",
+    "simulated_reads_97": "ont",
     "simulated_reads_98": "ont",
     "simulated_reads_99": "ont",
     #"SRR8556426": "ont",
@@ -100,6 +106,8 @@ reads_type = {
 
 reference_path = {
     "simulated_reads_95": "references/CP028309.fasta",
+    "simulated_reads_96": "references/CP028309.fasta",
+    "simulated_reads_97": "references/CP028309.fasta",
     "simulated_reads_98": "references/CP028309.fasta",
     "simulated_reads_99": "references/CP028309.fasta",
     #"SRR8556426": "references/CP026549.fasta",
@@ -195,31 +203,35 @@ rule br_read:
 ###############################################################################
 # Section global rules                                                        #
 ###############################################################################
+def sim_genomic_output(error):
+    yield f"reads/simulated_reads_{error}.stats"
+
+    for k in range(9, 21, 2):
+        yield f"reads/simulated_reads_{error}.k{k}.pcon" for k in range(9, 21, 2)
+
+    for k in range(9, 21, 2):
+        for s in range(1, 10):
+            yield f"genetic_kmer/simulated_reads_{error}.k{k}.s{s}.stats"
+
+def sim_reads_output(error):
+    yield f"reads/simulated_reads_{error}.stats"
+
+    for k in range(9, 21, 2):
+        yield f"reads/simulated_reads_{error}.k{k}.pcon" for k in range(9, 21, 2)
+
+    for k in range(9, 21, 2):
+        for a in range(1, 16):
+            for s in range(1, 10):
+                yield f"genetic_kmer/simulated_reads_{error}.k{k}.a{a}.s{s}.stats"
+
+         
 rule genomic_kmer:
     input:
-        "reads/simulated_reads_95.stats",
-        ["reads/simulated_reads_95.k{}.pcon".format(k) for k in range(9, 21, 2)],
-        ["genetic_kmer/simulated_reads_95.k{}.s{}.stats".format(k, s) for k in range(9, 21, 2) for s in range(1, 10)],
-        "reads/simulated_reads_98.stats",
-        ["reads/simulated_reads_98.k{}.pcon".format(k) for k in range(9, 21, 2)],
-        ["genetic_kmer/simulated_reads_98.k{}.s{}.stats".format(k, s) for k in range(9, 21, 2) for s in range(1, 10)],
-        "reads/simulated_reads_99.stats",
-        ["reads/simulated_reads_99.k{}.pcon".format(k) for k in range(9, 21, 2)],
-        ["genetic_kmer/simulated_reads_99.k{}.s{}.stats".format(k, s) for k in range(9, 21, 2) for s in range(1, 10)],
-
+        [sim_genomic_output(error) for error in range(95, 100)]
         
 rule read_kmer:
     input:
-        "reads/simulated_reads_95.stats",
-        ["reads/simulated_reads_95.k{}.pcon".format(k) for k in range(9, 19, 2)],
-        ["read_kmer/simulated_reads_95.k{}.a{}.s{}.stats".format(k, a, s) for k in range(13, 21, 2) for a in range(1, 16) for s in range(1, 10)],
-        "reads/simulated_reads_98.stats",
-        ["reads/simulated_reads_98.k{}.pcon".format(k) for k in range(9, 19, 2)],
-        ["read_kmer/simulated_reads_98.k{}.a{}.s{}.stats".format(k, a, s) for k in range(13, 21, 2) for a in range(1, 16) for s in range(1, 10)],
-        "reads/simulated_reads_99.stats",
-        ["reads/simulated_reads_99.k{}.pcon".format(k) for k in range(9, 19, 2)],
-        ["read_kmer/simulated_reads_99.k{}.a{}.s{}.stats".format(k, a, s) for k in range(13, 21, 2) for a in range(1, 16) for s in range(1, 10)],
-
+        [sim_reads_output(error) for error in range(95, 100)]
               
 # rule bacteria:
 #     input:
