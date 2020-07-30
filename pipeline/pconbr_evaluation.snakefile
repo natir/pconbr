@@ -203,35 +203,35 @@ rule br_read:
 ###############################################################################
 # Section global rules                                                        #
 ###############################################################################
-def sim_genomic_output(error):
+def sim_genomic_input(error):
     yield f"reads/simulated_reads_{error}.stats"
 
-    for k in range(9, 21, 2):
-        yield f"reads/simulated_reads_{error}.k{k}.pcon" for k in range(9, 21, 2)
-
-    for k in range(9, 21, 2):
-        for s in range(1, 10):
+    for k in range(config["kmer_begin"], config["kmer_end"], 2):
+        yield f"reads/simulated_reads_{error}.k{k}.pcon"
+        
+    for k in range(config["kmer_begin"], config["kmer_end"], 2):
+        for s in range(config["solidity_begin"], config["solidity_end"]):
             yield f"genetic_kmer/simulated_reads_{error}.k{k}.s{s}.stats"
 
-def sim_reads_output(error):
+def sim_reads_input(error):
     yield f"reads/simulated_reads_{error}.stats"
 
-    for k in range(9, 21, 2):
-        yield f"reads/simulated_reads_{error}.k{k}.pcon" for k in range(9, 21, 2)
-
-    for k in range(9, 21, 2):
-        for a in range(1, 16):
-            for s in range(1, 10):
+    for k in range(config["kmer_begin"], config["kmer_end"], 2):
+        yield f"reads/simulated_reads_{error}.k{k}.pcon"
+        
+    for k in range(config["kmer_begin"], config["kmer_end"], 2):
+        for a in range(config["abundance_begin"], config["abundance_end"]:
+            for s in range(config["solidity_begin"], config["solidity_end"]):
                 yield f"genetic_kmer/simulated_reads_{error}.k{k}.a{a}.s{s}.stats"
 
          
 rule genomic_kmer:
     input:
-        [sim_genomic_output(error) for error in range(95, 100)]
+        [sim_genomic_input(error) for error in range(95, 100)]
         
 rule read_kmer:
     input:
-        [sim_reads_output(error) for error in range(95, 100)]
+        [sim_reads_input(error) for error in range(95, 100)]
               
 # rule bacteria:
 #     input:

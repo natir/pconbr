@@ -1,0 +1,11 @@
+kmer_begin: 9
+kmer_end: 21
+
+solidity_begin: 1
+solidity_end: 11
+
+error_begin: 95
+error_end: 100
+
+abundance_begin: 2
+abundance_end: 20
