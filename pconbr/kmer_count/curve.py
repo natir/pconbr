@@ -7,14 +7,12 @@ import pandas
 
 from collections import Counter, defaultdict 
 
-def read_pcon_file(filename):
+def count(filename, columns_name):
+    count = dict()
     with open(filename) as fh:
         reader = csv.reader(fh)
         for row in reader:
-            yield (row[0], row[1])
-
-def count(filename, columns_name):
-    count = dict(Counter(read_pcon_file(filename)))
+            count[row[0]] = int(row[1])
 
     df = pandas.DataFrame.from_dict(count, orient='index', columns=[columns_name])
     df.sort_index(inplace=True)
