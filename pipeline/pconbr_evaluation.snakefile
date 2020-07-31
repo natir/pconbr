@@ -205,7 +205,7 @@ rule br_genetic:
         "genetic_kmer/{filename}.k{kmer_size}.{method}.fasta"
 
     params:
-        method = lambda wcd: " ".join(wcd["method"].split("_"))
+        method = lambda wcd: " ".join(wcd["method"].split("-"))
         
     wildcard_constraints:
         kmer_size = '\d+'
@@ -225,7 +225,7 @@ rule br_read:
         "read_kmer/{filename}.k{kmer_size}.a{abundance}.{method}.fasta"
 
     params:
-        method = lambda wcd: " ".join(wcd["method"].split("_"))
+        method = lambda wcd: " ".join(wcd["method"].split("-"))
 
     wildcard_constraints:
         kmer_size = '\d+'
@@ -247,7 +247,7 @@ def sim_genomic_input(error):
         yield f"reads/simulated_reads_{error}.k{k}.pcon"
         
     for k in range(config["kmer_begin"], config["kmer_end"], 2):
-        for m in ["_".join(methods[:i]) for i in range(1, 5)]:
+        for m in ["-".join(methods[:i]) for i in range(1, 5)]:
                 yield f"genetic_kmer/simulated_reads_{error}.k{k}.{m}.stats"
 
 def sim_reads_input(error):
@@ -258,7 +258,7 @@ def sim_reads_input(error):
         
     for k in range(config["kmer_begin"], config["kmer_end"], 2):
         for a in range(config["abundance_begin"], config["abundance_end"]):
-            for m in ["_".join(methods[:i]) for i in range(1, 5)]:
+            for m in ["-".join(methods[:i]) for i in range(1, 5)]:
                 yield f"read_kmer/simulated_reads_{error}.k{k}.a{a}.{m}.stats"
 
          
