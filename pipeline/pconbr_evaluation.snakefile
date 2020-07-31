@@ -46,6 +46,10 @@ rule generate_bad_read:
         
     output:
         "reads/simulated_reads_{mean_id}.fasta"
+
+
+    wildcard_constraints:
+        mean_id = '\d+'
         
     shell:
         "badread simulate --reference {input} --quantity 100x --identity {wildcards.mean_id},100,2 --error_model nanopore --seed 42 --start_adapter 0,0 --end_adapter 0,0 --junk_reads 0 --random_reads 0 --chimeras 0 --glitches 0,0,0 | seqtk seq -A - > {output}"
@@ -198,7 +202,7 @@ rule br_genetic:
         solid = "references/CP028309.k{kmer_size}.a0.solid"
         
     output:
-        "genetic_kmer/{filename}.k{kmer_size}.s{solidity}.{method}.fasta"
+        "genetic_kmer/{filename}.k{kmer_size}.{method}.fasta"
 
     params:
         method = lambda wcd: " ".join(wcd["method"].split("_"))
@@ -218,7 +222,7 @@ rule br_read:
         solid = "reads/{filename}.k{kmer_size}.a{abundance}.solid"
         
     output:
-        "read_kmer/{filename}.k{kmer_size}.a{abundance}.s{solidity}.{method}.fasta"
+        "read_kmer/{filename}.k{kmer_size}.a{abundance}.{method}.fasta"
 
     params:
         method = lambda wcd: " ".join(wcd["method"].split("_"))
@@ -243,9 +247,8 @@ def sim_genomic_input(error):
         yield f"reads/simulated_reads_{error}.k{k}.pcon"
         
     for k in range(config["kmer_begin"], config["kmer_end"], 2):
-        for s in range(config["solidity_begin"], config["solidity_end"]):
-            for m in ["_".join(methods[:i]) for i in range(1, 5)]:
-                yield f"genetic_kmer/simulated_reads_{error}.k{k}.s{s}.{m}.stats"
+        for m in ["_".join(methods[:i]) for i in range(1, 5)]:
+                yield f"genetic_kmer/simulated_reads_{error}.k{k}.{m}.stats"
 
 def sim_reads_input(error):
     yield f"reads/simulated_reads_{error}.stats"
@@ -255,9 +258,8 @@ def sim_reads_input(error):
         
     for k in range(config["kmer_begin"], config["kmer_end"], 2):
         for a in range(config["abundance_begin"], config["abundance_end"]):
-            for s in range(config["solidity_begin"], config["solidity_end"]):
-                for m in ["_".join(methods[:i]) for i in range(1, 5)]:
-                    yield f"read_kmer/simulated_reads_{error}.k{k}.a{a}.s{s}.{m}.stats"
+            for m in ["_".join(methods[:i]) for i in range(1, 5)]:
+                yield f"read_kmer/simulated_reads_{error}.k{k}.a{a}.{m}.stats"
 
          
 rule genomic_kmer:

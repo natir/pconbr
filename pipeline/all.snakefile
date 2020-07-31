@@ -8,7 +8,7 @@ rule pconbr_eval:
         rules.genomic_kmer.input,
         rules.read_kmer.input,
         rules.kmer_spectrum.input,
-        rules.kmer_spectrum_true_false.input
+        #rules.kmer_spectrum_true_false.input
         
 rule all:
     input:
