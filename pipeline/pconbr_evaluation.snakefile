@@ -198,8 +198,11 @@ rule br_genetic:
         solid = "references/CP028309.k{kmer_size}.a0.solid"
         
     output:
-        "genetic_kmer/{filename}.k{kmer_size}.s{solidity}.fasta"
+        "genetic_kmer/{filename}.k{kmer_size}.s{solidity}.{method}.fasta"
 
+    params:
+        method = lambda wcd: " ".join(wcd["method"].split("_"))
+        
     wildcard_constraints:
         kmer_size = '\d+'
 
@@ -207,7 +210,7 @@ rule br_genetic:
         mem_mb = lambda wcd: br_memory_usage(int(wcd.kmer_size))
         
     shell:
-        "br -i {input.filename} -s {input.solid} -c 2 -o {output}"
+        "br -i {input.filename} -s {input.solid} -o {output} -m {params.method}"
 
 rule br_read:
     input:
@@ -215,7 +218,10 @@ rule br_read:
         solid = "reads/{filename}.k{kmer_size}.a{abundance}.solid"
         
     output:
-        "read_kmer/{filename}.k{kmer_size}.a{abundance}.s{solidity}.fasta"
+        "read_kmer/{filename}.k{kmer_size}.a{abundance}.s{solidity}.{method}.fasta"
+
+    params:
+        method = lambda wcd: " ".join(wcd["method"].split("_"))
 
     wildcard_constraints:
         kmer_size = '\d+'
@@ -224,11 +230,12 @@ rule br_read:
         mem_mb = lambda wcd: br_memory_usage(int(wcd.kmer_size))
         
     shell:
-        "br -i {input.filename} -s {input.solid} -c 2 -o {output}"
+        "br -i {input.filename} -s {input.solid} -o {output} -m {params.method}"
 
 ###############################################################################
 # Section global rules                                                        #
 ###############################################################################
+methods = ["one", "greedy", "gap_size", "graph"]
 def sim_genomic_input(error):
     yield f"reads/simulated_reads_{error}.stats"
 
@@ -237,7 +244,8 @@ def sim_genomic_input(error):
         
     for k in range(config["kmer_begin"], config["kmer_end"], 2):
         for s in range(config["solidity_begin"], config["solidity_end"]):
-            yield f"genetic_kmer/simulated_reads_{error}.k{k}.s{s}.stats"
+            for m in ["_".join(methods[:i]) for i in range(1, 5)]:
+                yield f"genetic_kmer/simulated_reads_{error}.k{k}.s{s}.{m}.stats"
 
 def sim_reads_input(error):
     yield f"reads/simulated_reads_{error}.stats"
@@ -248,7 +256,8 @@ def sim_reads_input(error):
     for k in range(config["kmer_begin"], config["kmer_end"], 2):
         for a in range(config["abundance_begin"], config["abundance_end"]):
             for s in range(config["solidity_begin"], config["solidity_end"]):
-                yield f"read_kmer/simulated_reads_{error}.k{k}.a{a}.s{s}.stats"
+                for m in ["_".join(methods[:i]) for i in range(1, 5)]:
+                    yield f"read_kmer/simulated_reads_{error}.k{k}.a{a}.s{s}.{m}.stats"
 
          
 rule genomic_kmer:
