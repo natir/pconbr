@@ -23,7 +23,8 @@ def generate_csv_count(inputs, output):
     # Get data
     df = pandas.DataFrame()
     for (k, v) in inputs.items():
-        df = pandas.merge(df, count(v, k), how="outer", left_index=True, right_index=True)
+        for value in v:
+            df = pandas.merge(df, count(value, k), how="outer", left_index=True, right_index=True)
 
     # Clean up
     df = df.fillna(0)
