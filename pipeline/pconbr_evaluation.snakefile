@@ -89,7 +89,7 @@ rule pcon_dump_spectrum:
         kmer_size = '\d+'
 
     resources:
-        mem_mb = lambda wcd: pcon_memory_usage(int(wcd.kmer_size), True)
+        mem_mb = lambda wcd: pcon_memory_usage(int(wcd.kmer_size))
 
     shell:
         "pcon dump -i {input} -S {output.spectrum}"

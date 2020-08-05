@@ -12,24 +12,29 @@ def count(filename, columns_name):
     with open(filename) as fh:
         reader = csv.reader(fh)
         for row in reader:
-            count[row[0]] = int(row[1])
+            count[int(row[0])] = int(row[1])
 
     df = pandas.DataFrame.from_dict(count, orient='index', columns=[columns_name])
+
     df.sort_index(inplace=True)
 
     return df
 
+def filename2k(filename):
+     return filename.split(".")[1]
+ 
 def generate_csv_count(inputs, output):
     # Get data
     df = pandas.DataFrame()
-    for (k, v) in inputs.items():
-        for value in v:
-            df = pandas.merge(df, count(value, k), how="outer", left_index=True, right_index=True)
+    for value in inputs:
+        df = pandas.merge(df, count(value, filename2k(value)), how="outer", left_index=True, right_index=True)
 
     # Clean up
     df = df.fillna(0)
     for c in df.columns:
         df = df.astype({c: 'int64'})
+
+    df.sort_index(inplace=True)
 
     # Write result
     df.to_csv(output)
@@ -63,7 +68,7 @@ def generate_csv_true_false(inputs, output):
     k2file = defaultdict(dict)
 
     for v in inputs:
-        k = v.split(".")[1][1:]
+        k = filename2k(v)[1:]
         if v.endswith("a0.csv"):
             k2file[k][True] = v
         else:
