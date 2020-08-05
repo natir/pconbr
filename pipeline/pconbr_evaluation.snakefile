@@ -2,27 +2,15 @@
 import math
 
 def pcon_memory_usage(kmer_size, dump):
-    if dump:
-        if kmer_size >= 13:
-            return math.ceil(
-                1.1 *
-                (
-                    (1 << (kmer_size * 2 - 21)) +
-                    (1 << (kmer_size * 2 - 24))
-                )
+    if kmer_size >= 11:
+        return math.ceil(
+            1.1 *
+            (
+                1 << (kmer_size * 2 - 21)
             )
-        else:
-            return 10
+        )
     else:
-        if kmer_size >= 11:
-            return math.ceil(
-                1.1 *
-                (
-                    1 << (kmer_size * 2 - 21)
-                )
-            )
-        else:
-            return 3
+        return 3
 
 
 def br_memory_usage(kmer_size):
@@ -68,7 +56,7 @@ rule pcon_count:
         kmer_size = '\d+'
         
     resources:
-        mem_mb = lambda wcd: pcon_memory_usage(int(wcd.kmer_size), False)
+        mem_mb = lambda wcd: pcon_memory_usage(int(wcd.kmer_size))
         
     shell:
         "pcon count -i {input} -o {output} -k {wildcards.kmer_size}"
@@ -85,7 +73,7 @@ rule pcon_dump:
         kmer_size = '\d+'
         
     resources:
-        mem_mb = lambda wcd: pcon_memory_usage(int(wcd.kmer_size), True)
+        mem_mb = lambda wcd: pcon_memory_usage(int(wcd.kmer_size)) + br_memory_usage(int(wcd.kmer_size))
 
     shell:
         "pcon dump -i {input} -a {wildcards.abundance} -c {output.csv} -s {output.solid}"
