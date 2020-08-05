@@ -36,7 +36,7 @@ def genomic_kmer(filename):
                 if error_rate is None:
                     data[k][m] = -1
                 else:
-                    data[k][m] = float(error_rate) - raw_error_rate
+                    data[k][m] = float(error_rate)
 
     all_k = sorted(list({k for k in data.keys()}))
     all_m = sorted(list({m for k in data.keys() for m in data[k].keys()}))
@@ -75,7 +75,7 @@ def read_kmer(filename):
                 if error_rate is None:
                     data[k][a][m] = -1
                 else:
-                    data[k][a][m] = float(error_rate) - raw_error_rate
+                    data[k][a][m] = float(error_rate)
                     
     all_k = sorted(list({k for k in data.keys()}))
     all_a = sorted(list({a for k in data.keys() for a in data[k].keys()}))                
