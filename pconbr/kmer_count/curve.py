@@ -34,15 +34,21 @@ def generate_csv_count(inputs, output):
     # Write result
     df.to_csv(output)
 
-def generate_true_set(filename):
-    return {i for i, c in enumerate(read_pcon_file(filename)) if int(c) > 0}
+def generator_true_set(filename):
+    with open(filename) as fh:
+        reader = csv.reader(fh)
+        for row in reader:
+            if int(row[1]) > 0:
+                yield row[0]
     
 def count_true_false(filename, true_set, columns_name):
 
     count = {True: Counter(), False: Counter()}
 
-    for (i, v) in enumerate(read_pcon_file(filename)):
-        count[i in true_set][v] += 1
+    with open(filename) as fh:
+        reader = csv.reader(fh)
+        for row in reader:
+            count[row[0] in true_set][int(row[1])] += 1
 
     df = pandas.DataFrame.from_dict(dict(count[True]), orient='index', columns=[columns_name + "_true"])
     false_df = pandas.DataFrame.from_dict(dict(count[False]), orient='index', columns=[columns_name + "_false"])
@@ -56,15 +62,16 @@ def generate_csv_true_false(inputs, output):
 
     k2file = defaultdict(dict)
 
-    for (k, v) in inputs.items():
-        if k.startswith("true_"):
-            k2file[k.split("_")[1]][True] = v
+    for v in inputs:
+        k = v.split(".")[1][1:]
+        if v.endswith("a0.csv"):
+            k2file[k][True] = v
         else:
             k2file[k][False] = v
 
     df = pandas.DataFrame()
     for (k, v) in k2file.items():
-        df = pandas.merge(df, count_true_false(v[False], generate_true_set(v[True]), k), how="outer", left_index=True, right_index=True)
+        df = pandas.merge(df, count_true_false(v[False], set(generator_true_set(v[True])), k), how="outer", left_index=True, right_index=True)
 
     # Clean up
     df = df.fillna(0)

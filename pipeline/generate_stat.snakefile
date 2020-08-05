@@ -12,7 +12,7 @@ def kmer_spectrum_input(error):
 
 def kmer_spectrum_input_csv(error):
     for k in range(config["kmer_begin"], config["kmer_end"], 2):
-        yield f"reads/simulated_reads_{error}.k{k}.a0.csv"
+        yield f"reads/simulated_reads_{error}.k{k}.a1.csv"
         
 def true_kmer_input():
     for k in range(config["kmer_begin"], config["kmer_end"], 2):

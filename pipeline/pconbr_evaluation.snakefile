@@ -1,7 +1,7 @@
 
 import math
 
-def pcon_memory_usage(kmer_size, dump):
+def pcon_memory_usage(kmer_size):
     if kmer_size >= 11:
         return math.ceil(
             1.1 *
