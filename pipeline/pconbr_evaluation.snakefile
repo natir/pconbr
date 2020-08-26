@@ -40,7 +40,7 @@ rule generate_bad_read:
         mean_id = '\d+'
         
     shell:
-        "badread simulate --reference {input} --quantity 100x --identity {wildcards.mean_id},100,2 --error_model nanopore --seed 42 --start_adapter 0,0 --end_adapter 0,0 --junk_reads 0 --random_reads 0 --chimeras 0 --glitches 0,0,0 | seqtk seq -A - > {output}"
+        "badread simulate --reference {input} --quantity 100x --identity {wildcards.mean_id},100,2 --error_model nanopore --seed 42 | seqtk seq -A - > {output}"
 
 ###############################################################################
 # Section count                                                               #
