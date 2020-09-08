@@ -1,0 +1,8 @@
+name: canu
+
+channels:
+  - bioconda
+  - defaults
+
+dependencies:
+  - canu = 2.0

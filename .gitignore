@@ -1,12 +1,11 @@
 # personal ignore
-reads
-references
-kmc_*
+data
 count
-benchmark
-genetic_kmer
-read_kmer
-stats
+correct
+filter
+tmp
+
+config.yaml
 
 # snakemake
 .snakemake

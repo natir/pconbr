@@ -1,0 +1,48 @@
+##############################
+# Generate range from config #
+##############################
+def conf_range(name, step=1):
+    return range(config[name + "_begin"], config[name + "_end"], step)
+
+######################################
+# Compute estimation of memory usage #
+######################################
+import math
+
+def pcon_memory_usage(kmer_size):
+    if kmer_size >= 11:
+        return math.ceil(
+            1.1 *
+            (
+                1 << (kmer_size * 2 - 21)
+            )
+        )
+    else:
+        return 3
+
+
+def br_memory_usage(kmer_size):
+    if kmer_size >= 13:
+        return math.ceil(
+            1.1 *
+            (
+                1 << (kmer_size * 2 - 24)
+            )
+        )
+    else:
+        return 3
+
+
+############################
+# Generate synthetic reads #
+############################
+rule generate_synthetic_reads:
+    input:
+        "data/{dataset}/reference.fasta",
+        
+    output:
+        "data/{dataset}/synthetic.e{mean_id}.c{coverage}.fasta",
+        
+    shell:
+        "badread simulate --reference {input} --quantity {wildcards.coverage}x --identity {wildcards.mean_id},100,5 --error_model nanopore --seed 42 | seqtk seq -A - > {output}"
+

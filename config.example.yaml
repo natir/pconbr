@@ -1,8 +1,8 @@
 kmer_begin: 9
 kmer_end: 21
 
-error_begin: 95
-error_end: 100
+identity_begin: 95
+identity_end: 100
 
 abundance_begin: 2
 abundance_end: 20

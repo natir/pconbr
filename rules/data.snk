@@ -1,0 +1,93 @@
+# Ecoli K-12 substr. MG1655
+rule bacteria_real_reads:
+    output:
+        "data/bacteria/reads.fasta",
+
+    shell:
+        "curl https://sra-pub-src-1.s3.amazonaws.com/SRR10950300/PaenibacillusRUD330__MinION_Nanopore_reads.fastq.gz.1 | seqtk seq -A - > {output}"
+
+
+rule bacteria_reference:
+    output:
+        "data/bacteria/reference.fasta",
+
+    shell:
+        "curl ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/005/845/GCF_000005845.2_ASM584v2/GCF_000005845.2_ASM584v2_genomic.fna.gz | seqtk seq -A - > {output}"
+
+        
+rule bacteria_synthetic_reads:
+    input:
+        rules.bacteria_reference.output,
+        [f"data/bacteria/synthetic.e{mean_id}.c50.fasta" for mean_id in conf_range("identity")],
+
+    shell:
+        "touch {output}"
+
+
+# genoscope yeast
+rule yeast_real_reads:
+    output:
+        "data/yeast/reads.fasta",
+
+    run:
+        raise Exception('You need download this data by your own')
+
+    
+rule yeast_reference:
+    output:
+        "data/yeast/reference.fasta",
+
+    shell:
+        " && ".join([
+            "mkdir -p tmp/yeast_dl",
+            "curl http://sgd-archive.yeastgenome.org/sequence/S288C_reference/genome_releases/S288C_reference_genome_Current_Release.tgz > tmp/yeast_dl/reference.tar.gz",
+            "tar xvfz tmp/yeast_dl/reference.tar.gz -C tmp/yeast_dl/ S288C_reference_genome_R64-2-1_20150113/S288C_reference_sequence_R64-2-1_20150113.fsa ",
+            "mv tmp/yeast_dl/S288C_reference_genome_R64-2-1_20150113/S288C_reference_sequence_R64-2-1_20150113.fsa {output}",
+        ])
+
+
+# Nick Loman R10 sequencing
+rule metagenome_real_reads:
+    output:
+        "data/metagenome/reads.fasta",
+
+    conda:
+        f"../{config['env_mode']}/seqtk.yaml"
+        
+    shell:
+        "curl https://nanopore.s3.climb.ac.uk/Zymo-GridION-Even-3Peaks-Native-R10-guppy_r10_large_v0.1alpha.fq.gz | seqtk seq -A - > {output}"
+
+        
+rule metagenome_reference:
+    output:
+        "data/metagenome/reference.fasta",
+
+    shell:
+        "curl https://raw.githubusercontent.com/al-mcintyre/mCaller_analysis_scripts/master/assemblies/bsubtilis_pb.fasta https://raw.githubusercontent.com/al-mcintyre/mCaller_analysis_scripts/master/assemblies/efaecalis_pb.fasta https://raw.githubusercontent.com/al-mcintyre/mCaller_analysis_scripts/master/assemblies/ecoli_pb.fasta https://raw.githubusercontent.com/al-mcintyre/mCaller_analysis_scripts/master/assemblies/lmonocytogenes_pb.fasta https://raw.githubusercontent.com/al-mcintyre/mCaller_analysis_scripts/master/assemblies/paeruginosa_pb.fasta https://raw.githubusercontent.com/al-mcintyre/mCaller_analysis_scripts/master/assemblies/scerevisiae_pb.fasta https://raw.githubusercontent.com/al-mcintyre/mCaller_analysis_scripts/master/assemblies/senterica_pb.fasta https://raw.githubusercontent.com/al-mcintyre/mCaller_analysis_scripts/master/assemblies/saureus_pb.fasta > {output}"
+
+        
+rule data_bacteria:
+    input:
+        rules.bacteria_real_reads.input,
+        rules.bacteria_reference.input,
+        rules.bacteria_synthetic_reads.input,
+
+        
+rule data_yeast:
+    input:
+        rules.yeast_real_reads.input,
+        rules.yeast_reference.input,
+
+        
+rule data_metagenome:
+    input:
+        rules.metagenome_real_reads.input,
+        rules.metagenome_reference.input,
+
+        
+rule data_all:
+    input:
+        rules.data_bacteria.input,
+        rules.data_yeast.input,
+        rules.data_metagenome.input,
+    

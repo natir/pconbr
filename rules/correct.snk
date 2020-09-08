@@ -1,0 +1,93 @@
+
+rule pconbr:
+    input:
+        "data/{dataset}/{prefix}.fasta"
+
+    output:
+        "correct/{dataset}/{prefix}.k{kmer_size}.fasta"
+
+    resources:
+        mem_mb = lambda wcd: pcon_memory_usage(int(wcd.kmer_size)) + br_memory_usage(int(wcd.kmer_size))
+
+    shell:
+        "pconbr -i {input} -o {output} -k {wildcards.kmer_size} -m one greedy gap_size graph"
+
+
+rule canu:
+    input:
+        "data/{dataset}/{prefix}.fasta"
+
+    output:
+        "correct/{dataset}/{prefix}.fasta"
+
+    params:
+        work_dir = lambda wcd: "tmp/canu/{wcd.dataset}_{wcd.prefix}/",
+        genome_size = lambda wcd: config["genomeSize"][wcd.dataset],
+        canu_correct_out = lambda wcd: "tmp/canu/{wcd.dataset}_{wcd.prefix}/corrected.fasta",
+
+    conda:
+        f"../{config['env_mode']}/canu.yaml"
+
+    threads:
+        64
+        
+    shell:
+        "canu -threads -nanopore {input} -p {prefix} -d {params.work_dir} useGrid=false executiveThreads=1 genomeSize={params.genome_size} && mv {params.canu_correct_out} {output}"
+
+        
+rule evaluate_correction:
+    input:
+        raw = "data/{dataset}/{type}.fasta",
+        correct = "correct/{dataset}/{type}{params}.k{kmer_size}.fasta",
+        reference = "data/{dataset}/reference.fasta",
+
+    output:
+        "correct/{dataset}/error_rate/{type}{params}.k{kmer_size}/log"
+
+    params:
+        output = "correct/{dataset}/error_rate/{type}{params}.k{kmer_size}"
+        
+    conda:
+        f"../{config['env_mode']}/elector.yaml"
+
+    threads:
+        64
+        
+    shell:
+        "elector -reference {input.reference} -uncorrected {input.raw} -corrected {input.correct} -threads {threads} -corrector pconbr -simulator real -output {params.output}"
+
+        
+rule correct_bacteria:
+    input:
+        # synthetic
+        [f"correct/bacteria/error_rate/synthetic.e{mean_id}.c{config['coverage']}.k{kmer_size}/log" for mean_id in conf_range("identity") for kmer_size in conf_range("kmer", step=2)],
+
+        # real
+        [f"correct/bacteria/error_rate/reads.k{kmer_size}/log" for kmer_size in conf_range("kmer", step=2)],
+
+        
+rule correct_yeast:
+    input:
+        # synthetic
+        [f"correct/yeast/error_rate/synthetic.e{mean_id}.c{config['coverage']}.k{kmer_size}/log" for mean_id in conf_range("identity") for kmer_size in conf_range("kmer", step=2)],
+
+        # real
+        [f"correct/yeast/error_rate/reads.k{kmer_size}/log" for kmer_size in conf_range("kmer", step=2)],
+        
+
+rule correct_metagenome:
+    input:
+        # synthetic
+        [f"correct/metagenome/error_rate/synthetic.e{mean_id}.c{config['coverage']}.k{kmer_size}/log" for mean_id in conf_range("identity") for kmer_size in conf_range("kmer", step=2)],
+
+        # real
+        [f"correct/metagenome/error_rate/reads.k{kmer_size}/log" for kmer_size in conf_range("kmer", step=2)],
+        
+
+rule correct_all:
+    input:
+        rules.correct_bacteria.input,
+        rules.correct_yeast.input,
+        rules.correct_metagenome.input,
+    
+

@@ -1,0 +1,9 @@
+name: seqtk
+
+channels:
+  - nodefaults
+  - http://conda.repo.test.hhu.de/bioconda
+  - http://conda.repo.test.hhu.de/main
+
+dependencies:
+  - seqtk = 1.3
