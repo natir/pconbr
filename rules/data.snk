@@ -65,21 +65,21 @@ rule metagenome_reference:
         
 rule data_bacteria:
     input:
-        rules.bacteria_real_reads.input,
-        rules.bacteria_reference.input,
+        rules.bacteria_real_reads.output,
+        rules.bacteria_reference.output,
         rules.bacteria_synthetic_reads.input,
 
         
 rule data_yeast:
     input:
-        rules.yeast_real_reads.input,
-        rules.yeast_reference.input,
+        rules.yeast_real_reads.output,
+        rules.yeast_reference.output,
 
         
 rule data_metagenome:
     input:
-        rules.metagenome_real_reads.input,
-        rules.metagenome_reference.input,
+        rules.metagenome_real_reads.output,
+        rules.metagenome_reference.output,
 
         
 rule data_all:

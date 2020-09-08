@@ -1,8 +1,28 @@
-kmer_begin: 9
+# Range of kmer use for correction
+kmer_begin: 13
 kmer_end: 21
 
-identity_begin: 95
+# Range of identity used for synthetic reads
+identity_begin: 90
 identity_end: 100
 
-abundance_begin: 2
-abundance_end: 20
+# Coverage targeted durring synthetic reads
+coverage: 50
+
+# Range of kmrf ratio value is divide by 10
+ratio_begin: 6
+ratio_end: 10
+
+# Range of abundance use in br polishing
+abundance_begin: 10
+abundance_end: 30
+
+# Environement directory use
+env_mode: "envs"
+#env_mode: "hilbert_envs"
+
+# Genome size for each dataset
+genomeSize:
+  bacteria: "4641652"
+  yeast: "12157105"
+  metagenome: "42157070"
