@@ -1,2 +1,91 @@
-rule amerfine:
-    
+rule kmerf:
+    input:
+        "data/{dataset}/{prefix}.fasta"
+
+    output:
+        "filter/{dataset}/{prefix}.k{kmer_size}.r{ratio}.fasta"
+
+    benchmark:
+        "filter/bench/kmerf/{dataset}_{prefix}.k{kmer_size}.r{ratio}.tsv"
+        
+    resources:
+        mem_mb = lambda wcd: pcon_memory_usage(int(wcd.kmer_size)) + br_memory_usage(int(wcd.kmer_size))
+
+    threads:
+        32
+        
+    shell:
+        "kmerf -i {input} -o {output} -k {wildcards.kmer_size} -t {threads} -r {wildcards.ratio}"
+
+
+rule redbean:
+    input:
+        "filter/{dataset}/{prefix}.k{kmer_size}.r{ratio}.fasta"
+
+    output:
+        "filter/{dataset}/redbean/{prefix}.k{kmer_size}.r{ratio}/dbg.raw.fa"
+
+    params:
+        prefix = "filter/redbean/{dataset}/{prefix}.k{kmer_size}/dbg",
+        genome_size = lambda wcd: config["genomeSize"][wcd.dataset],
+        
+    threads:
+        32
+
+    conda:
+        f"../{config['env_mode']}/redbean.yaml"
+        
+    shell:
+        """
+        wtdbg2 -x ont -g {params.genome_size} -i {input} -t {threads} -fo {params.prefix} &&
+        wtpoa-cns -t {threads} -i {params.prefix}.ctg.lay.gz -fo {output}
+        """
+
+        
+rule quast_filter:
+    input:
+        asm = "filter/{dataset}/redbean/{prefix}.k{kmer_size}.r{ratio}/dbg.raw.fa",
+        ref = "data/{dataset}/reference.fasta"
+
+    output:
+        "filter/{dataset}/quast/{prefix}.k{kmer_size}.r{ratio}/report.txt"
+
+    params:
+        prefix = "filter/quast/{dataset}/{prefix}.k{kmer_size}.r{ratio}/"
+        
+    threads:
+        32
+
+    conda:
+        f"../{config['env_mode']}/quast.yaml"
+        
+    shell:
+        "quast --min-identity 80 -t {threads} -o {params.prefix} -r {input.ref} {input.asm}"
+
+        
+rule filter_bacteria:
+    input:
+        # synthetic
+        [f"filter/bacteria/quast/synthetic.e{mean_id}.c{config['coverage']}.k{kmer_size}.r{ratio/10}/report.txt" for mean_id in conf_range("identity") for kmer_size in conf_range("kmer", step=2) for ratio in conf_range("ratio")],
+
+        # real
+        [f"filter/bacteria/quast/reads.k{kmer_size}.r{ratio/10}/report.txt" for kmer_size in conf_range("kmer", step=2) for ratio in conf_range("ratio")],
+
+        
+rule filter_yeast:
+    input:
+        # real
+        [f"filter/yeast/quast/reads.k{kmer_size}.r{ratio/10}/report.txt" for kmer_size in conf_range("kmer", step=2) for ratio in conf_range("ratio")],
+        
+
+rule filter_metagenome:
+    input:
+        # real
+        [f"filter/metagenome/quast/reads.k{kmer_size}.r{ratio/10}/report.txt" for kmer_size in conf_range("kmer", step=2) for ratio in conf_range("ratio")],
+
+
+rule filter_all:
+    input:
+        rules.filter_bacteria.input,
+        rules.filter_yeast.input,
+        rules.filter_metagenome.input,

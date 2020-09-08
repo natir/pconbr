@@ -1,0 +1,9 @@
+name: redbean
+
+channels:
+  - nodefaults
+  - http://conda.repo.test.hhu.de/bioconda
+  - http://conda.repo.test.hhu.de/main
+
+dependencies:
+  - wtdbg = v2.5

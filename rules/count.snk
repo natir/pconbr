@@ -7,7 +7,7 @@ rule pcon:
         "count/{dataset}/{prefix}.k{kmer_size}.pcon"
 
     benchmark:
-        "count/bench/{dataset}_{prefix}.k{kmer_size}.pcon.tsv"
+        "count/bench/pcon/{dataset}_{prefix}.k{kmer_size}.tsv"
         
     resources:
         mem_mb = lambda wcd: pcon_memory_usage(int(wcd.kmer_size))
@@ -27,7 +27,7 @@ rule kmc:
         "count/{dataset}/kmc/{prefix}.k{kmer_size}.kmc_suf"
 
     benchmark:
-        "count/bench/{dataset}_{prefix}.k{kmer_size}.kmc.tsv"
+        "count/bench/kmc/{dataset}_{prefix}.k{kmer_size}.tsv"
 
     params:
         work_dir = lambda wcd: f"tmp/kmc/{wcd.dataset}_{wcd.prefix}_{wcd.kmer_size}",
@@ -54,7 +54,7 @@ rule jellyfish:
         "count/{dataset}/jellyfish/{prefix}.k{kmer_size}.jf"
 
     benchmark:
-        "count/bench/{dataset}_{prefix}.k{kmer_size}.jellyfish.tsv"
+        "count/bench/jellyfish/{dataset}_{prefix}.k{kmer_size}.tsv"
 
     threads:
         32

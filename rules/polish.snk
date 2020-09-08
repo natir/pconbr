@@ -1,0 +1,114 @@
+rule pcon_count:
+    input:
+        "data/{dataset}/reads.fasta"
+
+    output:
+        "polish/{dataset}/reads.k{kmer_size}.pcon"
+        
+    resources:
+        mem_mb = lambda wcd: pcon_memory_usage(int(wcd.kmer_size))
+        
+    threads:
+        32
+
+    shell:
+        "pcon count -i {input} -k {wildcards.kmer_size} -o {output} -t {threads}"
+
+        
+rule pcon_dump:
+    input:
+        "polish/{dataset}/reads.k{kmer_size}.pcon"
+
+    output:
+        "polish/{dataset}/reads.k{kmer_size}.a{abundance}.solid"
+        
+    resources:
+        mem_mb = lambda wcd: pcon_memory_usage(int(wcd.kmer_size)) + br_memory_usage(int(wcd.kmer_size))
+    
+    shell:
+        "pcon dump -i {input} -s {output}"
+
+
+rule miniasm:
+    input:
+        "data/{dataset}/reads.fasta"
+
+    output:
+        ovl = "data/{dataset}/miniasm/asm.paf",
+        graph = "data/{dataset}/miniasm/asm.gfa",
+        asm = "data/{dataset}/miniasm/asm.fasta",
+
+    threads:
+        32
+        
+    shell:
+        " && ".join([
+            "minimap2 -t {threads} -x ava-ont {input} {input} > {output.ovl}",
+            "miniasm -f {input} {output.ovl} > {output.graph}",
+            "./script/gfaminiasm2fasta.py {output.graph} {output.asm}"
+        ])
+
+
+rule br_polish:
+    input:
+        solid = "polish/{dataset}/reads.k{kmer_size}.a{abundance}.solid",
+        asm = "data/{dataset}/miniasm/asm.fasta",
+
+    output:
+        "polish/{dataset}/polish.k{kmer_size}.a{abundance}.fasta"
+
+    resources:
+        mem_mb = lambda wcd: br_memory_usage(int(wcd.kmer_size))
+
+    threads:
+        32
+
+    shell:
+        "br -s {input.solid} -i {input.asm} -o {output} -t {threads} -m one greedy gap_size graph"
+
+
+rule quast_polish:
+    input:
+        asm = "polish/{dataset}/polish.k{kmer_size}.a{abundance}.fasta",
+        ref = "data/{dataset}/reference.fasta"
+
+    output:
+        "polish/{dataset}/quast/polish.k{kmer_size}.a{abundance}/report.txt"
+
+    params:
+        prefix = "polish/{dataset}/quast/polish.k{kmer_size}.a{abundance}/"
+        
+    threads:
+        32
+
+    conda:
+        f"../{config['env_mode']}/quast.yaml"
+        
+    shell:
+        "quast --min-identity 80 -t {threads} -o {params.prefix} -r {input.ref} {input.asm}"
+
+
+rule polish_bacteria:
+    input:
+        # real
+        [f"polish/bacteria/quast/polish.k{kmer_size}.a{abundance}/report.txt" for kmer_size in conf_range("kmer", step=2) for abundance in conf_range("abundance")],
+
+        
+rule polish_yeast:
+    input:
+        # real
+        [f"polish/yeast/quast/polish.k{kmer_size}.a{abundance}/report.txt" for kmer_size in conf_range("kmer", step=2) for abundance in conf_range("abundance")],
+        
+
+rule polish_metagenome:
+    input:
+        # real
+        [f"polish/metagenome/quast/polish.k{kmer_size}.a{abundance}/report.txt" for kmer_size in conf_range("kmer", step=2) for abundance in conf_range("abundance")],
+
+
+rule polish_all:
+    input:
+        rules.polish_bacteria.input,
+        rules.polish_yeast.input,
+        rules.polish_metagenome.input,
+        

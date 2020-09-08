@@ -20,9 +20,6 @@ rule bacteria_synthetic_reads:
         rules.bacteria_reference.output,
         [f"data/bacteria/synthetic.e{mean_id}.c50.fasta" for mean_id in conf_range("identity")],
 
-    shell:
-        "touch {output}"
-
 
 # genoscope yeast
 rule yeast_real_reads:

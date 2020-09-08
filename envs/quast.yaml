@@ -1,0 +1,8 @@
+name: quast
+
+channels:
+  - bioconda
+  - defaults
+
+dependencies:
+  - quast = v5.0.2

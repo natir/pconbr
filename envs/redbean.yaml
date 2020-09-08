@@ -1,0 +1,8 @@
+name: redbean
+
+channels:
+  - bioconda
+  - defaults
+
+dependencies:
+  - wtdbg = v2.5
