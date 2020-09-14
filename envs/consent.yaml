@@ -1,0 +1,8 @@
+name: consent
+
+channels:
+  - bioconda
+  - defaults
+
+dependencies:
+  - consent = 2.1

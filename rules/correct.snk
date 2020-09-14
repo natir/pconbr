@@ -45,6 +45,32 @@ rule canu:
         "canu -threads -nanopore {input} -p {params.prefix} -d {params.work_dir} useGrid=false executiveThreads={threads} genomeSize={params.genome_size} && mv {params.canu_correct_out} {output}"
 
         
+rule consent:
+    input:
+        "data/{dataset}/{type}.fasta"
+
+    output:
+        "correct/{dataset}/consent/{type}{prefix}.fasta"
+
+    benchmark:
+        "correct/bench/consent/{dataset}_{type}{prefix}.tsv"
+        
+    params:
+        prefix = lambda wcd: f"{wcd.type}{wcd.prefix}",
+        work_dir = lambda wcd: "tmp/canu/{wcd.dataset}_{wcd.prefix}/",
+        genome_size = lambda wcd: config["genomeSize"][wcd.dataset],
+        canu_correct_out = lambda wcd: "tmp/canu/{wcd.dataset}_{wcd.prefix}/corrected.fasta",
+
+    conda:
+        f"../{config['env_mode']}/consent.yaml"
+
+    threads:
+        32
+        
+    shell:
+        "CONSENT-correct --in {input} --out {output} --type ONT"
+        
+        
 rule elector:
     input:
         raw = "data/{dataset}/{type}.fasta",
@@ -70,22 +96,22 @@ rule elector:
 rule correct_bacteria:
     input:
         # synthetic
-        [f"correct/bacteria/elector/{corrector}/synthetic.e{mean_id}.c{config['coverage']}.k{kmer_size}/log" for mean_id in conf_range("identity") for kmer_size in conf_range("kmer", step=2) for corrector in ["br", "canu"]],
+        [f"correct/bacteria/elector/{corrector}/synthetic.e{mean_id}.c{config['coverage']}.k{kmer_size}/log" for mean_id in conf_range("identity") for kmer_size in conf_range("kmer", step=2) for corrector in ["br", "canu", "consent"]],
 
         # real
-        [f"correct/bacteria/elector/{corrector}/reads.k{kmer_size}/log" for kmer_size in conf_range("kmer", step=2) for corrector in ["br", "canu"]],
+        [f"correct/bacteria/elector/{corrector}/reads.k{kmer_size}/log" for kmer_size in conf_range("kmer", step=2) for corrector in ["br", "canu", "consent"]],
 
         
 rule correct_yeast:
     input:
         # real
-        [f"correct/yeast/elector/{corrector}/reads.k{kmer_size}/log" for kmer_size in conf_range("kmer", step=2) for corrector in ["br", "canu"]],
+        [f"correct/yeast/elector/{corrector}/reads.k{kmer_size}/log" for kmer_size in conf_range("kmer", step=2) for corrector in ["br", "canu", "consent"]],
         
 
 rule correct_metagenome:
     input:
         # real
-        [f"correct/metagenome/elector/{corrector}/reads.k{kmer_size}/log" for kmer_size in conf_range("kmer", step=2) for corrector in ["br", "canu"]],
+        [f"correct/metagenome/elector/{corrector}/reads.k{kmer_size}/log" for kmer_size in conf_range("kmer", step=2) for corrector in ["br", "canu", "consent"]],
         
 
 rule correct_all:
