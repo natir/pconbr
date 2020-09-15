@@ -1,0 +1,9 @@
+name: necat
+
+channels:
+  - nodefaults
+  - http://conda.repo.test.hhu.de/bioconda
+  - http://conda.repo.test.hhu.de/main
+
+dependencies:
+  - necat = 0.0.1_update20200803

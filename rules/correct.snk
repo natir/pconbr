@@ -24,16 +24,16 @@ rule canu:
         "data/{dataset}/{type}.fasta"
 
     output:
-        "correct/{dataset}/canu/{type}{prefix}.fasta"
+        "correct/{dataset}/canu/{type}{params}.fasta"
 
     benchmark:
-        "correct/bench/canu/{dataset}_{type}{prefix}.tsv"
+        "correct/bench/canu/{dataset}_{type}{params}.tsv"
         
     params:
-        prefix = lambda wcd: f"{wcd.type}{wcd.prefix}",
-        work_dir = lambda wcd: "tmp/canu/{wcd.dataset}_{wcd.prefix}/",
+        prefix = lambda wcd: f"{wcd.type}{wcd.params}",
+        work_dir = lambda wcd: "tmp/canu/{wcd.dataset}_{wcd.params}/",
         genome_size = lambda wcd: config["genomeSize"][wcd.dataset],
-        canu_correct_out = lambda wcd: "tmp/canu/{wcd.dataset}_{wcd.prefix}/corrected.fasta",
+        canu_correct_out = lambda wcd: "tmp/canu/{wcd.dataset}_{wcd.params}/corrected.fasta",
 
     conda:
         f"../{config['env_mode']}/canu.yaml"
@@ -50,17 +50,11 @@ rule consent:
         "data/{dataset}/{type}.fasta"
 
     output:
-        "correct/{dataset}/consent/{type}{prefix}.fasta"
+        "correct/{dataset}/consent/{type}{params}.fasta"
 
     benchmark:
-        "correct/bench/consent/{dataset}_{type}{prefix}.tsv"
-        
-    params:
-        prefix = lambda wcd: f"{wcd.type}{wcd.prefix}",
-        work_dir = lambda wcd: "tmp/canu/{wcd.dataset}_{wcd.prefix}/",
-        genome_size = lambda wcd: config["genomeSize"][wcd.dataset],
-        canu_correct_out = lambda wcd: "tmp/canu/{wcd.dataset}_{wcd.prefix}/corrected.fasta",
-
+        "correct/bench/consent/{dataset}_{type}{params}.tsv"
+    
     conda:
         f"../{config['env_mode']}/consent.yaml"
 
@@ -69,7 +63,41 @@ rule consent:
         
     shell:
         "CONSENT-correct --in {input} --out {output} --type ONT"
+
+
+rule necat:
+    input:
+        "data/{dataset}/{type}.fasta"
+
+    output:
+        "correct/{dataset}/necat/{type}{params}.fasta"
+
+    benchmark:
+        "correct/bench/necat/{dataset}_{type}{params}.tsv"
         
+    params:
+        template_path = "data/necat_template",
+        work_dir = lambda wcd: f"tmp/necat/{wcd.dataset}_{wcd.type}{wcd.params}/",
+        coverage = "100000",
+        input_abs_path = lambda wcd: os.path.abspath(f"data/{wcd.dataset}/{wcd.type}.fasta")
+        
+    conda:
+        f"../{config['env_mode']}/necat.yaml"
+
+    threads:
+        32
+        
+    shell:
+        "mkdir -p {params.work_dir} &&"
+        " echo '{params.input_abs_path}' > {params.work_dir}/file_list &&"
+        " cp {params.template_path} {params.work_dir}/config &&"
+        " sed -i 's#_WORKDIR_#{params.work_dir}#' {params.work_dir}/config &&"
+        " sed -i 's#_READ_LIST_#{params.work_dir}/file_list#' {params.work_dir}/config &&"
+        " sed -i 's#_THREADS_#{threads}#' {params.work_dir}/config &&"
+        " sed -i 's#_COVERAGE_#{params.coverage}#' {params.work_dir}/config &&"
+        " necat correct {params.work_dir}/config &&"
+        "cp {params.work_dir}/1-consensus/cns_iter2/cns.fasta {output}"
+
         
 rule elector:
     input:
@@ -96,23 +124,27 @@ rule elector:
 rule correct_bacteria:
     input:
         # synthetic
-        [f"correct/bacteria/elector/{corrector}/synthetic.e{mean_id}.c{config['coverage']}.k{kmer_size}/log" for mean_id in conf_range("identity") for kmer_size in conf_range("kmer", step=2) for corrector in ["br", "canu", "consent"]],
+        [f"correct/bacteria/elector/br/synthetic.e{mean_id}.c{config['coverage']}.k{kmer_size}/log" for mean_id in conf_range("identity") for kmer_size in conf_range("kmer", step=2)],
+        [f"correct/bacteria/elector/{corrector}/synthetic.e{mean_id}.c{config['coverage']}/log" for mean_id in conf_range("identity") for corrector in ["canu", "consent", "necat"]],
 
         # real
-        [f"correct/bacteria/elector/{corrector}/reads.k{kmer_size}/log" for kmer_size in conf_range("kmer", step=2) for corrector in ["br", "canu", "consent"]],
+        [f"correct/bacteria/elector/br/reads.k{kmer_size}/log" for kmer_size in conf_range("kmer", step=2)],
+        [f"correct/bacteria/elector/{corrector}/reads/log" for corrector in ["canu", "consent", "necat"]],
 
         
 rule correct_yeast:
     input:
         # real
-        [f"correct/yeast/elector/{corrector}/reads.k{kmer_size}/log" for kmer_size in conf_range("kmer", step=2) for corrector in ["br", "canu", "consent"]],
-        
+        [f"correct/yeast/elector/br/reads.k{kmer_size}/log" for kmer_size in conf_range("kmer", step=2)],
+        [f"correct/yeast/elector/{corrector}/reads/log" for corrector in ["canu", "consent", "necat"]],
 
+    
 rule correct_metagenome:
     input:
         # real
-        [f"correct/metagenome/elector/{corrector}/reads.k{kmer_size}/log" for kmer_size in conf_range("kmer", step=2) for corrector in ["br", "canu", "consent"]],
-        
+        [f"correct/metagenome/elector/br/reads.k{kmer_size}/log" for kmer_size in conf_range("kmer", step=2)],
+        [f"correct/metagenome/elector/{corrector}/reads/log" for corrector in ["canu", "consent", "necat"]],
+       
 
 rule correct_all:
     input:
