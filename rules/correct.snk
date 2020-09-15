@@ -76,10 +76,11 @@ rule necat:
         "correct/bench/necat/{dataset}_{type}{params}.tsv"
         
     params:
-        template_path = "data/necat_template",
+        template_path = "etc/necat_template",
         work_dir = lambda wcd: f"tmp/necat/{wcd.dataset}_{wcd.type}{wcd.params}/",
         coverage = "100000",
-        input_abs_path = lambda wcd: os.path.abspath(f"data/{wcd.dataset}/{wcd.type}.fasta")
+        input_abs_path = lambda wcd: os.path.abspath(f"data/{wcd.dataset}/{wcd.type}.fasta"),
+        genome_size = lambda wcd: config["genomeSize"][wcd.dataset],        
         
     conda:
         f"../{config['env_mode']}/necat.yaml"
@@ -89,10 +90,11 @@ rule necat:
         
     shell:
         "mkdir -p {params.work_dir} &&"
-        " echo '{params.input_abs_path}' > {params.work_dir}/file_list &&"
+        " echo '{params.input_abs_path}' > {params.work_dir}/file_list.txt &&"
         " cp {params.template_path} {params.work_dir}/config &&"
         " sed -i 's#_WORKDIR_#{params.work_dir}#' {params.work_dir}/config &&"
-        " sed -i 's#_READ_LIST_#{params.work_dir}/file_list#' {params.work_dir}/config &&"
+        " sed -i 's#_READ_LIST_#{params.work_dir}/file_list.txt#' {params.work_dir}/config &&"
+        " sed -i 's#_GENOME_SIZE_#{params.genome_size}#' {params.work_dir}/config &&"
         " sed -i 's#_THREADS_#{threads}#' {params.work_dir}/config &&"
         " sed -i 's#_COVERAGE_#{params.coverage}#' {params.work_dir}/config &&"
         " necat correct {params.work_dir}/config &&"

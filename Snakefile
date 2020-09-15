@@ -1,5 +1,5 @@
 
-configfile: "config.yaml"
+configfile: "etc/config.yaml"
 
 include: "rules/utils.snk"
 include: "rules/data.snk"

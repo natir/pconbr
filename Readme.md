@@ -12,8 +12,8 @@ cargo install --git https://github.com/natir/pcon --force
 cargo install --git https://github.com/natir/br --force
 cargo install --git https://github.com/natir/kmerf --force
 
-cp config.example.yaml config.yaml
-# edit config.yaml to set your parameter
+cp etc/config.example.yaml etc/config.yaml
+# edit etc/config.yaml to set your parameter
 
 jupyter notebook pconbr.ipynb
 ```
