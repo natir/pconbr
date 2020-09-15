@@ -1,0 +1,8 @@
+name: badread
+
+channels:
+  - bioconda
+  - defaults
+
+dependencies:
+  - badread = 0.1.5
