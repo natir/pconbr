@@ -7,7 +7,10 @@ rule kmrf:
 
     benchmark:
         "filter/bench/kmrf/{dataset}_{type}.k{kmer_size}.r{ratio}.tsv"
-        
+
+    params:
+        ratio = lambda wcd: int(wcd.ratio)/100,
+            
     resources:
         mem_mb = lambda wcd: pcon_memory_usage(int(wcd.kmer_size)) + br_memory_usage(int(wcd.kmer_size))
 
@@ -15,7 +18,7 @@ rule kmrf:
         32
         
     shell:
-        "kmrf -i {input} -o {output} -k {wildcards.kmer_size} -t {threads} -r {wildcards.ratio}"
+        "kmrf -i {input} -o {output} -k {wildcards.kmer_size} -t {threads} -r {params.ratio}"
 
 
 rule filtlong:
@@ -105,15 +108,15 @@ rule evaluate_filter:
 rule filter_bacteria:
     input:
         # synthetic
-        [f"filter/bacteria/quast/kmrf/synthetic.e{mean_id}.c{config['coverage']}.k{kmer_size}.r{ratio/10}/report.txt" for mean_id in conf_range("identity") for kmer_size in conf_range("kmer", step=2) for ratio in conf_range("ratio")],
-        [f"filter/bacteria/identity/kmrf/synthetic.e{mean_id}.c{config['coverage']}.k{kmer_size}.r{ratio/10}.tsv" for mean_id in conf_range("identity") for kmer_size in conf_range("kmer", step=2) for ratio in conf_range("ratio")],
+        [f"filter/bacteria/quast/kmrf/synthetic.e{mean_id}.c{config['coverage']}.k{kmer_size}.r{ratio}/report.txt" for mean_id in conf_range("identity") for kmer_size in conf_range("kmer", step=2) for ratio in conf_range("ratio", 5)],
+        [f"filter/bacteria/identity/kmrf/synthetic.e{mean_id}.c{config['coverage']}.k{kmer_size}.r{ratio}.tsv" for mean_id in conf_range("identity") for kmer_size in conf_range("kmer", step=2) for ratio in conf_range("ratio", 5)],
 
         [f"filter/bacteria/quast/filtlong/synthetic.e{mean_id}.c{config['coverage']}.q{quality}/report.txt" for mean_id in conf_range("identity") for quality in conf_range("filtlong_qual")],
         [f"filter/bacteria/identity/filtlong/synthetic.e{mean_id}.c{config['coverage']}.q{quality}.tsv" for mean_id in conf_range("identity") for quality in conf_range("filtlong_qual")],
         
         # real
-        [f"filter/bacteria/quast/kmrf/reads.k{kmer_size}.r{ratio/10}/report.txt" for kmer_size in conf_range("kmer", step=2) for ratio in conf_range("ratio")],
-        [f"filter/bacteria/identity/kmrf/reads.k{kmer_size}.r{ratio/10}.tsv" for kmer_size in conf_range("kmer", step=2) for ratio in conf_range("ratio")],
+        [f"filter/bacteria/quast/kmrf/reads.k{kmer_size}.r{ratio}/report.txt" for kmer_size in conf_range("kmer", step=2) for ratio in conf_range("ratio", 5)],
+        [f"filter/bacteria/identity/kmrf/reads.k{kmer_size}.r{ratio}.tsv" for kmer_size in conf_range("kmer", step=2) for ratio in conf_range("ratio", 5)],
 
         [f"filter/bacteria/quast/filtlong/reads.q{quality}/report.txt" for mean_id in conf_range("identity") for quality in conf_range("filtlong_qual")],
         [f"filter/bacteria/identity/filtlong/reads.q{quality}.tsv" for mean_id in conf_range("identity") for quality in conf_range("filtlong_qual")],
@@ -122,8 +125,8 @@ rule filter_bacteria:
 rule filter_yeast:
     input:
         # real
-        [f"filter/yeast/quast/kmrf/reads.k{kmer_size}.r{ratio/10}/report.txt" for kmer_size in conf_range("kmer", step=2) for ratio in conf_range("ratio")],
-        [f"filter/yeast/identity/kmrf/reads.k{kmer_size}.r{ratio/10}.tsv" for kmer_size in conf_range("kmer", step=2) for ratio in conf_range("ratio")],
+        [f"filter/yeast/quast/kmrf/reads.k{kmer_size}.r{ratio}/report.txt" for kmer_size in conf_range("kmer", step=2) for ratio in conf_range("ratio", 5)],
+        [f"filter/yeast/identity/kmrf/reads.k{kmer_size}.r{ratio}.tsv" for kmer_size in conf_range("kmer", step=2) for ratio in conf_range("ratio", 5)],
 
         [f"filter/yeast/quast/filtlong/reads.q{quality}/report.txt" for mean_id in conf_range("identity") for quality in conf_range("filtlong_qual")],
         [f"filter/yeast/identity/filtlong/reads.q{quality}.tsv" for mean_id in conf_range("identity") for quality in conf_range("filtlong_qual")],
@@ -132,8 +135,8 @@ rule filter_yeast:
 rule filter_metagenome:
     input:
         # real
-        [f"filter/metagenome/quast/kmrf/reads.k{kmer_size}.r{ratio/10}/report.txt" for kmer_size in conf_range("kmer", step=2) for ratio in conf_range("ratio")],
-        [f"filter/metagenome/identity/kmrf/reads.k{kmer_size}.r{ratio/10}.tsv" for kmer_size in conf_range("kmer", step=2) for ratio in conf_range("ratio")],
+        [f"filter/metagenome/quast/kmrf/reads.k{kmer_size}.r{ratio}/report.txt" for kmer_size in conf_range("kmer", step=2) for ratio in conf_range("ratio", 5)],
+        [f"filter/metagenome/identity/kmrf/reads.k{kmer_size}.r{ratio}.tsv" for kmer_size in conf_range("kmer", step=2) for ratio in conf_range("ratio", 5)],
 
         [f"filter/metagenome/quast/filtlong/reads.q{quality}/report.txt" for mean_id in conf_range("identity") for quality in conf_range("filtlong_qual")],
         [f"filter/metagenome/identity/filtlong/reads.q{quality}.tsv" for mean_id in conf_range("identity") for quality in conf_range("filtlong_qual")],

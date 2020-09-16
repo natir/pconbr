@@ -38,8 +38,8 @@ def dataframe():
 
     for dataset in ["bacteria", "yeast", "metagenome"]:
         for kmer_size in range(13, 21, 2):
-            for ratio in range(6, 10, 1):
-                path = f"filter/{dataset}/identity/kmrf/reads.k{kmer_size}.r{ratio/10}.tsv"
+            for ratio in range(70, 100, 5):
+                path = f"filter/{dataset}/identity/kmrf/reads.k{kmer_size}.r{ratio}.tsv"
                 if os.path.isfile(path):
                     with open(path) as fh:
                         reader = csv.DictReader(fh, delimiter='\t')

@@ -1,23 +1,23 @@
-# Range of kmer use for correction
+# Range of kmer use for correction, step=2
 kmer_begin: 13
 kmer_end: 21
 
-# Range of identity used for synthetic reads
+# Range of identity used for synthetic reads, step=1
 identity_begin: 90
 identity_end: 100
 
 # Coverage targeted durring synthetic reads
 coverage: 50
 
-# Range of kmrf ratio value is divide by 10
-ratio_begin: 6
-ratio_end: 10
+# Range of kmrf ratio value, step=5
+ratio_begin: 70
+ratio_end: 100
 
-# Range of filtlong minimum quality
+# Range of filtlong minimum quality, step=1
 filtlong_qual_begin: 90
 filtlong_qual_end: 100
 
-# Range of abundance use in br polishing
+# Range of abundance use in br polishing, step=1
 abundance_begin: 10
 abundance_end: 30
 

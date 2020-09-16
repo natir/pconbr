@@ -14,7 +14,7 @@ wildcard_constraints:
     kmer_size = '\d+',
     abundance = '\d+',
     params = '.*',
-    ratio = "0\.\d+",
+    ratio = "\d+",
     type = "([^\d\.]+(\.e\d\d)?(\.c\d\d)?)",
     
 rule all:
