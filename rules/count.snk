@@ -40,10 +40,10 @@ rule kmc:
         f"../{config['env_mode']}/kmc.yaml"
         
     shell:
-        " && ".join([
-            "mkdir -p {params.work_dir}",
-            "kmc -k{wildcards.kmer_size} -t{threads} -r -fa {input} {params.kmc_out} {params.work_dir}",
-        ])
+        """
+        mkdir -p {params.work_dir}
+        kmc -k{wildcards.kmer_size} -t{threads} -r -fa {input} {params.kmc_out} {params.work_dir}
+        """
 
 
 rule jellyfish:

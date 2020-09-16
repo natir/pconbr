@@ -45,11 +45,11 @@ rule miniasm:
         f"../{config['env_mode']}/miniasm.yaml"
         
     shell:
-        " && ".join([
-            "minimap2 -t {threads} -x ava-ont {input} {input} > {output.ovl}",
-            "miniasm -f {input} {output.ovl} > {output.graph}",
-            "./script/gfaminiasm2fasta.py {output.graph} {output.asm}"
-        ])
+        """
+        minimap2 -t {threads} -x ava-ont {input} {input} > {output.ovl}
+        miniasm -f {input} {output.ovl} > {output.graph}
+        ./script/gfaminiasm2fasta.py {output.graph} {output.asm}
+        """
 
 
 rule br_polish:

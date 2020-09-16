@@ -42,7 +42,10 @@ rule canu:
         32
         
     shell:
-        "canu -threads -nanopore {input} -p {params.prefix} -d {params.work_dir} useGrid=false executiveThreads={threads} genomeSize={params.genome_size} && mv {params.canu_correct_out} {output}"
+        """
+        canu -threads -nanopore {input} -p {params.prefix} -d {params.work_dir} useGrid=false executiveThreads={threads} genomeSize={params.genome_size}
+        mv {params.canu_correct_out} {output}
+        """
 
         
 rule consent:
@@ -89,17 +92,18 @@ rule necat:
         32
         
     shell:
-        "mkdir -p {params.work_dir} &&"
-        " echo '{params.input_abs_path}' > {params.work_dir}/file_list.txt &&"
-        " cp {params.template_path} {params.work_dir}/config &&"
-        " sed -i 's#_WORKDIR_#{params.work_dir}#' {params.work_dir}/config &&"
-        " sed -i 's#_READ_LIST_#{params.work_dir}/file_list.txt#' {params.work_dir}/config &&"
-        " sed -i 's#_GENOME_SIZE_#{params.genome_size}#' {params.work_dir}/config &&"
-        " sed -i 's#_THREADS_#{threads}#' {params.work_dir}/config &&"
-        " sed -i 's#_COVERAGE_#{params.coverage}#' {params.work_dir}/config &&"
-        " necat correct {params.work_dir}/config &&"
-        "cp {params.work_dir}/1-consensus/cns_iter2/cns.fasta {output}"
-
+        """
+        mkdir -p {params.work_dir}
+        echo '{params.input_abs_path}' > {params.work_dir}/file_list.txt
+        cp {params.template_path} {params.work_dir}/config
+        sed -i 's#_WORKDIR_#{params.work_dir}#' {params.work_dir}/config
+        sed -i 's#_READ_LIST_#{params.work_dir}/file_list.txt#' {params.work_dir}/config
+        sed -i 's#_GENOME_SIZE_#{params.genome_size}#' {params.work_dir}/config
+        sed -i 's#_THREADS_#{threads}#' {params.work_dir}/config
+        sed -i 's#_COVERAGE_#{params.coverage}#' {params.work_dir}/config
+        necat correct {params.work_dir}/config
+        cp {params.work_dir}/1-consensus/cns_iter2/cns.fasta {output}"
+        """
         
 rule elector:
     input:

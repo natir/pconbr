@@ -35,12 +35,12 @@ rule yeast_reference:
         "data/yeast/reference.fasta",
 
     shell:
-        " && ".join([
-            "mkdir -p tmp/yeast_dl",
-            "curl http://sgd-archive.yeastgenome.org/sequence/S288C_reference/genome_releases/S288C_reference_genome_Current_Release.tgz > tmp/yeast_dl/reference.tar.gz",
-            "tar xvfz tmp/yeast_dl/reference.tar.gz -C tmp/yeast_dl/ S288C_reference_genome_R64-2-1_20150113/S288C_reference_sequence_R64-2-1_20150113.fsa ",
-            "mv tmp/yeast_dl/S288C_reference_genome_R64-2-1_20150113/S288C_reference_sequence_R64-2-1_20150113.fsa {output}",
-        ])
+        """
+        mkdir -p tmp/yeast_dl
+        curl http://sgd-archive.yeastgenome.org/sequence/S288C_reference/genome_releases/S288C_reference_genome_Current_Release.tgz > tmp/yeast_dl/reference.tar.gz
+        tar xvfz tmp/yeast_dl/reference.tar.gz -C tmp/yeast_dl/ S288C_reference_genome_R64-2-1_20150113/S288C_reference_sequence_R64-2-1_20150113.fsa
+        mv tmp/yeast_dl/S288C_reference_genome_R64-2-1_20150113/S288C_reference_sequence_R64-2-1_20150113.fsa {output}
+        """
 
 
 # Nick Loman R10 sequencing
