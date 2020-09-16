@@ -13,6 +13,10 @@ coverage: 50
 ratio_begin: 6
 ratio_end: 10
 
+# Range of filtlong minimum quality
+filtlong_qual_begin: 90
+filtlong_qual_end: 100
+
 # Range of abundance use in br polishing
 abundance_begin: 10
 abundance_end: 30
