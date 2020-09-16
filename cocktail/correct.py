@@ -4,6 +4,8 @@ import math
 import pandas
 import altair
 
+from .utils import get_bench_data
+
 def figure_pr(dataset):
     df = dataframe_pr()
 
@@ -57,3 +59,35 @@ def get_data_pr(corrector, dataset, kmer_size=None):
         return (precision, recall)
     
     return (None, None)
+
+
+def figure_bench(dataset):
+    df = dataframe_bench()
+
+    return altair.Chart(df[df["dataset"] == dataset]).mark_point().encode(
+        x="time",
+        y="memory",
+        color="corrector",
+    )
+
+def dataframe_bench():
+    data = list()
+    
+    for dataset in ["bacteria", "yeast", "metagenome"]:
+        for kmer_size in range(13, 21, 2):
+            (time, memory) = get_data_bench("br", dataset, f".k{kmer_size}")
+            if time is not None:
+                data.append((dataset, f"br_k{kmer_size}", time, memory))
+
+        for corrector in ["canu", "consent", "necat"]:
+            (time, memory) = get_data_bench(corrector, dataset, "")
+            if time is not None:
+                data.append((dataset, corrector, time, memory))
+
+    return pandas.DataFrame(data, columns=['dataset', 'corrector', 'time', 'memory'])
+
+
+def get_data_bench(corrector, dataset, params):
+    path = f"correct/bench/{corrector}/{dataset}_reads{params}.tsv"
+        
+    return get_bench_data(path)

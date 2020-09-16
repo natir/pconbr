@@ -1,8 +1,8 @@
-import os
 import csv
 import pandas
 import altair
 
+from .utils import get_bench_data
 
 def figure(dataset):
     df = dataframe()
@@ -25,16 +25,11 @@ def dataframe():
                 if time is not None:
                     data.append((counter, dataset, str(kmer_size), time, memory))
 
-    return  pandas.DataFrame(data, columns=['counter', 'dataset', 'kmer_size', 'time', 'memory'])
+    return pandas.DataFrame(data, columns=['counter', 'dataset', 'kmer_size', 'time', 'memory'])
 
     
 def get_data(counter, dataset, prefix, kmer_size):
     path = f"count/bench/{counter}/{dataset}_{prefix}.k{kmer_size}.tsv"
 
-    if os.path.isfile(path):
-        with open(path) as fh:
-            reader = csv.DictReader(fh, delimiter='\t')
-            row = next(reader)
-            return (int(row["s"]), int(row["max_rss"]))
-    else:
-        return (None, None)
+    return get_bench_data(path)
+    
