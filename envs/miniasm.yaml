@@ -1,0 +1,9 @@
+name: miniasm
+
+channels:
+  - bioconda
+  - defaults
+
+dependencies:
+  - minimap2 = v2.17
+  - miniasm = v0.3_r179

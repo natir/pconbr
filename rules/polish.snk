@@ -40,6 +40,9 @@ rule miniasm:
 
     threads:
         32
+
+    conda:
+        f"../{config['env_mode']}/miniasm.yaml"
         
     shell:
         " && ".join([
