@@ -25,7 +25,7 @@ def dataframe():
                 if time is not None:
                     data.append((counter, dataset, str(kmer_size), time, memory))
 
-    return  pandas.DataFrame(data, columns=['counter', 'dataset', 'kmer_size', "time", "memory"])
+    return  pandas.DataFrame(data, columns=['counter', 'dataset', 'kmer_size', 'time', 'memory'])
 
     
 def get_data(counter, dataset, prefix, kmer_size):
