@@ -9,17 +9,26 @@ def figure(dataset, kmer_size, ratio):
 
     readlength = altair.Chart(df).mark_bar().encode(
         x=altair.X("length:Q", bin=altair.Bin(maxbins=100), axis=None),
-        y=altair.Y('count()', axis=None)
+        y=altair.Y('count()', axis=altair.Axis(title=None))
+    ).properties(
+        width=1000,
+        height=200
     )
 
     quality = altair.Chart(df).mark_bar().encode(
         y=altair.X("identity:Q", bin=altair.Bin(maxbins=100), axis=None),
-        x=altair.Y('count()', axis=None)
+        x=altair.Y('count()', axis=altair.Axis(title=None))
+    ).properties(
+        width=200,
+        height=500
     )
 
     scatter = altair.Chart(df).mark_circle().encode(
-        x="length",
-        y="identity"
+        x=altair.X("length", axis=altair.Axis(title="Read length in base")),
+        y=altair.Y("identity", axis=altair.Axis(title="Read indentity in percent"))
+    ).properties(
+        width=1000,
+        height=500
     )
 
     return altair.vconcat(readlength, scatter | quality) 
