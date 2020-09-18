@@ -32,7 +32,7 @@ rule canu:
     params:
         prefix = lambda wcd: f"{wcd.type}{wcd.params}",
         work_dir = lambda wcd: "tmp/canu/{wcd.dataset}_{wcd.params}/",
-        genome_size = lambda wcd: config["genomeSize"][wcd.dataset],
+        genome_size = lambda wcd: config["genomeSize"][wcd.dataset] if wcd.dataset in config["genomeSize"] else config["genomeSize"]["bacteria"],
         canu_correct_out = lambda wcd: "tmp/canu/{wcd.dataset}_{wcd.params}/corrected.fasta",
 
     conda:
@@ -83,7 +83,7 @@ rule necat:
         work_dir = lambda wcd: f"tmp/necat/{wcd.dataset}_{wcd.type}{wcd.params}/",
         coverage = "100000",
         input_abs_path = lambda wcd: os.path.abspath(f"data/{wcd.dataset}/{wcd.type}.fasta"),
-        genome_size = lambda wcd: config["genomeSize"][wcd.dataset],        
+        genome_size = lambda wcd: config["genomeSize"][wcd.dataset] if wcd.dataset in config["genomeSize"] else config["genomeSize"]["bacteria"],
         
     conda:
         f"../{config['env_mode']}/necat.yaml"
@@ -129,25 +129,30 @@ rule elector:
         
 rule correct_bacteria:
     input:
-        # synthetic
-        [f"correct/bacteria/elector/br/synthetic.e{mean_id}.c{config['coverage']}.k{kmer_size}/log" for mean_id in conf_range("identity") for kmer_size in conf_range("kmer", step=2)],
-        [f"correct/bacteria/elector/{corrector}/synthetic.e{mean_id}.c{config['coverage']}/log" for mean_id in conf_range("identity") for corrector in ["canu", "consent", "necat"]],
-
-        # real
         [f"correct/bacteria/elector/br/reads.k{kmer_size}/log" for kmer_size in conf_range("kmer", step=2)],
         [f"correct/bacteria/elector/{corrector}/reads/log" for corrector in ["canu", "consent", "necat"]],
 
         
+rule correct_bacteria7:
+    input:
+        [f"correct/bacteria7/elector/br/reads.k{kmer_size}/log" for kmer_size in conf_range("kmer", step=2)],
+        [f"correct/bacteria7/elector/{corrector}/reads/log" for corrector in ["canu", "consent", "necat"]],
+
+
+rule correct_synthetic:
+    input:
+        [f"correct/synthetic.e{mean_id}.c{config['coverage']}/elector/br/reads.k{kmer_size}/log" for mean_id in conf_range("identity") for kmer_size in conf_range("kmer", step=2)],
+        [f"correct/synthetic.e{mean_id}.c{config['coverage']}/elector/{corrector}/reads/log" for mean_id in conf_range("identity") for corrector in ["canu", "consent", "necat"]],
+
+        
 rule correct_yeast:
     input:
-        # real
         [f"correct/yeast/elector/br/reads.k{kmer_size}/log" for kmer_size in conf_range("kmer", step=2)],
         [f"correct/yeast/elector/{corrector}/reads/log" for corrector in ["canu", "consent", "necat"]],
 
     
 rule correct_metagenome:
     input:
-        # real
         [f"correct/metagenome/elector/br/reads.k{kmer_size}/log" for kmer_size in conf_range("kmer", step=2)],
         [f"correct/metagenome/elector/{corrector}/reads/log" for corrector in ["canu", "consent", "necat"]],
        
@@ -155,6 +160,8 @@ rule correct_metagenome:
 rule correct_all:
     input:
         rules.correct_bacteria.input,
+        rules.correct_bacteria7.input,
+        rules.correct_synthetic.input,
         rules.correct_yeast.input,
         rules.correct_metagenome.input,
     

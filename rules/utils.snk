@@ -40,10 +40,10 @@ def br_memory_usage(kmer_size):
 ############################
 rule generate_synthetic_reads:
     input:
-        "data/{dataset}/reference.fasta",
+        "data/synthetic.e{mean_id}.c{coverage}/reference.fasta",
         
     output:
-        "data/{dataset}/synthetic.e{mean_id}.c{coverage}.fasta",
+        "data/synthetic.e{mean_id}.c{coverage}/reads.fasta",
 
     conda:
         f"../{config['env_mode']}/badread.yaml"

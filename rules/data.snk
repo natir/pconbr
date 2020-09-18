@@ -16,13 +16,7 @@ rule bacteria_reference:
     shell:
         "curl ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/005/845/GCF_000005845.2_ASM584v2/GCF_000005845.2_ASM584v2_genomic.fna.gz | seqtk seq -A - > {output}"
 
-        
-rule bacteria_synthetic_reads:
-    input:
-        rules.bacteria_reference.output,
-        [f"data/bacteria/synthetic.e{mean_id}.c50.fasta" for mean_id in conf_range("identity")],
-
-        
+                
 rule bacteria7_real_reads:
     output:
         "data/bacteria7/reads.fasta",
@@ -44,6 +38,18 @@ rule bacteria7_reference:
     shell:
         "ln -s {input} {output}"
 
+        
+rule bacteria_synthetic_reference:
+    input:
+        "data/bacteria/reference.fasta",
+
+    output:
+        "data/synthetic.e{mean_id}.c50/reference.fasta",
+
+    shell:
+        "ln -s {input} {output}"
+
+        
 # genoscope yeast
 rule yeast_real_reads:
     output:
@@ -90,7 +96,12 @@ rule data_bacteria:
     input:
         rules.bacteria_real_reads.output,
         rules.bacteria_reference.output,
-        rules.bacteria_synthetic_reads.input,
+
+        
+rule data_bacteria7:
+    input:
+        rules.bacteria_real_reads.output,
+        rules.bacteria_reference.output,
 
         
 rule data_yeast:
@@ -107,6 +118,7 @@ rule data_metagenome:
         
 rule data_all:
     input:
+        rules.data_bacteria.input,
         rules.data_bacteria.input,
         rules.data_yeast.input,
         rules.data_metagenome.input,

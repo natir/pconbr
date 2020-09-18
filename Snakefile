@@ -15,7 +15,7 @@ wildcard_constraints:
     abundance = '\d+',
     params = '.*',
     ratio = "\d+",
-    type = "([^\d\.]+(\.e\d\d)?(\.c\d\d)?)",
+    type = '[^\.]+'
     
 rule all:
     input:
