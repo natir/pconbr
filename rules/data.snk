@@ -2,10 +2,12 @@
 rule bacteria_real_reads:
     output:
         "data/bacteria/reads.fasta",
-
+        
+    conda:
+        f"../{config['env_mode']}/seqtk.yaml"
+        
     shell:
-        "curl https://sra-pub-src-1.s3.amazonaws.com/SRR10950300/PaenibacillusRUD330__MinION_Nanopore_reads.fastq.gz.1 | seqtk seq -A - > {output}"
-
+        "fastq-dump  --fasta --stdout ERR3890216 | seqtk seq -A - > {output}"
 
 rule bacteria_reference:
     output:
@@ -20,6 +22,27 @@ rule bacteria_synthetic_reads:
         rules.bacteria_reference.output,
         [f"data/bacteria/synthetic.e{mean_id}.c50.fasta" for mean_id in conf_range("identity")],
 
+        
+rule bacteria7_real_reads:
+    output:
+        "data/bacteria7/reads.fasta",
+        
+    conda:
+        f"../{config['env_mode']}/seqtk.yaml"
+        
+    shell:
+        "curl https://ndownloader.figshare.com/files/21623145 | seqtk seq -A - > {output}" 
+
+
+rule bacteria7_reference:
+    input:
+        "data/bacteria/reference.fasta",
+
+    output:
+        "data/bacteria7/reference.fasta",
+
+    shell:
+        "ln -s {input} {output}"
 
 # genoscope yeast
 rule yeast_real_reads:
