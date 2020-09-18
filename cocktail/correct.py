@@ -6,18 +6,6 @@ import altair
 
 from .utils import get_bench_data
 
-def figure_pr(dataset):
-    df = dataframe_pr()
-
-    xrange = (math.floor(df["recall"].min() * 100) / 100, math.ceil(df["recall"].max() * 100) / 100)
-    yrange = (math.floor(df["precision"].min() * 100) / 100, math.ceil(df["precision"].max() * 100) / 100)
-    
-    return altair.Chart(df[df["dataset"] == dataset]).mark_point().encode(
-        x=altair.X("recall", scale=altair.Scale(domain=xrange)),
-        y=altair.Y("precision", scale=altair.Scale(domain=yrange)),
-        color="corrector",
-    )
-
 
 def dataframe_pr():
     data = list()
@@ -60,15 +48,6 @@ def get_data_pr(corrector, dataset, kmer_size=None):
     
     return (None, None)
 
-
-def figure_bench(dataset):
-    df = dataframe_bench()
-
-    return altair.Chart(df[df["dataset"] == dataset]).mark_point().encode(
-        x="time",
-        y="memory",
-        color="corrector",
-    )
 
 def dataframe_bench():
     data = list()

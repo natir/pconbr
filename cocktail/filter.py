@@ -3,10 +3,7 @@ import csv
 import pandas
 import altair
 
-def figure(dataset, tool):
-    df = dataframe()
-    df = df[(df["dataset"] == dataset) & (df["tool"] == tool)]
-
+def figure(df):
     readlength = altair.Chart(df).mark_bar().encode(
         x=altair.X("length:Q", bin=altair.Bin(maxbins=100), axis=None),
         y=altair.Y('count()', axis=altair.Axis(title=None))
@@ -16,8 +13,8 @@ def figure(dataset, tool):
     )
 
     quality = altair.Chart(df).mark_bar().encode(
-        y=altair.X("identity:Q", bin=altair.Bin(maxbins=100), axis=None),
-        x=altair.Y('count()', axis=altair.Axis(title=None))
+        y=altair.X("identity:Q", bin=altair.Bin(maxbins=100), scale=altair.Scale(domain=(0, 100)), axis=None),
+        x=altair.Y('count()', axis=altair.Axis(title=None)),
     ).properties(
         width=200,
         height=500
@@ -41,18 +38,23 @@ def dataframe():
             for ratio in range(70, 100, 5):
                 path = f"filter/{dataset}/identity/kmrf/reads.k{kmer_size}.r{ratio}.tsv"
                 if os.path.isfile(path):
-                    with open(path) as fh:
-                        reader = csv.DictReader(fh, delimiter='\t')
-                        for row in reader:
-                            data.append((dataset, f"kmrf_k{kmer_size}_r{ratio}", row["name"], int(row["length"]), float(row["identity"])))
-
+                    data += get_data(path, dataset, f"kmrf_k{kmer_size}_r{ratio}")
+                    
     for dataset in ["bacteria", "yeast", "metagenome"]:
         for quality in range(90, 100, 1):
-                path = f"filter/{dataset}/identity/filtlong/reads.q{quality}.tsv"
-                if os.path.isfile(path):
-                    with open(path) as fh:
-                        reader = csv.DictReader(fh, delimiter='\t')
-                        for row in reader:
-                            data.append((dataset, f"filtlong_q{quality}", row["name"], int(row["length"]), float(row["identity"])))
+            path = f"filter/{dataset}/identity/filtlong/reads.q{quality}.tsv"
+            if os.path.isfile(path):
+                data += get_data(path, dataset, f"filtlong_q{quality}")
                             
     return pandas.DataFrame(data, columns=['dataset', 'tool', 'name', 'length', 'identity'])
+
+
+def get_data(path, dataset, filter):
+    data = list()
+    
+    with open(path) as fh:
+        reader = csv.DictReader(fh, delimiter='\t')
+        for row in reader:
+            data.append((dataset, filter, row["name"], int(row["length"]), float(row["identity"])))
+
+    return data

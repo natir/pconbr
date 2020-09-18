@@ -4,16 +4,6 @@ import altair
 
 from .utils import get_bench_data
 
-def figure(dataset):
-    df = dataframe()
-
-    return altair.Chart(df[df["dataset"] == dataset]).mark_point().encode(
-        x="time",
-        y="memory",
-        color="counter",
-        shape="kmer_size"
-    )
-
 def dataframe():
     data = list()
     
