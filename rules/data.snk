@@ -25,7 +25,7 @@ rule bacteria7_real_reads:
         f"../{config['env_mode']}/seqtk.yaml"
         
     shell:
-        "curl https://ndownloader.figshare.com/files/21623145 | seqtk seq -A - > {output}" 
+        "curl https://s3-eu-west-1.amazonaws.com/pfigshare-u-files/21623145/ecolk12mg1655_R10_3_guppy_345_HAC.fastq.gz | seqtk seq -A - > {output}" 
 
 
 rule bacteria7_reference:
@@ -36,7 +36,7 @@ rule bacteria7_reference:
         "data/bacteria7/reference.fasta",
 
     shell:
-        "ln -s {input} {output}"
+        "ln -s $(pwd)/{input} $(pwd)/{output}"
 
         
 rule bacteria_synthetic_reference:
@@ -100,8 +100,8 @@ rule data_bacteria:
         
 rule data_bacteria7:
     input:
-        rules.bacteria_real_reads.output,
-        rules.bacteria_reference.output,
+        rules.bacteria7_real_reads.output,
+        rules.bacteria7_reference.output,
 
         
 rule data_yeast:
@@ -119,7 +119,7 @@ rule data_metagenome:
 rule data_all:
     input:
         rules.data_bacteria.input,
-        rules.data_bacteria.input,
+        rules.data_bacteria7.input,
         rules.data_yeast.input,
         rules.data_metagenome.input,
     
