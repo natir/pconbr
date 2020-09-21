@@ -16,7 +16,7 @@ rule pcon:
         mem_mb = lambda wcd: pcon_memory_usage(int(wcd.kmer_size))
 
     threads:
-        32
+        config['max_threads']
         
     shell:
         "pcon count -i {input} -o {output} -k {wildcards.kmer_size} -t {threads} -vvv 2>&1 > {log}"
@@ -40,7 +40,7 @@ rule kmc:
         kmc_out = lambda wcd: f"count/{wcd.dataset}/kmc/{wcd.prefix}.k{wcd.kmer_size}"
 
     threads:
-        32
+        config['max_threads']
         
     conda:
         f"../{config['env_mode']}/kmc.yaml"
@@ -66,7 +66,7 @@ rule jellyfish:
         "count/bench/jellyfish/{dataset}_{prefix}.k{kmer_size}.tsv"
 
     threads:
-        32
+        config['max_threads']
         
     conda:
         f"../{config['env_mode']}/jellyfish.yaml"

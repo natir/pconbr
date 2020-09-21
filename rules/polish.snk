@@ -12,7 +12,7 @@ rule pcon_count:
         mem_mb = lambda wcd: pcon_memory_usage(int(wcd.kmer_size))
         
     threads:
-        32
+        config['max_threads']
 
     shell:
         "pcon count -i {input} -k {wildcards.kmer_size} -o {output} -t {threads} -vvv 2>&1 > {log}"
@@ -48,7 +48,7 @@ rule miniasm:
         "log/polish/miniasm/{dataset}.txt"            
 
     threads:
-        32
+        config['max_threads']
 
     conda:
         f"../{config['env_mode']}/miniasm.yaml"
@@ -76,7 +76,7 @@ rule br_polish:
         mem_mb = lambda wcd: br_memory_usage(int(wcd.kmer_size))
 
     threads:
-        32
+        config['max_threads']
 
     shell:
         "br -s {input.solid} -i {input.asm} -o {output} -t {threads} -m one greedy gap_size graph 2> {log}"
@@ -97,7 +97,7 @@ rule quast_polish:
         prefix = "polish/{dataset}/quast/polish.k{kmer_size}.a{abundance}/"
         
     threads:
-        32
+        config['max_threads']
 
     conda:
         f"../{config['env_mode']}/quast.yaml"

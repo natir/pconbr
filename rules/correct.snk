@@ -16,7 +16,7 @@ rule br:
         mem_mb = lambda wcd: pcon_memory_usage(int(wcd.kmer_size)) + br_memory_usage(int(wcd.kmer_size))
 
     threads:
-        32
+        config['max_threads']
         
     shell:
         "br -i {input} -o {output} -k {wildcards.kmer_size} -t {threads} -m one greedy gap_size graph -vvv 2>&1 > {log}"
@@ -45,7 +45,7 @@ rule canu:
         f"../{config['env_mode']}/canu.yaml"
 
     threads:
-        32
+        config['max_threads']
         
     shell:
         """
@@ -71,7 +71,7 @@ rule consent:
         f"../{config['env_mode']}/consent.yaml"
 
     threads:
-        32
+        config['max_threads']
         
     shell:
         "CONSENT-correct --in {input} --out {output} --type ONT 2>&1 > {log}"
@@ -101,7 +101,7 @@ rule necat:
         f"../{config['env_mode']}/necat.yaml"
 
     threads:
-        32
+        config['max_threads']
         
     shell:
         """
@@ -136,7 +136,7 @@ rule elector:
         f"../{config['env_mode']}/elector.yaml"
 
     threads:
-        32
+        config['max_threads']
         
     shell:
         "elector -reference {input.reference} -uncorrected {input.raw} -corrected {input.correct} -threads {threads} -corrector {wildcards.corrector} -simulator real -output {params.output} 2>&1 > {log}"

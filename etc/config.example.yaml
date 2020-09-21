@@ -30,3 +30,6 @@ genomeSize:
   bacteria: "4641652"
   yeast: "12157105"
   metagenome: "42157070"
+
+# Control maximal number of threads
+max_threads: 16

@@ -18,7 +18,7 @@ rule kmrf:
         mem_mb = lambda wcd: pcon_memory_usage(int(wcd.kmer_size)) + br_memory_usage(int(wcd.kmer_size))
 
     threads:
-        32
+        config['max_threads']
         
     shell:
         "kmrf -i {input} -o {output} -k {wildcards.kmer_size} -t {threads} -r {params.ratio} -vvv 2>&1 > {log}"
@@ -39,7 +39,7 @@ rule filtlong:
         "filter/bench/filtlong/{dataset}_{type}{params}.q{quality}.tsv"
     
     threads:
-        32
+        config['max_threads']
 
     conda:
         f"../{config['env_mode']}/filtlong.yaml"
@@ -62,7 +62,7 @@ rule redbean:
         prefix = "filter{dataset}/redbean/{filter}/{type}{params}/dbg",
         genome_size = lambda wcd: config["genomeSize"][wcd.dataset] if wcd.dataset in config["genomeSize"] else config["genomeSize"]["bacteria"],
     threads:
-        32
+        config['max_threads']
 
     conda:
         f"../{config['env_mode']}/redbean.yaml"
@@ -89,7 +89,7 @@ rule quast_filter:
         prefix = "filter/quast/{dataset}/{type}{params}/"
         
     threads:
-        32
+        config['max_threads']
 
     conda:
         f"../{config['env_mode']}/quast.yaml"
@@ -110,7 +110,7 @@ rule evaluate_filter:
         "log/filter/identity/{dataset}_{filter}_{type}{params}.txt"
         
     threads:
-        32
+        config['max_threads']
 
     conda:
         f"../{config['env_mode']}/miniasm.yaml"
