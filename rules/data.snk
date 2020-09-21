@@ -7,7 +7,7 @@ rule bacteria_reads:
         "log/data/bacteria_reads.txt"
         
     conda:
-        f"../{config['env_mode']}/seqtk.yaml"
+        f"../{config['env_mode']}/fastq-dump.yaml"
         
     shell:
         "fastq-dump  --fasta --stdout ERR3890216 | seqtk seq -A - > {output} 2>&1 > {log}"
