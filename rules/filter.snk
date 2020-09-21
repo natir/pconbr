@@ -5,6 +5,9 @@ rule kmrf:
     output:
         "filter/{dataset}/kmrf/{type}.k{kmer_size}.r{ratio}.fasta"
 
+    log:
+        "log/filter/kmrf/{dataset}_{type}.k{kmer_size}.r{ratio}.txt"
+        
     benchmark:
         "filter/bench/kmrf/{dataset}_{type}.k{kmer_size}.r{ratio}.tsv"
 
@@ -18,7 +21,7 @@ rule kmrf:
         32
         
     shell:
-        "kmrf -i {input} -o {output} -k {wildcards.kmer_size} -t {threads} -r {params.ratio}"
+        "kmrf -i {input} -o {output} -k {wildcards.kmer_size} -t {threads} -r {params.ratio} -vvv 2>&1 > {log}"
 
 
 rule filtlong:
@@ -29,8 +32,11 @@ rule filtlong:
     output:
         "filter/{dataset}/filtlong/{type}{params}.q{quality}.fasta"
 
+    log:
+        "log/filter/filtlong/{dataset}_{type}{params}.q{quality}.txt"
+        
     benchmark:
-        "filter/bench/kmrf/{dataset}_{type}{params}.q{quality}.tsv"
+        "filter/bench/filtlong/{dataset}_{type}{params}.q{quality}.tsv"
     
     threads:
         32
@@ -39,7 +45,7 @@ rule filtlong:
         f"../{config['env_mode']}/filtlong.yaml"
         
     shell:
-        "filtlong --min_mean_q {wildcards.quality} -a {input.ref} {input.reads} > {output}"
+        "filtlong --min_mean_q {wildcards.quality} -a {input.ref} {input.reads} > {output} 2> {log}"
 
         
 rule redbean:
@@ -49,6 +55,9 @@ rule redbean:
     output:
         "filter/{dataset}/redbean/{filter}/{type}{params}/dbg.raw.fa"
 
+    log:
+        "log/filter/readbean/{dataset}_{filter}_{type}{params}.txt"
+        
     params:
         prefix = "filter{dataset}/redbean/{filter}/{type}{params}/dbg",
         genome_size = lambda wcd: config["genomeSize"][wcd.dataset] if wcd.dataset in config["genomeSize"] else config["genomeSize"]["bacteria"],
@@ -60,8 +69,8 @@ rule redbean:
         
     shell:
         """
-        wtdbg2 -x ont -g {params.genome_size} -i {input} -t {threads} -fo {params.prefix}
-        wtpoa-cns -t {threads} -i {params.prefix}.ctg.lay.gz -fo {output}
+        wtdbg2 -x ont -g {params.genome_size} -i {input} -t {threads} -fo {params.prefix} 2>&1 > {log}
+        wtpoa-cns -t {threads} -i {params.prefix}.ctg.lay.gz -fo {output} 2>&1 >> {log}
         """
 
         
@@ -73,6 +82,9 @@ rule quast_filter:
     output:
         "filter/{dataset}/quast/{filter}/{type}{params}/report.txt"
 
+    log:
+        "log/filter/quast/{dataset}_{filter}_{type}{params}.txt"
+        
     params:
         prefix = "filter/quast/{dataset}/{type}{params}/"
         
@@ -83,7 +95,7 @@ rule quast_filter:
         f"../{config['env_mode']}/quast.yaml"
         
     shell:
-        "quast --min-identity 80 -t {threads} -o {params.prefix} -r {input.ref} {input.asm}"
+        "quast --min-identity 80 -t {threads} -o {params.prefix} -r {input.ref} {input.asm} 2>&1 > {log}"
 
 
 rule evaluate_filter:
@@ -94,6 +106,9 @@ rule evaluate_filter:
     output:
         "filter/{dataset}/identity/{filter}/{type}{params}.tsv"
 
+    log:
+        "log/filter/identity/{dataset}_{filter}_{type}{params}.txt"
+        
     threads:
         32
 
@@ -101,7 +116,7 @@ rule evaluate_filter:
         f"../{config['env_mode']}/miniasm.yaml"
         
     shell:
-        "minimap2 -x map10k -t {threads} -c {input.ref} {input.reads} | ./script/read_length_identity.py > {output}"
+        "minimap2 -x map10k -t {threads} -c {input.ref} {input.reads} 2> {log} | ./script/read_length_identity.py > {output} 2>> {log}"
 
 
 rule filter_bacteria:

@@ -6,6 +6,9 @@ rule br:
     output:
         "correct/{dataset}/br/{prefix}.k{kmer_size}.fasta"
 
+    log:
+        "log/correct/br/{dataset}_{prefix}.k{kmer_size}.txt"
+        
     benchmark:
         "correct/bench/br/{dataset}_{prefix}.k{kmer_size}.tsv"
         
@@ -16,7 +19,7 @@ rule br:
         32
         
     shell:
-        "br -i {input} -o {output} -k {wildcards.kmer_size} -t {threads} -m one greedy gap_size graph"
+        "br -i {input} -o {output} -k {wildcards.kmer_size} -t {threads} -m one greedy gap_size graph -vvv 2>&1 > {log}"
 
 
 rule canu:
@@ -25,6 +28,9 @@ rule canu:
 
     output:
         "correct/{dataset}/canu/{type}{params}.fasta"
+
+    log:
+        "log/correct/canu/{dataset}_{type}{params}.txt"
 
     benchmark:
         "correct/bench/canu/{dataset}_{type}{params}.tsv"
@@ -43,8 +49,8 @@ rule canu:
         
     shell:
         """
-        canu -threads -nanopore {input} -p {params.prefix} -d {params.work_dir} useGrid=false executiveThreads={threads} genomeSize={params.genome_size}
-        mv {params.canu_correct_out} {output}
+        canu -threads -nanopore {input} -p {params.prefix} -d {params.work_dir} useGrid=false executiveThreads={threads} genomeSize={params.genome_size} 2>&1 > {log}
+        mv {params.canu_correct_out} {output} 2>&1 > {log}
         """
 
         
@@ -54,6 +60,9 @@ rule consent:
 
     output:
         "correct/{dataset}/consent/{type}{params}.fasta"
+
+    log:
+        "log/correct/consent/{dataset}_{type}{params}.txt"
 
     benchmark:
         "correct/bench/consent/{dataset}_{type}{params}.tsv"
@@ -65,7 +74,7 @@ rule consent:
         32
         
     shell:
-        "CONSENT-correct --in {input} --out {output} --type ONT"
+        "CONSENT-correct --in {input} --out {output} --type ONT 2>&1 > {log}"
 
 
 rule necat:
@@ -74,6 +83,9 @@ rule necat:
 
     output:
         "correct/{dataset}/necat/{type}{params}.fasta"
+
+    log:
+        "log/correct/necat/{dataset}_{type}{params}.txt"
 
     benchmark:
         "correct/bench/necat/{dataset}_{type}{params}.tsv"
@@ -93,16 +105,16 @@ rule necat:
         
     shell:
         """
-        mkdir -p {params.work_dir}
-        echo '{params.input_abs_path}' > {params.work_dir}/file_list.txt
-        cp {params.template_path} {params.work_dir}/config
-        sed -i 's#_WORKDIR_#{params.work_dir}#' {params.work_dir}/config
-        sed -i 's#_READ_LIST_#{params.work_dir}/file_list.txt#' {params.work_dir}/config
-        sed -i 's#_GENOME_SIZE_#{params.genome_size}#' {params.work_dir}/config
-        sed -i 's#_THREADS_#{threads}#' {params.work_dir}/config
-        sed -i 's#_COVERAGE_#{params.coverage}#' {params.work_dir}/config
-        necat correct {params.work_dir}/config
-        cp {params.work_dir}/1-consensus/cns_iter2/cns.fasta {output}"
+        mkdir -p {params.work_dir} 2>&1 > {log}
+        echo '{params.input_abs_path}' > {params.work_dir}/file_list.txt 2> {log}
+        cp {params.template_path} {params.work_dir}/config 2>&1 > {log}
+        sed -i 's#_WORKDIR_#{params.work_dir}#' {params.work_dir}/config 2>&1 > {log}
+        sed -i 's#_READ_LIST_#{params.work_dir}/file_list.txt#' {params.work_dir}/config 2>&1 > {log}
+        sed -i 's#_GENOME_SIZE_#{params.genome_size}#' {params.work_dir}/config 2>&1 > {log}
+        sed -i 's#_THREADS_#{threads}#' {params.work_dir}/config 2>&1 > {log}
+        sed -i 's#_COVERAGE_#{params.coverage}#' {params.work_dir}/config 2>&1 > {log}
+        necat correct {params.work_dir}/config 2>&1 > {log}
+        cp {params.work_dir}/1-consensus/cns_iter2/cns.fasta {output} 2>&1 > {log}
         """
         
 rule elector:
@@ -114,6 +126,9 @@ rule elector:
     output:
         "correct/{dataset}/elector/{corrector}/{type}{params}/log"
 
+    log:
+        "log/correct/elector/{dataset}_{corrector}_{type}{params}.txt"
+        
     params:
         output = "correct/{dataset}/elector/{corrector}/{type}{params}"
         
@@ -124,7 +139,7 @@ rule elector:
         32
         
     shell:
-        "elector -reference {input.reference} -uncorrected {input.raw} -corrected {input.correct} -threads {threads} -corrector {wildcards.corrector} -simulator real -output {params.output}"
+        "elector -reference {input.reference} -uncorrected {input.raw} -corrected {input.correct} -threads {threads} -corrector {wildcards.corrector} -simulator real -output {params.output} 2>&1 > {log}"
 
         
 rule correct_bacteria:

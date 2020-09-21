@@ -6,6 +6,9 @@ rule pcon:
     output:
         "count/{dataset}/pcon/{prefix}.k{kmer_size}.pcon"
 
+    log:
+        "log/count/pcon/{dataset}_{prefix}.k{kmer_size}.txt"
+        
     benchmark:
         "count/bench/pcon/{dataset}_{prefix}.k{kmer_size}.tsv"
         
@@ -16,7 +19,7 @@ rule pcon:
         32
         
     shell:
-        "pcon count -i {input} -o {output} -k {wildcards.kmer_size} -t {threads}"
+        "pcon count -i {input} -o {output} -k {wildcards.kmer_size} -t {threads} -vvv 2>&1 > {log}"
 
 
 rule kmc:
@@ -26,6 +29,9 @@ rule kmc:
     output:
         "count/{dataset}/kmc/{prefix}.k{kmer_size}.kmc_suf"
 
+    log:
+        "log/count/kmc/{dataset}_{prefix}.k{kmer_size}.txt"
+        
     benchmark:
         "count/bench/kmc/{dataset}_{prefix}.k{kmer_size}.tsv"
 
@@ -42,7 +48,7 @@ rule kmc:
     shell:
         """
         mkdir -p {params.work_dir}
-        kmc -k{wildcards.kmer_size} -t{threads} -r -fa {input} {params.kmc_out} {params.work_dir}
+        kmc -k{wildcards.kmer_size} -t{threads} -r -fa {input} {params.kmc_out} {params.work_dir} 2>&1 > {log}
         """
 
 
@@ -53,6 +59,9 @@ rule jellyfish:
     output:
         "count/{dataset}/jellyfish/{prefix}.k{kmer_size}.jf"
 
+    log:
+        "log/count/jellyfish/{dataset}_{prefix}.k{kmer_size}.txt"
+        
     benchmark:
         "count/bench/jellyfish/{dataset}_{prefix}.k{kmer_size}.tsv"
 
@@ -63,7 +72,7 @@ rule jellyfish:
         f"../{config['env_mode']}/jellyfish.yaml"
         
     shell:
-        "jellyfish count -m{wildcards.kmer_size} -t{threads} -s10G -C -o {output} {input}"
+        "jellyfish count -m{wildcards.kmer_size} -t{threads} -s10G -C -o {output} {input} 2>&1 > {log}"
 
         
 rule count_bacteria:

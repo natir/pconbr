@@ -35,19 +35,3 @@ def br_memory_usage(kmer_size):
         return 3
 
 
-############################
-# Generate synthetic reads #
-############################
-rule generate_synthetic_reads:
-    input:
-        "data/synthetic.e{mean_id}.c{coverage}/reference.fasta",
-        
-    output:
-        "data/synthetic.e{mean_id}.c{coverage}/reads.fasta",
-
-    conda:
-        f"../{config['env_mode']}/badread.yaml"
-        
-    shell:
-        "badread simulate --reference {input} --quantity {wildcards.coverage}x --identity {wildcards.mean_id},100,5 --error_model nanopore --seed 42 | seqtk seq -A - > {output}"
-

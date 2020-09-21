@@ -1,60 +1,98 @@
 # Ecoli K-12 substr. MG1655
-rule bacteria_real_reads:
+rule bacteria_reads:
     output:
         "data/bacteria/reads.fasta",
+
+    log:
+        "log/data/bacteria_reads.txt"
         
     conda:
         f"../{config['env_mode']}/seqtk.yaml"
         
     shell:
-        "fastq-dump  --fasta --stdout ERR3890216 | seqtk seq -A - > {output}"
+        "fastq-dump  --fasta --stdout ERR3890216 | seqtk seq -A - > {output} 2>&1 > {log}"
 
 rule bacteria_reference:
     output:
         "data/bacteria/reference.fasta",
 
-    shell:
-        "curl ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/005/845/GCF_000005845.2_ASM584v2/GCF_000005845.2_ASM584v2_genomic.fna.gz | seqtk seq -A - > {output}"
+    log:
+        "log/data/bacteria_reference.txt"
 
-                
-rule bacteria7_real_reads:
-    output:
-        "data/bacteria7/reads.fasta",
-        
     conda:
         f"../{config['env_mode']}/seqtk.yaml"
         
     shell:
-        "curl https://s3-eu-west-1.amazonaws.com/pfigshare-u-files/21623145/ecolk12mg1655_R10_3_guppy_345_HAC.fastq.gz | seqtk seq -A - > {output}" 
+        "curl ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/005/845/GCF_000005845.2_ASM584v2/GCF_000005845.2_ASM584v2_genomic.fna.gz 2> {log} | seqtk seq -A - > {output} 2>> {log}"
+
+                
+rule bacteria7_reads:
+    output:
+        "data/bacteria7/reads.fasta",    
+    
+    log:
+        "log/data/bacteria7_reads.txt"
+
+    conda:
+        f"../{config['env_mode']}/seqtk.yaml"
+        
+    shell:
+        "curl https://s3-eu-west-1.amazonaws.com/pfigshare-u-files/21623145/ecolk12mg1655_R10_3_guppy_345_HAC.fastq.gz 2> {log}| seqtk seq -A - > {output} 2>> {log}" 
 
 
 rule bacteria7_reference:
     input:
         "data/bacteria/reference.fasta",
 
+    log:
+        "log/data/bacteria7_reference.txt"
+
     output:
         "data/bacteria7/reference.fasta",
 
     shell:
-        "ln -s $(pwd)/{input} $(pwd)/{output}"
+        "ln -s $(pwd)/{input} $(pwd)/{output} 2>&1 > {log}"
 
         
-rule bacteria_synthetic_reference:
+rule synthetic_reference:
     input:
         "data/bacteria/reference.fasta",
 
+    log:
+        "log/data/synthetic.e{mean_id}.c{coverage}.txt"
+
     output:
-        "data/synthetic.e{mean_id}.c50/reference.fasta",
+        "data/synthetic.e{mean_id}.c{coverage}/reference.fasta",
 
     shell:
-        "ln -s {input} {output}"
+        "ln -s {input} {output} 2>&1 > {log}"
+
+        
+rule generate_synthetic_reads:
+    input:
+        "data/synthetic.e{mean_id}.c{coverage}/reference.fasta",
+        
+    output:
+        "data/synthetic.e{mean_id}.c{coverage}/reads.fasta",
+        
+    log:
+        "log/badread/synthetic.e{mean_id}.c{coverage}.txt"
+        
+    conda:
+        f"../{config['env_mode']}/badread.yaml"
+        
+    shell:
+        "badread simulate --reference {input} --quantity {wildcards.coverage}x --identity {wildcards.mean_id},100,5 --error_model nanopore --seed 42 | seqtk seq -A - > {output} 2>&1 > {log}1"
 
         
 # genoscope yeast
-rule yeast_real_reads:
+rule yeast_reads:
     output:
         "data/yeast/reads.fasta",
 
+    log:
+        "log/data/yeast_reads.txt"
+        
     run:
         raise Exception('You need download this data by your own')
 
@@ -63,56 +101,71 @@ rule yeast_reference:
     output:
         "data/yeast/reference.fasta",
 
-    shell:
-        """
-        mkdir -p tmp/yeast_dl
-        curl http://sgd-archive.yeastgenome.org/sequence/S288C_reference/genome_releases/S288C_reference_genome_Current_Release.tgz > tmp/yeast_dl/reference.tar.gz
-        tar xvfz tmp/yeast_dl/reference.tar.gz -C tmp/yeast_dl/ S288C_reference_genome_R64-2-1_20150113/S288C_reference_sequence_R64-2-1_20150113.fsa
-        mv tmp/yeast_dl/S288C_reference_genome_R64-2-1_20150113/S288C_reference_sequence_R64-2-1_20150113.fsa {output}
-        """
-
-
-# Nick Loman R10 sequencing
-rule metagenome_real_reads:
-    output:
-        "data/metagenome/reads.fasta",
+    log:
+        "log/data/yeast_reference.txt"
 
     conda:
         f"../{config['env_mode']}/seqtk.yaml"
         
     shell:
-        "curl https://nanopore.s3.climb.ac.uk/Zymo-GridION-Even-3Peaks-Native-R10-guppy_r10_large_v0.1alpha.fq.gz | seqtk seq -A - > {output}"
+        """
+        mkdir -p tmp/yeast_dl 2> {log}
+        curl http://sgd-archive.yeastgenome.org/sequence/S288C_reference/genome_releases/S288C_reference_genome_Current_Release.tgz > tmp/yeast_dl/reference.tar.gz 2>> {log}
+        tar xvfz tmp/yeast_dl/reference.tar.gz -C tmp/yeast_dl/ S288C_reference_genome_R64-2-1_20150113/S288C_reference_sequence_R64-2-1_20150113.fsa 2>&1 >> {log}
+        seqtk seq -A - tmp/yeast_dl/S288C_reference_genome_R64-2-1_20150113/S288C_reference_sequence_R64-2-1_20150113.fsa > {output} 2>> {log}
+        """
+
+
+# Nick Loman R10 sequencing
+rule metagenome_reads:
+    output:
+        "data/metagenome/reads.fasta",
+
+    log:
+        "log/data/metagenome_reads.txt"
+        
+    conda:
+        f"../{config['env_mode']}/seqtk.yaml"
+        
+    shell:
+        "curl https://nanopore.s3.climb.ac.uk/Zymo-GridION-Even-3Peaks-Native-R10-guppy_r10_large_v0.1alpha.fq.gz 2> {log}| seqtk seq -A - > {output} 2>> {log}"
 
         
 rule metagenome_reference:
     output:
         "data/metagenome/reference.fasta",
 
+    log:
+        "log/data/metagenome_reference.txt"
+
+    conda:
+        f"../{config['env_mode']}/seqtk.yaml"
+
     shell:
-        "curl https://raw.githubusercontent.com/al-mcintyre/mCaller_analysis_scripts/master/assemblies/bsubtilis_pb.fasta https://raw.githubusercontent.com/al-mcintyre/mCaller_analysis_scripts/master/assemblies/efaecalis_pb.fasta https://raw.githubusercontent.com/al-mcintyre/mCaller_analysis_scripts/master/assemblies/ecoli_pb.fasta https://raw.githubusercontent.com/al-mcintyre/mCaller_analysis_scripts/master/assemblies/lmonocytogenes_pb.fasta https://raw.githubusercontent.com/al-mcintyre/mCaller_analysis_scripts/master/assemblies/paeruginosa_pb.fasta https://raw.githubusercontent.com/al-mcintyre/mCaller_analysis_scripts/master/assemblies/scerevisiae_pb.fasta https://raw.githubusercontent.com/al-mcintyre/mCaller_analysis_scripts/master/assemblies/senterica_pb.fasta https://raw.githubusercontent.com/al-mcintyre/mCaller_analysis_scripts/master/assemblies/saureus_pb.fasta > {output}"
+        "curl https://raw.githubusercontent.com/al-mcintyre/mCaller_analysis_scripts/master/assemblies/bsubtilis_pb.fasta https://raw.githubusercontent.com/al-mcintyre/mCaller_analysis_scripts/master/assemblies/efaecalis_pb.fasta https://raw.githubusercontent.com/al-mcintyre/mCaller_analysis_scripts/master/assemblies/ecoli_pb.fasta https://raw.githubusercontent.com/al-mcintyre/mCaller_analysis_scripts/master/assemblies/lmonocytogenes_pb.fasta https://raw.githubusercontent.com/al-mcintyre/mCaller_analysis_scripts/master/assemblies/paeruginosa_pb.fasta https://raw.githubusercontent.com/al-mcintyre/mCaller_analysis_scripts/master/assemblies/scerevisiae_pb.fasta https://raw.githubusercontent.com/al-mcintyre/mCaller_analysis_scripts/master/assemblies/senterica_pb.fasta https://raw.githubusercontent.com/al-mcintyre/mCaller_analysis_scripts/master/assemblies/saureus_pb.fasta | seqtk seq -A - >{output} 2> {log}"
 
         
 rule data_bacteria:
     input:
-        rules.bacteria_real_reads.output,
+        rules.bacteria_reads.output,
         rules.bacteria_reference.output,
 
         
 rule data_bacteria7:
     input:
-        rules.bacteria7_real_reads.output,
+        rules.bacteria7_reads.output,
         rules.bacteria7_reference.output,
 
         
 rule data_yeast:
     input:
-        rules.yeast_real_reads.output,
+        rules.yeast_reads.output,
         rules.yeast_reference.output,
 
         
 rule data_metagenome:
     input:
-        rules.metagenome_real_reads.output,
+        rules.metagenome_reads.output,
         rules.metagenome_reference.output,
 
         

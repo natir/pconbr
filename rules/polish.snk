@@ -4,6 +4,9 @@ rule pcon_count:
 
     output:
         "polish/{dataset}/reads.k{kmer_size}.pcon"
+
+    log:
+        "log/polish/pcon_count/{dataset}_reads.k{kmer_size}.txt"
         
     resources:
         mem_mb = lambda wcd: pcon_memory_usage(int(wcd.kmer_size))
@@ -12,7 +15,7 @@ rule pcon_count:
         32
 
     shell:
-        "pcon count -i {input} -k {wildcards.kmer_size} -o {output} -t {threads}"
+        "pcon count -i {input} -k {wildcards.kmer_size} -o {output} -t {threads} -vvv 2>&1 > {log}"
 
         
 rule pcon_dump:
@@ -21,12 +24,15 @@ rule pcon_dump:
 
     output:
         "polish/{dataset}/reads.k{kmer_size}.a{abundance}.solid"
-        
+
+    log:
+        "log/polish/pcon_dump/{dataset}_reads.k{kmer_size}.a{abundance}.txt"
+                
     resources:
         mem_mb = lambda wcd: pcon_memory_usage(int(wcd.kmer_size)) + br_memory_usage(int(wcd.kmer_size))
     
     shell:
-        "pcon dump -i {input} -s {output}"
+        "pcon dump -i {input} -s {output} -vvv 2>&1 > {log}"
 
 
 rule miniasm:
@@ -38,6 +44,9 @@ rule miniasm:
         graph = "data/{dataset}/miniasm/asm.gfa",
         asm = "data/{dataset}/miniasm/asm.fasta",
 
+    log:
+        "log/polish/miniasm/{dataset}.txt"            
+
     threads:
         32
 
@@ -46,9 +55,9 @@ rule miniasm:
         
     shell:
         """
-        minimap2 -t {threads} -x ava-ont {input} {input} > {output.ovl}
-        miniasm -f {input} {output.ovl} > {output.graph}
-        ./script/gfaminiasm2fasta.py {output.graph} {output.asm}
+        minimap2 -t {threads} -x ava-ont {input} {input} > {output.ovl} 2> {log}
+        miniasm -f {input} {output.ovl} > {output.graph} 2>> {log}
+        ./script/gfaminiasm2fasta.py {output.graph} {output.asm} 2>> {log}
         """
 
 
@@ -60,6 +69,9 @@ rule br_polish:
     output:
         "polish/{dataset}/polish.k{kmer_size}.a{abundance}.fasta"
 
+    log:
+        "log/polish/br_polish/{dataset}.k{kmer_size}.a{abundance}.txt"
+                
     resources:
         mem_mb = lambda wcd: br_memory_usage(int(wcd.kmer_size))
 
@@ -67,7 +79,7 @@ rule br_polish:
         32
 
     shell:
-        "br -s {input.solid} -i {input.asm} -o {output} -t {threads} -m one greedy gap_size graph"
+        "br -s {input.solid} -i {input.asm} -o {output} -t {threads} -m one greedy gap_size graph 2> {log}"
 
 
 rule quast_polish:
@@ -77,6 +89,9 @@ rule quast_polish:
 
     output:
         "polish/{dataset}/quast/polish.k{kmer_size}.a{abundance}/report.txt"
+
+    log:
+        "log/polish/quast/{dataset}.k{kmer_size}.a{abundance}.txt"    
 
     params:
         prefix = "polish/{dataset}/quast/polish.k{kmer_size}.a{abundance}/"
@@ -88,7 +103,7 @@ rule quast_polish:
         f"../{config['env_mode']}/quast.yaml"
         
     shell:
-        "quast --min-identity 80 -t {threads} -o {params.prefix} -r {input.ref} {input.asm}"
+        "quast --min-identity 80 -t {threads} -o {params.prefix} -r {input.ref} {input.asm} 2>&1 > {log}"
 
 
 rule polish_bacteria:
