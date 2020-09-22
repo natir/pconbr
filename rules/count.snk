@@ -19,7 +19,7 @@ rule pcon:
         config['max_threads']
         
     shell:
-        "pcon count -i {input} -o {output} -k {wildcards.kmer_size} -t {threads} -vvv 2>&1 > {log}"
+        "pcon -vvv count -i {input} -o {output} -k {wildcards.kmer_size} -t {threads} 2>&1 > {log}"
 
 
 rule kmc:

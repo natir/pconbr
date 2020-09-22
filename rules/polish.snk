@@ -15,7 +15,7 @@ rule pcon_count:
         config['max_threads']
 
     shell:
-        "pcon count -i {input} -k {wildcards.kmer_size} -o {output} -t {threads} -vvv 2>&1 > {log}"
+        "pcon -vvv count -i {input} -k {wildcards.kmer_size} -o {output} -t {threads} 2>&1 > {log}"
 
         
 rule pcon_dump:
@@ -32,7 +32,7 @@ rule pcon_dump:
         mem_mb = lambda wcd: pcon_memory_usage(int(wcd.kmer_size)) + br_memory_usage(int(wcd.kmer_size))
     
     shell:
-        "pcon dump -i {input} -s {output} -vvv 2>&1 > {log}"
+        "pcon -vvv dump -i {input} -s {output} 2>&1 > {log}"
 
 
 rule miniasm:

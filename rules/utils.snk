@@ -13,25 +13,25 @@ import math
 
 def pcon_memory_usage(kmer_size):
     if kmer_size >= 11:
-        return math.ceil(
+        return 1024 + math.ceil(
             1.1 *
             (
                 1 << (kmer_size * 2 - 21)
             )
         )
     else:
-        return 3
+        return 1024 + 3
 
 
 def br_memory_usage(kmer_size):
     if kmer_size >= 13:
-        return math.ceil(
+        return 1024 + math.ceil(
             1.1 *
             (
                 1 << (kmer_size * 2 - 24)
             )
         )
     else:
-        return 3
+        return 1024 + 3
 
 
