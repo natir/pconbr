@@ -1,27 +1,7 @@
-rule pcon_count:
+rule pcon_polish:
     input:
         "data/{dataset}/reads.fasta"
-
-    output:
-        "polish/{dataset}/reads.k{kmer_size}.pcon"
-
-    log:
-        "log/polish/pcon_count/{dataset}_reads.k{kmer_size}.txt"
         
-    resources:
-        mem_mb = lambda wcd: pcon_memory_usage(int(wcd.kmer_size))
-        
-    threads:
-        config['max_threads']
-
-    shell:
-        "pcon -vvv count -i {input} -k {wildcards.kmer_size} -o {output} -t {threads} 2>&1 > {log}"
-
-        
-rule pcon_dump:
-    input:
-        "polish/{dataset}/reads.k{kmer_size}.pcon"
-
     output:
         "polish/{dataset}/reads.k{kmer_size}.a{abundance}.solid"
 
@@ -31,8 +11,11 @@ rule pcon_dump:
     resources:
         mem_mb = lambda wcd: pcon_memory_usage(int(wcd.kmer_size)) + br_memory_usage(int(wcd.kmer_size))
     
+    threads:
+        config['max_threads']
+
     shell:
-        "pcon -vvv dump -i {input} -s {output} 2>&1 > {log}"
+        "pcon -vvv -t {threads} count -i {input} -s {output} -k {wildcards.kmer_size} -a {wildcards.abundance} 2>&1 > {log}"
 
 
 rule miniasm:

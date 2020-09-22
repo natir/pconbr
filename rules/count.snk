@@ -4,7 +4,8 @@ rule pcon:
         "data/{dataset}/{prefix}.fasta"
         
     output:
-        "count/{dataset}/pcon/{prefix}.k{kmer_size}.pcon"
+        bin = "count/{dataset}/pcon/{prefix}.k{kmer_size}.pcon",
+        csv = "count/{dataset}/pcon/{prefix}.k{kmer_size}.csv"
 
     log:
         "log/count/pcon/{dataset}_{prefix}.k{kmer_size}.txt"
@@ -19,7 +20,7 @@ rule pcon:
         config['max_threads']
         
     shell:
-        "pcon -vvv count -i {input} -o {output} -k {wildcards.kmer_size} -t {threads} 2>&1 > {log}"
+        "pcon -vvv -t {threads} count -i {input} -o {output.csv} -c {output.csv} -k {wildcards.kmer_size}  2>&1 > {log}"
 
 
 rule kmc:
@@ -51,6 +52,37 @@ rule kmc:
         kmc -k{wildcards.kmer_size} -t{threads} -r -fa {input} {params.kmc_out} {params.work_dir} 2>&1 > {log}
         """
 
+        
+rule kmc_cd:
+    input:
+        "data/{dataset}/{prefix}.fasta"
+
+    output:
+        "count/{dataset}/kmc_cd/{prefix}.k{kmer_size}.csv"
+
+    log:
+        "log/count/kmc_cd/{dataset}_{prefix}.k{kmer_size}.txt"
+        
+    benchmark:
+        "count/bench/kmc_cd/{dataset}_{prefix}.k{kmer_size}.tsv"
+
+    params:
+        work_dir = lambda wcd: f"tmp/kmc_cd/{wcd.dataset}_{wcd.prefix}_{wcd.kmer_size}",
+        kmc_out = lambda wcd: f"count/{wcd.dataset}/kmc_cd/{wcd.prefix}.k{wcd.kmer_size}"
+
+    threads:
+        config['max_threads']
+        
+    conda:
+        f"../{config['env_mode']}/kmc.yaml"
+        
+    shell:
+        """
+        mkdir -p {params.work_dir}
+        kmc -k{wildcards.kmer_size} -t{threads} -r -fa {input} {params.kmc_out} {params.work_dir} 2>&1 > {log}
+        kmc_dump {params.kmc_out} {output} 2>&1 >> {log}
+        """
+
 
 rule jellyfish:
     input:
@@ -75,11 +107,39 @@ rule jellyfish:
         "jellyfish count -m{wildcards.kmer_size} -t{threads} -s10G -C -o {output} {input} 2>&1 > {log}"
 
         
+rule jellyfish_cd:
+    input:
+        "data/{dataset}/{prefix}.fasta"
+        
+    output:
+        bin = "count/{dataset}/jellyfish_cd/{prefix}.k{kmer_size}.jf",
+        csv = "count/{dataset}/jellyfish_cd/{prefix}.k{kmer_size}.csv"
+
+    log:
+        "log/count/jellyfish_cd/{dataset}_{prefix}.k{kmer_size}.txt"
+        
+    benchmark:
+        "count/bench/jellyfish_cd/{dataset}_{prefix}.k{kmer_size}.tsv"
+
+    threads:
+        config['max_threads']
+        
+    conda:
+        f"../{config['env_mode']}/jellyfish.yaml"
+        
+    shell:
+        """
+        jellyfish count -m{wildcards.kmer_size} -t{threads} -s10G -C -o {output.bin} {input} 2>&1 > {log}
+        jellyfish dump -c -o {output.csv} {output.bin} 2>&1 >> {log}
+        """
+        
 rule count_bacteria:
     input:
         [f"count/bacteria/pcon/reads.k{kmer_size}.pcon" for kmer_size in conf_range("kmer", step=2)],
         [f"count/bacteria/kmc/reads.k{kmer_size}.kmc_suf" for kmer_size in conf_range("kmer", step=2)],
         [f"count/bacteria/jellyfish/reads.k{kmer_size}.jf" for kmer_size in conf_range("kmer", step=2)],
+        [f"count/bacteria/kmc_cd/reads.k{kmer_size}.csv" for kmer_size in conf_range("kmer", step=2)],
+        [f"count/bacteria/jellyfish_cd/reads.k{kmer_size}.csv" for kmer_size in conf_range("kmer", step=2)],
 
 
 rule count_bacteria7:
@@ -87,28 +147,34 @@ rule count_bacteria7:
         [f"count/bacteria7/pcon/reads.k{kmer_size}.pcon" for kmer_size in conf_range("kmer", step=2)],
         [f"count/bacteria7/kmc/reads.k{kmer_size}.kmc_suf" for kmer_size in conf_range("kmer", step=2)],
         [f"count/bacteria7/jellyfish/reads.k{kmer_size}.jf" for kmer_size in conf_range("kmer", step=2)],
-
+        [f"count/bacteria7/kmc_cd/reads.k{kmer_size}.csv" for kmer_size in conf_range("kmer", step=2)],
+        [f"count/bacteria7/jellyfish_cd/reads.k{kmer_size}.csv" for kmer_size in conf_range("kmer", step=2)],
 
 rule count_synthetic:
     input:
         [f"count/synthetic.e{mean_id}.c{config['coverage']}/pcon/reads.k{kmer_size}.pcon" for mean_id in conf_range("identity") for kmer_size in conf_range("kmer", step=2)],
         [f"count/synthetic.e{mean_id}.c{config['coverage']}/kmc/reads.k{kmer_size}.kmc_suf" for mean_id in conf_range("identity") for kmer_size in conf_range("kmer", step=2)],
         [f"count/synthetic.e{mean_id}.c{config['coverage']}/jellyfish/reads.k{kmer_size}.jf" for mean_id in conf_range("identity") for kmer_size in conf_range("kmer", step=2)],
-
+        [f"count/synthetic.e{mean_id}.c{config['coverage']}/kmc_cd/reads.k{kmer_size}.csv" for mean_id in conf_range("identity") for kmer_size in conf_range("kmer", step=2)],
+        [f"count/synthetic.e{mean_id}.c{config['coverage']}/jellyfish_cd/reads.k{kmer_size}.csv" for mean_id in conf_range("identity") for kmer_size in conf_range("kmer", step=2)],
         
 rule count_yeast:
     input:
         [f"count/yeast/pcon/reads.k{kmer_size}.pcon" for kmer_size in conf_range("kmer", step=2)],
         [f"count/yeast/kmc/reads.k{kmer_size}.kmc_suf" for kmer_size in conf_range("kmer", step=2)],
         [f"count/yeast/jellyfish/reads.k{kmer_size}.jf" for kmer_size in conf_range("kmer", step=2)],
+        [f"count/yeast/kmc_cd/reads.k{kmer_size}.csv" for kmer_size in conf_range("kmer", step=2)],
+        [f"count/yeast/jellyfish_cd/reads.k{kmer_size}.csv" for kmer_size in conf_range("kmer", step=2)],
 
-
+        
 rule count_metagenome:
     input:
         [f"count/metagenome/pcon/reads.k{kmer_size}.pcon" for kmer_size in conf_range("kmer", step=2)],
         [f"count/metagenome/kmc/reads.k{kmer_size}.kmc_suf" for kmer_size in conf_range("kmer", step=2)],
         [f"count/metagenome/jellyfish/reads.k{kmer_size}.jf" for kmer_size in conf_range("kmer", step=2)],
-
+        [f"count/metagenome/kmc_cd/reads.k{kmer_size}.csv" for kmer_size in conf_range("kmer", step=2)],
+        [f"count/metagenome/jellyfish_cd/reads.k{kmer_size}.csv" for kmer_size in conf_range("kmer", step=2)],
+        
         
 rule count_all:
     input:
