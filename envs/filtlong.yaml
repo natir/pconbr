@@ -5,4 +5,4 @@ channels:
   - defaults
 
 dependencies:
-  - filtlong = v0.2.0
+  - filtlong = 0.2.0

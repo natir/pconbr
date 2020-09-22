@@ -5,4 +5,4 @@ channels:
   - defaults
 
 dependencies:
-  - wtdbg = v2.5
+  - wtdbg = 2.5

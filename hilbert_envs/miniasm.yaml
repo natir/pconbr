@@ -1,4 +1,4 @@
-name: badread
+name: miniasm
 
 channels:
   - nodefaults
@@ -6,4 +6,5 @@ channels:
   - http://conda.repo.test.hhu.de/main
 
 dependencies:
-  - badread = 0.1.5
+  - minimap2 = 2.17
+  - miniasm = 0.3_r179
