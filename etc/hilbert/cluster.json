@@ -1,0 +1,43 @@
+{
+    "__default__":
+    {
+	"cores": "{threads}",
+	"mem_mb": "{resources.mem_total_mb}",
+	"name": "{jobid}_{rule}",
+	"output": "log/cluster_jobs/stdout/{jobid}_{rule}.stdout",
+	"error": "log/cluster_jobs/stderr/{jobid}_{rule}.stderr",
+	"account": "HGSVC",
+	"run_hrs": "{resources.runtime_hrs}",
+	"run_min": "{resources.runtime_min}"
+    },
+
+    "pcon":
+    {
+	"mem_mb": "{resources.mem_mb}"
+    },
+
+    "br":
+    {
+	"mem_mb": "{resources.mem_mb}"
+    },
+
+    "kmrf":
+    {
+	"mem_mb": "{resources.mem_mb}"
+    },
+
+    "pcon_count":
+    {
+	"mem_mb": "{resources.mem_mb}"
+    },
+
+    "pcon_dump":
+    {
+	"mem_mb": "{resources.mem_mb}"
+    },
+
+    "br_polish":
+    {
+	"mem_mb": "{resources.mem_mb}"
+    }
+}

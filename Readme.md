@@ -19,3 +19,9 @@ jupyter notebook pconbr.ipynb
 ```
 
 When you are in your jupyter notebook you can run cells in order.
+
+# Run pipeline on PBSpro
+
+```
+snakemake --profile etc/hilbert_config.yaml --cluster-status etc/hilbert.py 
+```
