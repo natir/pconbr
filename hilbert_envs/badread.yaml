@@ -7,3 +7,6 @@ channels:
 
 dependencies:
   - badread = 0.1.5
+  - python-edlib = 1.3.8.post1
+  - edlib = 1.2.3
+  - seqtk = 1.3

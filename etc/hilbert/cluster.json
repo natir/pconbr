@@ -16,6 +16,16 @@
 	"mem_mb": "{resources.mem_mb}"
     },
 
+    "kmc":
+    {
+	"mem_mb": "30720"
+    },
+
+    "jellyfish":
+    {
+	"mem_mb": "30720"
+    },
+    
     "br":
     {
 	"mem_mb": "{resources.mem_mb}"
