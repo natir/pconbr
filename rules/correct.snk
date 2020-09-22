@@ -145,31 +145,31 @@ rule elector:
 rule correct_bacteria:
     input:
         [f"correct/bacteria/elector/br/reads.k{kmer_size}/log" for kmer_size in conf_range("kmer", step=2)],
-        [f"correct/bacteria/elector/{corrector}/reads/log" for corrector in ["canu", "consent", "necat"]],
+        [f"correct/bacteria/elector/{corrector}/reads/log" for corrector in config['corrector']],
 
         
 rule correct_bacteria7:
     input:
         [f"correct/bacteria7/elector/br/reads.k{kmer_size}/log" for kmer_size in conf_range("kmer", step=2)],
-        [f"correct/bacteria7/elector/{corrector}/reads/log" for corrector in ["canu", "consent", "necat"]],
+        [f"correct/bacteria7/elector/{corrector}/reads/log" for corrector in config['corrector']],
 
 
 rule correct_synthetic:
     input:
         [f"correct/synthetic.e{mean_id}.c{config['coverage']}/elector/br/reads.k{kmer_size}/log" for mean_id in conf_range("identity") for kmer_size in conf_range("kmer", step=2)],
-        [f"correct/synthetic.e{mean_id}.c{config['coverage']}/elector/{corrector}/reads/log" for mean_id in conf_range("identity") for corrector in ["canu", "consent", "necat"]],
+        [f"correct/synthetic.e{mean_id}.c{config['coverage']}/elector/{corrector}/reads/log" for mean_id in conf_range("identity") for corrector in config['corrector']],
 
         
 rule correct_yeast:
     input:
         [f"correct/yeast/elector/br/reads.k{kmer_size}/log" for kmer_size in conf_range("kmer", step=2)],
-        [f"correct/yeast/elector/{corrector}/reads/log" for corrector in ["canu", "consent", "necat"]],
+        [f"correct/yeast/elector/{corrector}/reads/log" for corrector in config['corrector']],
 
     
 rule correct_metagenome:
     input:
         [f"correct/metagenome/elector/br/reads.k{kmer_size}/log" for kmer_size in conf_range("kmer", step=2)],
-        [f"correct/metagenome/elector/{corrector}/reads/log" for corrector in ["canu", "consent", "necat"]],
+        [f"correct/metagenome/elector/{corrector}/reads/log" for corrector in config['corrector']],
        
 
 rule correct_all:
