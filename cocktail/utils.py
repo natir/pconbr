@@ -9,7 +9,7 @@ def get_bench_data(path):
         with open(path) as fh:
             reader = csv.DictReader(fh, delimiter='\t')
             row = next(reader)
-            return (int(row["s"]), int(row["max_rss"]))
+            return (float(row["s"]), float(row["max_rss"]))
     else:
         return (None, None)
 
