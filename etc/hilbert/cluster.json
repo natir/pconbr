@@ -36,12 +36,7 @@
 	"mem_mb": "{resources.mem_mb}"
     },
 
-    "pcon_count":
-    {
-	"mem_mb": "{resources.mem_mb}"
-    },
-
-    "pcon_dump":
+    "pcon_polish":
     {
 	"mem_mb": "{resources.mem_mb}"
     },
