@@ -136,6 +136,15 @@ rule filter_bacteria7:
         [f"filter/bacteria7/quast/filtlong/reads.q{quality}/report.txt" for quality in conf_range("filtlong_qual")],
         [f"filter/bacteria7/identity/filtlong/reads.q{quality}.tsv" for quality in conf_range("filtlong_qual")],
 
+
+rule filter_bacteria5:
+    input:
+        [f"filter/bacteria5/quast/kmrf/reads.k{kmer_size}.r{ratio}/report.txt" for kmer_size in conf_range("kmer", step=2) for ratio in conf_range("ratio", 5)],
+        [f"filter/bacteria5/identity/kmrf/reads.k{kmer_size}.r{ratio}.tsv" for kmer_size in conf_range("kmer", step=2) for ratio in conf_range("ratio", 5)],
+
+        [f"filter/bacteria5/quast/filtlong/reads.q{quality}/report.txt" for quality in conf_range("filtlong_qual")],
+        [f"filter/bacteria5/identity/filtlong/reads.q{quality}.tsv" for quality in conf_range("filtlong_qual")],
+
         
 rule filter_synthetic:
     input:
@@ -170,6 +179,7 @@ rule filter_all:
     input:
         rules.filter_bacteria.input,
         rules.filter_bacteria7.input,
+        rules.filter_bacteria5.input,
         rules.filter_synthetic.input,
         rules.filter_yeast.input,
         rules.filter_metagenome.input,

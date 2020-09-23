@@ -94,6 +94,18 @@ rule polish_bacteria:
         # real
         [f"polish/bacteria/quast/polish.k{kmer_size}.a{abundance}/report.txt" for kmer_size in conf_range("kmer", step=2) for abundance in conf_range("abundance")],
 
+
+rule polish_bacteria7:
+    input:
+        # real
+        [f"polish/bacteria7/quast/polish.k{kmer_size}.a{abundance}/report.txt" for kmer_size in conf_range("kmer", step=2) for abundance in conf_range("abundance")],
+
+
+rule polish_bacteria5:
+    input:
+        # real
+        [f"polish/bacteria5/quast/polish.k{kmer_size}.a{abundance}/report.txt" for kmer_size in conf_range("kmer", step=2) for abundance in conf_range("abundance")],
+
         
 rule polish_yeast:
     input:
@@ -110,6 +122,8 @@ rule polish_metagenome:
 rule polish_all:
     input:
         rules.polish_bacteria.input,
+        rules.polish_bacteria7.input,
+        rules.polish_bacteria5.input,
         rules.polish_yeast.input,
         rules.polish_metagenome.input,
         

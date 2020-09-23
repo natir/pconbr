@@ -153,6 +153,12 @@ rule correct_bacteria7:
         [f"correct/bacteria7/elector/br/reads.k{kmer_size}/log" for kmer_size in conf_range("kmer", step=2)],
         [f"correct/bacteria7/elector/{corrector}/reads/log" for corrector in config['corrector']],
 
+        
+rule correct_bacteria5:
+    input:
+        [f"correct/bacteria5/elector/br/reads.k{kmer_size}/log" for kmer_size in conf_range("kmer", step=2)],
+        [f"correct/bacteria5/elector/{corrector}/reads/log" for corrector in config['corrector']],
+
 
 rule correct_synthetic:
     input:
@@ -176,6 +182,7 @@ rule correct_all:
     input:
         rules.correct_bacteria.input,
         rules.correct_bacteria7.input,
+        rules.correct_bacteria5.input,
         rules.correct_synthetic.input,
         rules.correct_yeast.input,
         rules.correct_metagenome.input,

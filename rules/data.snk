@@ -53,6 +53,33 @@ rule bacteria7_reference:
     shell:
         "ln -s $(pwd)/{input} $(pwd)/{output} 2>&1 > {log}"
 
+rule bacteria5_reads:
+    output:
+        "data/bacteria5/reads.fasta",    
+    
+    log:
+        "log/data/bacteria5_reads.txt"
+
+    conda:
+        f"../{config['env_mode']}/seqtk.yaml"
+        
+    shell:
+        "curl https://ucefbb2684ceae6cf25ebcdf73c9.dl.dropboxusercontent.com/cd/0/get/A_8o5jl1NQQ0f5eMgQSUQKYfh_r4--ua8uh34jLANFWlX6Fq5wsf6DtozTJcY6WmNqvN_qHN_5tVrU8oXbhHFeuAfwpi7SXVtEfVpUZ6bgOLMuJlJ2geBH5uKuIa5Br5-Zk/file?_download_id=6457037878771431022489736601760941277660406941049858629655782127&_notify_domain=www.dropbox.com&dl=1 2> {log} | seqtk seq -A - > {output} 2>> {log}" 
+
+
+rule bacteria5_reference:
+    input:
+        "data/bacteria/reference.fasta",
+
+    log:
+        "log/data/bacteria5_reference.txt"
+
+    output:
+        "data/bacteria5/reference.fasta",
+
+    shell:
+        "ln -s $(pwd)/{input} $(pwd)/{output} 2>&1 > {log}"
+
         
 rule synthetic_reference:
     input:
@@ -155,6 +182,12 @@ rule data_bacteria7:
     input:
         rules.bacteria7_reads.output,
         rules.bacteria7_reference.output,
+
+        
+rule data_bacteria5:
+    input:
+        rules.bacteria5_reads.output,
+        rules.bacteria5_reference.output,
 
         
 rule data_yeast:
