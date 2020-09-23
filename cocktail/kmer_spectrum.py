@@ -1,26 +1,20 @@
-import csv
+import gzip
+
+import altair
 import pandas
 
 def get_kmer_spectrum(dataset, kmer_size):
-    ref_count_kmer = csv.reader(open(f"count/{dataset}/pcon/reference.k{kmer_size}.csv"))
-    read_count_kmer = csv.reader(open(f"count/{dataset}/pcon/reads.k{kmer_size}.csv"))
+    ref_count_kmer = read_pcon_bin(f"count/{dataset}/pcon/reference.k{kmer_size}.pcon")
+    read_count_kmer = read_pcon_bin(f"count/{dataset}/pcon/reads.k{kmer_size}.pcon")
 
     all_kmer = [0 for _ in range(0, 256)]
     true_kmer = [0 for _ in range(0, 256)]
     false_kmer = [0 for _ in range(0, 256)]
 
-    print("begin set of true kmer")
     ref_kmer = {kmer for (kmer, count) in ref_count_kmer}
-    print("end set of true kmer")
 
-    counter = 0
-    print("begin compute histograme")
-
-    for (kmer, count) in read_count_kmer:
-        counter += 1
-        if counter > 1000:
-            break;
-        
+    for (kmer, count) in read_count_kmer:        
+        #print(kmer, count)
         count = int(count)
 
         all_kmer[count] += 1
@@ -29,13 +23,33 @@ def get_kmer_spectrum(dataset, kmer_size):
         else:
             false_kmer[count] += 1
 
-    print("end compute histograme")
-    
-    df = pandas.DataFrame(data={"all": all_kmer, "true": true_kmer, "false": false_kmer}, index=range(0, 256))
+    data = [("all", i, all_kmer[i])for i in range(1, 256)]
+    data += [("true", i, true_kmer[i])for i in range(1, 256)]
+    data += [("false", i, false_kmer[i])for i in range(1, 256)]
+
+    df = pandas.DataFrame(data=data, columns=["type", "abundance", "count"])
+
     return df
 
-def figure(df, column):
+def figure(df):
     return altair.Chart(df).mark_bar().encode(
-        x=altair.X(column, bin=altair.Bin(maxbins=255), scale=altair.Scale(type='log', base=10)),
-        y=altair.Y('count()'),
+        x=altair.X("abundance", scale=altair.Scale(domain=(1, 255))),
+        y=altair.Y("count", scale=altair.Scale(type="log", base=10)),
+        color="type"
     )
+
+def read_pcon_bin(path):
+    fh = gzip.open(path)
+
+    k = fh.read(1)
+    
+    while True:
+        buffer = fh.read(9*1_000_000)
+        if buffer == b"":
+            break
+        
+        for i in range(0, len(buffer), 9):
+            kmer = buffer[i:i+8]
+            count = buffer[i+8]
+        
+            yield (int.from_bytes(kmer, "little"), count)
