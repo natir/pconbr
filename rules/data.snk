@@ -64,7 +64,7 @@ rule bacteria5_reads:
         f"../{config['env_mode']}/seqtk.yaml"
         
     shell:
-        "curl https://ucefbb2684ceae6cf25ebcdf73c9.dl.dropboxusercontent.com/cd/0/get/A_8o5jl1NQQ0f5eMgQSUQKYfh_r4--ua8uh34jLANFWlX6Fq5wsf6DtozTJcY6WmNqvN_qHN_5tVrU8oXbhHFeuAfwpi7SXVtEfVpUZ6bgOLMuJlJ2geBH5uKuIa5Br5-Zk/file?_download_id=6457037878771431022489736601760941277660406941049858629655782127&_notify_domain=www.dropbox.com&dl=1 2> {log} | seqtk seq -A - > {output} 2>> {log}" 
+        "curl 'https://ucefbb2684ceae6cf25ebcdf73c9.dl.dropboxusercontent.com/cd/0/get/A_8o5jl1NQQ0f5eMgQSUQKYfh_r4--ua8uh34jLANFWlX6Fq5wsf6DtozTJcY6WmNqvN_qHN_5tVrU8oXbhHFeuAfwpi7SXVtEfVpUZ6bgOLMuJlJ2geBH5uKuIa5Br5-Zk/file?_download_id=6457037878771431022489736601760941277660406941049858629655782127&_notify_domain=www.dropbox.com&dl=1' 2> {log} | seqtk seq -A - > {output} 2>> {log}" 
 
 
 rule bacteria5_reference:
@@ -206,6 +206,7 @@ rule data_all:
     input:
         rules.data_bacteria.input,
         rules.data_bacteria7.input,
+        rules.data_bacteria5.input,
         rules.data_yeast.input,
         rules.data_metagenome.input,
     
