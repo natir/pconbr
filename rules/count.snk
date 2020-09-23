@@ -20,8 +20,7 @@ rule pcon:
         config['max_threads']
         
     shell:
-        "pcon -vvv -t {threads} count -i {input} -o {output.csv} -c {output.csv} -k {wildcards.kmer_size}  2>&1 > {log}"
-
+        "pcon -vvv -t {threads} count -i {input} -o {output.bin} -c {output.csv} -k {wildcards.kmer_size}  2>&1 > {log}"
 
 rule kmc:
     input:
@@ -174,7 +173,15 @@ rule count_metagenome:
         [f"count/metagenome/jellyfish/reads.k{kmer_size}.jf" for kmer_size in conf_range("kmer", step=2)],
         [f"count/metagenome/kmc_cd/reads.k{kmer_size}.csv" for kmer_size in conf_range("kmer", step=2)],
         [f"count/metagenome/jellyfish_cd/reads.k{kmer_size}.csv" for kmer_size in conf_range("kmer", step=2)],
+
         
+rule count_ref:
+    input:
+        [f"count/bacteria/pcon/reference.k{kmer_size}.pcon" for kmer_size in conf_range("kmer", step=2)],
+        [f"count/bacteria7/pcon/reference.k{kmer_size}.pcon" for kmer_size in conf_range("kmer", step=2)],
+        [f"count/yeast/pcon/reference.k{kmer_size}.pcon" for kmer_size in conf_range("kmer", step=2)],
+        [f"count/metagenome/pcon/reference.k{kmer_size}.pcon" for kmer_size in conf_range("kmer", step=2)],
+
         
 rule count_all:
     input:

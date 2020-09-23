@@ -21,6 +21,7 @@ rule all:
     input:
         rules.data_all.input,
         rules.count_all.input,
+        rules.count_ref.input,
         rules.correct_all.input,
         rules.filter_all.input,
         rules.polish_all.input,
