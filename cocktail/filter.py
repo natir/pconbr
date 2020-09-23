@@ -4,8 +4,11 @@ import pandas
 import altair
 
 def figure(df):
+    domain_len = (df["length"].min(), df["length"].max())
+    domain_ide = (df["identity"].min(), 100)
+    
     readlength = altair.Chart(df).mark_bar().encode(
-        x=altair.X("length:Q", bin=altair.Bin(maxbins=100), axis=None),
+        x=altair.X("length:Q", bin=altair.Bin(maxbins=100), scale=altair.Scale(domain=domain_len), axis=None),
         y=altair.Y('count()', axis=altair.Axis(title=None))
     ).properties(
         width=1000,
@@ -13,7 +16,7 @@ def figure(df):
     )
 
     quality = altair.Chart(df).mark_bar().encode(
-        y=altair.X("identity:Q", bin=altair.Bin(maxbins=100), scale=altair.Scale(domain=(0, 100)), axis=None),
+        y=altair.X("identity:Q", bin=altair.Bin(maxbins=100), scale=altair.Scale(domain=domain_ide), axis=None),
         x=altair.Y('count()', axis=altair.Axis(title=None)),
     ).properties(
         width=200,
@@ -21,8 +24,8 @@ def figure(df):
     )
 
     scatter = altair.Chart(df).mark_circle(size=10).encode(
-        x=altair.X("length", axis=altair.Axis(title="Read length in base")),
-        y=altair.Y("identity", axis=altair.Axis(title="Read indentity in percent"))
+        x=altair.X("length", axis=altair.Axis(title="Read length in base"), scale=altair.Scale(domain=domain_len)),
+        y=altair.Y("identity", axis=altair.Axis(title="Read indentity in percent"), scale=altair.Scale(domain=domain_ide))
     ).properties(
         width=1000,
         height=500
