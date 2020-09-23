@@ -13,8 +13,14 @@ def get_kmer_spectrum(dataset, kmer_size):
     ref_kmer = {kmer for (kmer, count) in ref_count_kmer}
     print("end set of true kmer")
 
+    counter = 0
     print("begin compute histograme")
+
     for (kmer, count) in read_count_kmer:
+        counter += 1
+        if counter > 1000:
+            break;
+        
         count = int(count)
 
         all_kmer[count] += 1
@@ -22,6 +28,7 @@ def get_kmer_spectrum(dataset, kmer_size):
             true_kmer[count] += 1
         else:
             false_kmer[count] += 1
+
     print("end compute histograme")
     
     df = pandas.DataFrame(data={"all": all_kmer, "true": true_kmer, "false": false_kmer}, index=range(0, 256))
