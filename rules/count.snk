@@ -1,4 +1,3 @@
-
 rule pcon:
     input:
         "data/{dataset}/{prefix}.fasta"
@@ -22,6 +21,33 @@ rule pcon:
     shell:
         "pcon -vvv -t {threads} count -i {input} -o {output.bin} -c {output.csv} -k {wildcards.kmer_size}  2>&1 > {log}"
 
+
+rule pcon_cd:
+    input:
+        "data/{dataset}/{prefix}.fasta"
+        
+    output:
+        bin = "count/{dataset}/pcon/{prefix}.k{kmer_size}.pcon",
+        csv = "count/{dataset}/pcon/{prefix}.k{kmer_size}.csv"
+
+    log:
+        "log/count/pcon/{dataset}_{prefix}.k{kmer_size}.txt"
+        
+    benchmark:
+        "count/bench/pcon/{dataset}_{prefix}.k{kmer_size}.tsv"
+        
+    resources:
+        mem_mb = lambda wcd: pcon_memory_usage(int(wcd.kmer_size))
+
+    threads:
+        config['max_threads']
+        
+    shell:
+        """
+        pcon -vvv -t {threads} count -i {input} -o {output.bin} -k {wildcards.kmer_size}  2>&1 > {log}
+        pcon -vvv -t {threads} count -i {output.bin} -c {output.csv} -k {wildcards.kmer_size}  2>&1 >> {log}
+        """
+        
 rule kmc:
     input:
         "data/{dataset}/{prefix}.fasta"
