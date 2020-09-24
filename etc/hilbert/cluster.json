@@ -16,14 +16,29 @@
 	"mem_mb": "{resources.mem_mb}"
     },
 
+    "pcon_cd":
+    {
+	"mem_mb": "{resources.mem_mb}"
+    },
+    
     "kmc":
     {
-	"mem_mb": "200720"
+	"mem_mb": "400720"
     },
 
     "jellyfish":
     {
-	"mem_mb": "200720"
+	"mem_mb": "400720"
+    },
+
+    "kmc_cd":
+    {
+	"mem_mb": "400720"
+    },
+
+    "jellyfish_cd":
+    {
+	"mem_mb": "400720"
     },
     
     "br":
