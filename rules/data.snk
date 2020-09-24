@@ -103,13 +103,13 @@ rule generate_synthetic_reads:
         "data/synthetic.e{mean_id}.c{coverage}/reads.fasta",
         
     log:
-        "log/badread/synthetic.e{mean_id}.c{coverage}.txt"
+        "log/data/badread_synthetic.e{mean_id}.c{coverage}.txt"
         
     conda:
         f"../{config['env_mode']}/badread.yaml"
         
     shell:
-        "badread simulate --reference {input} --quantity {wildcards.coverage}x --identity {wildcards.mean_id},100,5 --error_model nanopore --seed 42 | seqtk seq -A - > {output} 2>&1 > {log}1"
+        "badread simulate --reference {input} --quantity {wildcards.coverage}x --identity {wildcards.mean_id},100,5 --error_model nanopore --seed 42 | seqtk seq -A - > {output} 2> {log}"
 
         
 # genoscope yeast
