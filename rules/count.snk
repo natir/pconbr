@@ -4,8 +4,7 @@ rule pcon:
         
     output:
         bin = "count/{dataset}/pcon/{prefix}.k{kmer_size}.pcon",
-        csv = "count/{dataset}/pcon/{prefix}.k{kmer_size}.csv"
-
+        
     log:
         "log/count/pcon/{dataset}_{prefix}.k{kmer_size}.txt"
         
@@ -19,7 +18,7 @@ rule pcon:
         config['max_threads']
         
     shell:
-        "pcon -vvv -t {threads} count -i {input} -o {output.bin} -c {output.csv} -k {wildcards.kmer_size}  2>&1 > {log}"
+        "pcon -vvv -t {threads} count -i {input} -o {output.bin} -k {wildcards.kmer_size}  2>&1 > {log}"
 
 
 rule pcon_cd:
@@ -44,8 +43,8 @@ rule pcon_cd:
         
     shell:
         """
-        pcon -vvv -t {threads} count -i {input} -o {output.bin} -k {wildcards.kmer_size}  2>&1 > {log}
-        pcon -vvv -t {threads} dump -i {output.bin} -c {output.csv} -k {wildcards.kmer_size}  2>&1 >> {log}
+        pcon -vvv -t {threads} count -i {input} -o {output.bin} -k {wildcards.kmer_size} 2>&1 > {log}
+        pcon -vvv -t {threads} dump -i {output.bin} -c {output.csv} 2>&1 >> {log}
         """
         
 rule kmc:
