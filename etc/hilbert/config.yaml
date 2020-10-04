@@ -19,7 +19,7 @@ use-conda: True
 use-envmodules: True
 nolock: False
 default-resources:
-  - mem_per_cpu_mb=5120
-  - mem_total_mb=5120
+  - mem_per_cpu_mb=16384
+  - mem_total_mb=16384
   - runtime_hrs=2
   - runtime_min=59
