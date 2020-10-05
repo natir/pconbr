@@ -59,7 +59,7 @@ rule redbean:
         "log/filter/readbean/{dataset}_{filter}_{type}{params}.txt"
         
     params:
-        prefix = "filter{dataset}/redbean/{filter}/{type}{params}/dbg",
+        prefix = "filter/{dataset}/redbean/{filter}/{type}{params}/dbg",
         genome_size = lambda wcd: config["genomeSize"][wcd.dataset] if wcd.dataset in config["genomeSize"] else config["genomeSize"]["bacteria"],
     threads:
         config['max_threads']
