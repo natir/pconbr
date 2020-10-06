@@ -23,7 +23,7 @@ abundance_end: 30
 
 # Environement directory use
 env_mode: "envs"
-#env_mode: "hilbert_envs"
+#env_mode: "envs/hilbert"
 
 # Genome size for each dataset
 genomeSize:
