@@ -86,7 +86,7 @@ rule quast_filter:
         "log/filter/quast/{dataset}_{filter}_{type}{params}.txt"
         
     params:
-        prefix = "filter/quast/{dataset}/{type}{params}/"
+        prefix = "filter/{dataset}/quast/{filter}/{type}{params}/"
         
     threads:
         config['max_threads']
