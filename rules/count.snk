@@ -196,6 +196,7 @@ rule count_synthetic:
         [f"count/synthetic.e{mean_id}.c{config['coverage']}/jellyfish/reads.k{kmer_size}.jf" for mean_id in conf_range("identity") for kmer_size in conf_range("kmer", step=2)],
         [f"count/synthetic.e{mean_id}.c{config['coverage']}/kmc_cd/reads.k{kmer_size}.csv" for mean_id in conf_range("identity") for kmer_size in conf_range("kmer", step=2)],
         [f"count/synthetic.e{mean_id}.c{config['coverage']}/jellyfish_cd/reads.k{kmer_size}.csv" for mean_id in conf_range("identity") for kmer_size in conf_range("kmer", step=2)],
+
         
 rule count_yeast:
     input:

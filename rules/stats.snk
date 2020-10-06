@@ -1,0 +1,59 @@
+rule error_rate:
+    input:
+        reads = "data/{dataset}/reads.fasta",
+        ref = "data/{dataset}/reference.fasta"
+
+    output:
+        "data/{dataset}/reads.stats"
+        
+    log:
+        "log/data/{dataset}_error_rate.txt"
+
+    threads:
+        config['max_threads']
+
+    conda:
+        f"../{config['env_mode']}/minimap.yaml"
+        
+    shell:
+        "minimap2 -x map10k -t {threads} -a {input.ref} {input.reads} 2> {log} | samtools stats 2> {log} | grep '^SN' > {output} 2> {log}"
+
+        
+rule dataset_length_identity:
+    input:
+        reads = "data/{dataset}/reads.fasta",
+        ref = "data/{dataset}/reference.fasta"
+        
+    output:
+        "data/{dataset}/reads.len_id.tsv"
+    
+    log:
+        "log/data/{dataset}_length_identity.txt"
+        
+    threads:
+        config['max_threads']
+
+    conda:
+        f"../{config['env_mode']}/minimap.yaml"
+        
+    shell:
+        "minimap2 -x map10k -t {threads} -c {input.ref} {input.reads} 2> {log} | ./script/read_length_identity.py > {output} 2>> {log}"
+        
+
+rule stats_all_error_rate:
+    input:
+        [f"data/{dataset}/reads.stats" for dataset in ["bacteria", "bacteria5", "bacteria7", "yeast", "metagenome"]],
+        [f"data/synthetic.e{mean_id}.c{config['coverage']}/reads.stats" for mean_id in conf_range("identity")],
+
+        
+rule stats_length_identity:
+    input:
+        [f"data/{dataset}/reads.len_id.tsv" for dataset in ["bacteria", "bacteria5", "bacteria7", "yeast", "metagenome"]],
+        [f"data/synthetic.e{mean_id}.c{config['coverage']}/reads.len_id.tsv" for mean_id in conf_range("identity")],
+
+        
+rule stats_all:
+    input:
+        rules.stats_all_error_rate.input,
+        rules.stats_length_identity.input,
+    

@@ -113,7 +113,7 @@ rule evaluate_filter:
         config['max_threads']
 
     conda:
-        f"../{config['env_mode']}/miniasm.yaml"
+        f"../{config['env_mode']}/minimap.yaml"
         
     shell:
         "minimap2 -x map10k -t {threads} -c {input.ref} {input.reads} 2> {log} | ./script/read_length_identity.py > {output} 2>> {log}"

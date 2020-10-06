@@ -7,6 +7,7 @@ include: "rules/count.snk"
 include: "rules/correct.snk"
 include: "rules/filter.snk"
 include: "rules/polish.snk"
+include: "rules/stats.snk"
 
 wildcard_constraints:
     mean_id = '\d+',
@@ -25,3 +26,4 @@ rule all:
         rules.correct_all.input,
         rules.filter_all.input,
         rules.polish_all.input,
+        rules.stats_all.input,
