@@ -23,12 +23,12 @@
     
     "kmc":
     {
-	"mem_mb": "300000"
+	"mem_mb": "150000"
     },
 
     "jellyfish":
     {
-	"mem_mb": "300000"
+	"mem_mb": "150000"
     },
 
     "kmc_cd":
