@@ -59,5 +59,20 @@
     "br_polish":
     {
 	"mem_mb": "{resources.mem_mb}"
+    },
+
+    "evaluate_filter":
+    {
+	"mem_mb": "32768"
+    },
+
+    "error_rate":
+    {
+	"mem_mb": "32768"
+    },
+
+    "stats_all_error_rate":
+    {
+	"mem_mb": "32768"
     }
 }
