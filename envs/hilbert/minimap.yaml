@@ -6,6 +6,6 @@ channels:
   - http://conda.repo.test.hhu.de/main
 
 dependencies:
-  - minimap2 = 2
-  - samtools = 1
-  - python >= 3
+  - minimap2
+  - samtools
+  - python

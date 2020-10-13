@@ -114,7 +114,7 @@ rule necat:
         sed -i 's#_THREADS_#{threads}#' {params.work_dir}/config 2>&1 > {log}
         sed -i 's#_COVERAGE_#{params.coverage}#' {params.work_dir}/config 2>&1 > {log}
         necat correct {params.work_dir}/config 2>&1 > {log}
-        cp {params.work_dir}/1-consensus/cns_iter2/cns.fasta {output} 2>&1 > {log}
+        gzip -c -d {params.work_dir}/1-consensus/cns_iter2/cns.fasta.gz > {output}  2> {log}
         """
         
 rule elector:
