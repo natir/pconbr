@@ -4,6 +4,7 @@ channels:
   - nodefaults
   - http://conda.repo.test.hhu.de/bioconda
   - http://conda.repo.test.hhu.de/main
+  - http://conda.repo.test.hhu.de/conda-forge
 
 dependencies:
   - minimap2 = 2.17
