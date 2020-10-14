@@ -5,4 +5,4 @@ channels:
   - defaults
 
 dependencies:
-  - consent = 2.1
+  - consent = 2.2

@@ -5,4 +5,4 @@ channels:
   - defaults
 
 dependencies:
-  - elector = 1.0.2
+  - elector = 1.0.3

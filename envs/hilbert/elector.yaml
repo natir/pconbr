@@ -6,4 +6,4 @@ channels:
   - http://conda.repo.test.hhu.de/main
 
 dependencies:
-  - elector = 1.0.2
+  - elector = 1.0.3
