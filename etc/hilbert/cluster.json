@@ -74,5 +74,25 @@
     "stats_all_error_rate":
     {
 	"mem_mb": "32768"
+    },
+
+    "canu":
+    {
+	"mem_mb": "65536"
+    },
+
+    "consent":
+    {
+	"mem_mb": "65536"
+    },
+   
+    "necat":
+    {
+	"mem_mb": "65536"
+    },
+    
+    "elector":
+    {
+	"mem_mb": "65536"
     }
 }
