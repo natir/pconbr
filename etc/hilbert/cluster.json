@@ -23,22 +23,22 @@
     
     "kmc":
     {
-	"mem_mb": "150000"
+	"mem_mb": "184320"
     },
 
     "jellyfish":
     {
-	"mem_mb": "150000"
+	"mem_mb": "184320"
     },
 
     "kmc_cd":
     {
-	"mem_mb": "150000"
+	"mem_mb": "184320"
     },
 
     "jellyfish_cd":
     {
-	"mem_mb": "150000"
+	"mem_mb": "184320"
     },
     
     "br":
@@ -78,21 +78,21 @@
 
     "canu":
     {
-	"mem_mb": "65536"
+	"mem_mb": "184320"
     },
 
     "consent":
     {
-	"mem_mb": "65536"
+	"mem_mb": "184320"
     },
    
     "necat":
     {
-	"mem_mb": "65536"
+	"mem_mb": "184320"
     },
     
     "elector":
     {
-	"mem_mb": "262144"
+	"mem_mb": "184320"
     }
 }

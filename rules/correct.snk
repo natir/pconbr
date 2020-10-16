@@ -37,9 +37,9 @@ rule canu:
         
     params:
         prefix = lambda wcd: f"{wcd.type}{wcd.params}",
-        work_dir = lambda wcd: "tmp/canu/{wcd.dataset}_{wcd.params}/",
+        work_dir = lambda wcd: f"tmp/canu/{wcd.dataset}_{wcd.params}/",
         genome_size = lambda wcd: config["genomeSize"][wcd.dataset] if wcd.dataset in config["genomeSize"] else config["genomeSize"]["bacteria"],
-        canu_correct_out = lambda wcd: "tmp/canu/{wcd.dataset}_{wcd.params}/corrected.fasta",
+        canu_correct_out = lambda wcd: f"tmp/canu/{wcd.dataset}_{wcd.params}/{wcd.type}{wcd.params}.correctedReads.fasta.gz",
 
     conda:
         f"../{config['env_mode']}/canu.yaml"
@@ -49,8 +49,8 @@ rule canu:
         
     shell:
         """
-        canu -nanopore {input} -p {params.prefix} -d {params.work_dir} useGrid=false executiveThreads={threads} genomeSize={params.genome_size} 2>&1 > {log}
-        mv {params.canu_correct_out} {output} 2>&1 > {log}
+        canu -nanopore {input} -p {params.prefix} -d {params.work_dir} -correct useGrid=false executiveThreads={threads} genomeSize={params.genome_size} 2>&1 > {log}
+        seqtk seq -A {params.canu_correct_out} > {output} 2>> {log}
         """
 
         
@@ -151,7 +151,7 @@ rule correct_error_rate:
         "correct/{dataset}/{corrector}/{type}{params}.stats",
         
     log:
-        "log/correct/error_rate/{dataset}_{corrector_{type}{params}.txt"
+        "log/correct/error_rate/{dataset}_{corrector}_{type}{params}.txt"
 
     threads:
         config['max_threads']
@@ -172,7 +172,7 @@ rule correct_length_identity:
         "correct/{dataset}/{corrector}/{type}{params}.len_id.tsv",
 
     log:
-        "log/correct/len_id/{dataset}_{corrector_{type}{params}.txt"
+        "log/correct/len_id/{dataset}_{corrector}_{type}{params}.txt"
 
     threads:
         config['max_threads']
@@ -190,8 +190,8 @@ rule correct_bacteria:
         #[f"correct/bacteria/elector/{corrector}/reads/log" for corrector in config['corrector']],
         [f"correct/bacteria/br/reads.k{kmer_size}.stats" for kmer_size in conf_range("kmer", step=2)],
         [f"correct/bacteria/{corrector}/reads.stats" for corrector in config['corrector']],
-        [f"correct/bacteria/br/reads.k{kmer_size}.stats" for kmer_size in conf_range("kmer", step=2)],
-        [f"correct/bacteria/{corrector}/reads.stats" for corrector in config['corrector']],
+        [f"correct/bacteria/br/reads.k{kmer_size}.len_id.tsv" for kmer_size in conf_range("kmer", step=2)],
+        [f"correct/bacteria/{corrector}/reads.len_id.tsv" for corrector in config['corrector']],
 
         
 rule correct_bacteria7:
@@ -200,8 +200,8 @@ rule correct_bacteria7:
         #[f"correct/bacteria7/elector/{corrector}/reads/log" for corrector in config['corrector']],
         [f"correct/bacteria7/br/reads.k{kmer_size}.stats" for kmer_size in conf_range("kmer", step=2)],
         [f"correct/bacteria7/{corrector}/reads.stats" for corrector in config['corrector']],
-        [f"correct/bacteria7/br/reads.k{kmer_size}.stats" for kmer_size in conf_range("kmer", step=2)],
-        [f"correct/bacteria7/{corrector}/reads.stats" for corrector in config['corrector']],
+        [f"correct/bacteria7/br/reads.k{kmer_size}.len_id.tsv" for kmer_size in conf_range("kmer", step=2)],
+        [f"correct/bacteria7/{corrector}/reads.len_id.tsv" for corrector in config['corrector']],
 
         
 rule correct_bacteria5:
@@ -210,8 +210,8 @@ rule correct_bacteria5:
         #[f"correct/bacteria5/elector/{corrector}/reads/log" for corrector in config['corrector']],
         [f"correct/bacteria5/br/reads.k{kmer_size}.stats" for kmer_size in conf_range("kmer", step=2)],
         [f"correct/bacteria5/{corrector}/reads.stats" for corrector in config['corrector']],
-        [f"correct/bacteria5/br/reads.k{kmer_size}.stats" for kmer_size in conf_range("kmer", step=2)],
-        [f"correct/bacteria5/{corrector}/reads.stats" for corrector in config['corrector']],
+        [f"correct/bacteria5/br/reads.k{kmer_size}.len_id.tsv" for kmer_size in conf_range("kmer", step=2)],
+        [f"correct/bacteria5/{corrector}/reads.len_id.tsv" for corrector in config['corrector']],
 
 
 rule correct_synthetic:
@@ -220,8 +220,8 @@ rule correct_synthetic:
         #[f"correct/synthetic.e{mean_id}.c{config['coverage']}/elector/{corrector}/reads/log" for mean_id in conf_range("identity") for corrector in config['corrector']],
         [f"correct/synthetic.e{mean_id}.c{config['coverage']}/br/reads.k{kmer_size}.stats" for mean_id in conf_range("identity") for kmer_size in conf_range("kmer", step=2)],
         [f"correct/synthetic.e{mean_id}.c{config['coverage']}/{corrector}/reads.stats" for mean_id in conf_range("identity") for corrector in config['corrector']],
-        [f"correct/synthetic.e{mean_id}.c{config['coverage']}/br/reads.k{kmer_size}.stats" for mean_id in conf_range("identity") for kmer_size in conf_range("kmer", step=2)],
-        [f"correct/synthetic.e{mean_id}.c{config['coverage']}/{corrector}/reads.stats" for mean_id in conf_range("identity") for corrector in config['corrector']],
+        [f"correct/synthetic.e{mean_id}.c{config['coverage']}/br/reads.k{kmer_size}.len_id.tsv" for mean_id in conf_range("identity") for kmer_size in conf_range("kmer", step=2)],
+        [f"correct/synthetic.e{mean_id}.c{config['coverage']}/{corrector}/reads.len_id.tsv" for mean_id in conf_range("identity") for corrector in config['corrector']],
 
         
 rule correct_yeast:
@@ -230,8 +230,8 @@ rule correct_yeast:
         #[f"correct/yeast/elector/{corrector}/reads/log" for corrector in config['corrector']],
         [f"correct/yeast/br/reads.k{kmer_size}.stats" for kmer_size in conf_range("kmer", step=2)],
         [f"correct/yeast/{corrector}/reads.stats" for corrector in config['corrector']],
-        [f"correct/yeast/br/reads.k{kmer_size}.stats" for kmer_size in conf_range("kmer", step=2)],
-        [f"correct/yeast/{corrector}/reads.stats" for corrector in config['corrector']],
+        [f"correct/yeast/br/reads.k{kmer_size}.len_id.tsv" for kmer_size in conf_range("kmer", step=2)],
+        [f"correct/yeast/{corrector}/reads.len_id.tsv" for corrector in config['corrector']],
 
     
 rule correct_metagenome:
@@ -240,8 +240,8 @@ rule correct_metagenome:
         #[f"correct/metagenome/elector/{corrector}/reads/log" for corrector in config['corrector']],
         [f"correct/metagenome/br/reads.k{kmer_size}.stats" for kmer_size in conf_range("kmer", step=2)],
         [f"correct/metagenome/{corrector}/reads.stats" for corrector in config['corrector']],
-        [f"correct/metagenome/br/reads.k{kmer_size}.stats" for kmer_size in conf_range("kmer", step=2)],
-        [f"correct/metagenome/{corrector}/reads.stats" for corrector in config['corrector']],
+        [f"correct/metagenome/br/reads.k{kmer_size}.len_id.tsv" for kmer_size in conf_range("kmer", step=2)],
+        [f"correct/metagenome/{corrector}/reads.len_id.tsv" for corrector in config['corrector']],
        
 
 rule correct_all:

@@ -6,3 +6,4 @@ channels:
 
 dependencies:
   - canu = 2.0
+  - seqtk = 1.3
