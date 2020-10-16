@@ -10,7 +10,7 @@ from .utils import get_bench_data
 def dataframe_pr():
     data = list()
 
-    for dataset in ["bacteria", "yeast", "metagenome"]:
+    for dataset in ["bacteria", "yeast", "metagenome", "bacteria5", "bacteria7"]:
         for kmer_size in range(13, 21, 2):
             (precision, recall) = get_data_pr("br", dataset, kmer_size)
             
@@ -52,7 +52,7 @@ def get_data_pr(corrector, dataset, kmer_size=None):
 def dataframe_bench():
     data = list()
     
-    for dataset in ["bacteria", "yeast", "metagenome"]:
+    for dataset in ["bacteria", "yeast", "metagenome", "bacteria5", "bacteria7"]:
         for kmer_size in range(13, 21, 2):
             (time, memory) = get_data_bench("br", dataset, f".k{kmer_size}")
             if time is not None:
