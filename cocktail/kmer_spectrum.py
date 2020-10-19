@@ -11,7 +11,7 @@ def get_kmer_spectrum(dataset, kmer_size):
     true_kmer = [0 for _ in range(0, 256)]
     false_kmer = [0 for _ in range(0, 256)]
 
-    ref_kmer = {kmer for (kmer, count) in ref_count_kmer}
+    ref_kmer = {kmer for (kmer, count) in ref_count_kmer if count > 0}
 
     for (kmer, count) in read_count_kmer:        
         #print(kmer, count)
@@ -32,9 +32,10 @@ def get_kmer_spectrum(dataset, kmer_size):
     return df
 
 def figure(df):
-    return altair.Chart(df).mark_bar().encode(
+    return altair.Chart(df).mark_area(opacity=0.7).encode(
         x=altair.X("abundance", scale=altair.Scale(domain=(1, 255))),
         y=altair.Y("count", scale=altair.Scale(type="log", base=10)),
+        #column="type",
         color="type"
     )
 
@@ -44,12 +45,11 @@ def read_pcon_bin(path):
     k = fh.read(1)
     
     while True:
-        buffer = fh.read(9*1_000_000)
+        buffer = fh.read(8*1_000_000)
         if buffer == b"":
             break
         
-        for i in range(0, len(buffer), 9):
-            kmer = buffer[i:i+8]
-            count = buffer[i+8]
+        for i in range(0, len(buffer)):
+            count = buffer[i]
         
-            yield (int.from_bytes(kmer, "little"), count)
+            yield (i, count)
