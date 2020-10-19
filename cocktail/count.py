@@ -3,7 +3,7 @@ import csv
 import pandas
 import altair
 
-from .utils import get_bench_data
+from . import utils
 
 def dataframe():
     data = list()
@@ -12,7 +12,7 @@ def dataframe():
         for dataset in ["bacteria", "yeast", "metagenome", "bacteria5", "bacteria7"]:
             for kmer_size in range(13, 21, 2):
                 (time, memory) = get_data(counter, dataset, "reads", kmer_size)
-                size = get_file_size(dataset)
+                size = utils.get_file_size(dataset)
                 
                 if time is not None:
                     data.append((counter, dataset, str(kmer_size), time, memory, size))
@@ -23,7 +23,7 @@ def dataframe():
 def get_data(counter, dataset, prefix, kmer_size):
     path = f"count/bench/{counter}/{dataset}_{prefix}.k{kmer_size}.tsv"
 
-    return get_bench_data(path)
+    return utils.get_bench_data(path)
     
 
 def get_file_size(dataset):
