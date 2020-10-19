@@ -65,19 +65,33 @@ rule br_polish:
         "br -s {input.solid} -i {input.asm} -o {output} -t {threads} -m one greedy gap_size graph 2> {log}"
 
 
+rule not_polish:
+    input:
+        "data/{dataset}/miniasm/asm.fasta",
+
+    output:
+        "polish/{dataset}/polish.fasta"
+
+    log:
+        "log/polish/not_polish/{dataset}.txt"
+        
+    shell:
+        "ln -s $(pwd)/{input} $(pwd)/{output} 2>&1 > {log}"
+    
+
 rule quast_polish:
     input:
-        asm = "polish/{dataset}/polish.k{kmer_size}.a{abundance}.fasta",
+        asm = "polish/{dataset}/polish{params}.fasta",
         ref = "data/{dataset}/reference.fasta"
 
     output:
-        "polish/{dataset}/quast/polish.k{kmer_size}.a{abundance}/report.txt"
+        "polish/{dataset}/quast/polish{params}/report.txt"
 
     log:
-        "log/polish/quast/{dataset}.k{kmer_size}.a{abundance}.txt"    
+        "log/polish/quast/{dataset}{params}.txt"    
 
     params:
-        prefix = "polish/{dataset}/quast/polish.k{kmer_size}.a{abundance}/"
+        prefix = "polish/{dataset}/quast/polish{params}/"
         
     threads:
         config['max_threads']
@@ -92,30 +106,35 @@ rule quast_polish:
 rule polish_bacteria:
     input:
         # real
+        "polish/bacteria/quast/polish/report.txt",
         [f"polish/bacteria/quast/polish.k{kmer_size}.a{abundance}/report.txt" for kmer_size in conf_range("kmer", step=2) for abundance in conf_range("abundance")],
 
 
 rule polish_bacteria7:
     input:
         # real
+        "polish/bacteria7/quast/polish/report.txt",
         [f"polish/bacteria7/quast/polish.k{kmer_size}.a{abundance}/report.txt" for kmer_size in conf_range("kmer", step=2) for abundance in conf_range("abundance")],
 
 
 rule polish_bacteria5:
     input:
         # real
+        "polish/bacteria5/quast/polish/report.txt",
         [f"polish/bacteria5/quast/polish.k{kmer_size}.a{abundance}/report.txt" for kmer_size in conf_range("kmer", step=2) for abundance in conf_range("abundance")],
 
         
 rule polish_yeast:
     input:
         # real
+        "polish/yeast/quast/polish/report.txt",
         [f"polish/yeast/quast/polish.k{kmer_size}.a{abundance}/report.txt" for kmer_size in conf_range("kmer", step=2) for abundance in conf_range("abundance")],
         
 
 rule polish_metagenome:
     input:
         # real
+        "polish/metagenome/quast/polish/report.txt",
         [f"polish/metagenome/quast/polish.k{kmer_size}.a{abundance}/report.txt" for kmer_size in conf_range("kmer", step=2) for abundance in conf_range("abundance")],
 
 

@@ -92,7 +92,7 @@ rule synthetic_reference:
         "data/synthetic.e{mean_id}.c{coverage}/reference.fasta",
 
     shell:
-        "ln -s {input} {output} 2>&1 > {log}"
+        "ln -s $(pwd)/{input} $(pwd)/{output} 2>&1 > {log}"
 
         
 rule generate_synthetic_reads:
