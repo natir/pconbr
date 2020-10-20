@@ -1,25 +1,44 @@
 # Range of kmer use for correction, step=2
-kmer_begin: 13
-kmer_end: 21
+kmer:
+  begin: 13
+  end: 21
+  step: 2
 
 # Range of identity used for synthetic reads, step=1
-identity_begin: 90
-identity_end: 100
+identity:
+  begin: 90
+  end: 100
 
 # Coverage targeted durring synthetic reads
 coverage: 50
 
+# Range of coverage for human read
+celegans_coverage:
+  list:
+    - 10
+    - 20
+    - 50
+    - 100
+    - 200
+
+celegans_identity: 95
+
 # Range of kmrf ratio value, step=5
-ratio_begin: 70
-ratio_end: 100
+ratio:
+  begin: 70
+  end: 100
+  step: 5
 
 # Range of filtlong minimum quality, step=1
-filtlong_qual_begin: 90
-filtlong_qual_end: 100
+filtlong_qual:
+  begin: 90
+  end: 100
 
 # Range of abundance use in br polishing, step=1
-abundance_begin: 10
-abundance_end: 30
+abundance:
+  begin: 10
+  end: 30
+
 
 # Environement directory use
 env_mode: "envs"
@@ -32,8 +51,7 @@ genomeSize:
   metagenome: "42157070"
 
 # Select corrector to compare against br
-#corrector: ["canu", "consent", "necat"]
-corrector: ["consent", "necat"]
+corrector: ["canu", "consent", "necat"]
 
 # Control maximal number of threads
 max_threads: 16

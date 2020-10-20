@@ -103,46 +103,12 @@ rule quast_polish:
         "quast --min-identity 80 -t {threads} -o {params.prefix} -r {input.ref} {input.asm} 2>&1 > {log}"
 
 
-rule polish_bacteria:
-    input:
-        # real
-        "polish/bacteria/quast/polish/report.txt",
-        [f"polish/bacteria/quast/polish.k{kmer_size}.a{abundance}/report.txt" for kmer_size in conf_range("kmer", step=2) for abundance in conf_range("abundance")],
-
-
-rule polish_bacteria7:
-    input:
-        # real
-        "polish/bacteria7/quast/polish/report.txt",
-        [f"polish/bacteria7/quast/polish.k{kmer_size}.a{abundance}/report.txt" for kmer_size in conf_range("kmer", step=2) for abundance in conf_range("abundance")],
-
-
-rule polish_bacteria5:
-    input:
-        # real
-        "polish/bacteria5/quast/polish/report.txt",
-        [f"polish/bacteria5/quast/polish.k{kmer_size}.a{abundance}/report.txt" for kmer_size in conf_range("kmer", step=2) for abundance in conf_range("abundance")],
-
-        
-rule polish_yeast:
-    input:
-        # real
-        "polish/yeast/quast/polish/report.txt",
-        [f"polish/yeast/quast/polish.k{kmer_size}.a{abundance}/report.txt" for kmer_size in conf_range("kmer", step=2) for abundance in conf_range("abundance")],
-        
-
-rule polish_metagenome:
-    input:
-        # real
-        "polish/metagenome/quast/polish/report.txt",
-        [f"polish/metagenome/quast/polish.k{kmer_size}.a{abundance}/report.txt" for kmer_size in conf_range("kmer", step=2) for abundance in conf_range("abundance")],
-
-
 rule polish_all:
     input:
-        rules.polish_bacteria.input,
-        rules.polish_bacteria7.input,
-        rules.polish_bacteria5.input,
-        rules.polish_yeast.input,
-        rules.polish_metagenome.input,
-        
+        polish_files("bacteria"),
+        polish_files("bacteria5"),
+        polish_files("bacteria7"),
+        polish_files("yeast"),
+        polish_files("metagenome"),
+        (polish_files(f"synthetic.e{mean_id}.c{config['coverage']}") for mean_id in conf_range("identity")),
+        (polish_files(f"celegans.e{config['celegans_identity']}.c{coverage}") for coverage in conf_range("celegans_coverage")),

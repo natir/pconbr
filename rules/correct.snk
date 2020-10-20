@@ -181,76 +181,17 @@ rule correct_length_identity:
         f"../{config['env_mode']}/minimap.yaml"
         
     shell:
-        "minimap2 -x map10k -t {threads} -c {input.ref} {input.reads} 2> {log} | ./script/read_length_identity.py > {output} 2>> {log}"
-        
-        
-rule correct_bacteria:
-    input:
-        #[f"correct/bacteria/elector/br/reads.k{kmer_size}/log" for kmer_size in conf_range("kmer", step=2)],
-        #[f"correct/bacteria/elector/{corrector}/reads/log" for corrector in config['corrector']],
-        [f"correct/bacteria/br/reads.k{kmer_size}.stats" for kmer_size in conf_range("kmer", step=2)],
-        [f"correct/bacteria/{corrector}/reads.stats" for corrector in config['corrector']],
-        [f"correct/bacteria/br/reads.k{kmer_size}.len_id.tsv" for kmer_size in conf_range("kmer", step=2)],
-        [f"correct/bacteria/{corrector}/reads.len_id.tsv" for corrector in config['corrector']],
+        "minimap2 -x map10k -t {threads} -c {input.ref} {input.reads} 2> {log} | ./script/read_length_identity.py > {output} 2>> {log}"        
 
-        
-rule correct_bacteria7:
-    input:
-        #[f"correct/bacteria7/elector/br/reads.k{kmer_size}/log" for kmer_size in conf_range("kmer", step=2)],
-        #[f"correct/bacteria7/elector/{corrector}/reads/log" for corrector in config['corrector']],
-        [f"correct/bacteria7/br/reads.k{kmer_size}.stats" for kmer_size in conf_range("kmer", step=2)],
-        [f"correct/bacteria7/{corrector}/reads.stats" for corrector in config['corrector']],
-        [f"correct/bacteria7/br/reads.k{kmer_size}.len_id.tsv" for kmer_size in conf_range("kmer", step=2)],
-        [f"correct/bacteria7/{corrector}/reads.len_id.tsv" for corrector in config['corrector']],
-
-        
-rule correct_bacteria5:
-    input:
-        #[f"correct/bacteria5/elector/br/reads.k{kmer_size}/log" for kmer_size in conf_range("kmer", step=2)],
-        #[f"correct/bacteria5/elector/{corrector}/reads/log" for corrector in config['corrector']],
-        [f"correct/bacteria5/br/reads.k{kmer_size}.stats" for kmer_size in conf_range("kmer", step=2)],
-        [f"correct/bacteria5/{corrector}/reads.stats" for corrector in config['corrector']],
-        [f"correct/bacteria5/br/reads.k{kmer_size}.len_id.tsv" for kmer_size in conf_range("kmer", step=2)],
-        [f"correct/bacteria5/{corrector}/reads.len_id.tsv" for corrector in config['corrector']],
-
-
-rule correct_synthetic:
-    input:
-        #[f"correct/synthetic.e{mean_id}.c{config['coverage']}/elector/br/reads.k{kmer_size}/log" for mean_id in conf_range("identity") for kmer_size in conf_range("kmer", step=2)],
-        #[f"correct/synthetic.e{mean_id}.c{config['coverage']}/elector/{corrector}/reads/log" for mean_id in conf_range("identity") for corrector in config['corrector']],
-        [f"correct/synthetic.e{mean_id}.c{config['coverage']}/br/reads.k{kmer_size}.stats" for mean_id in conf_range("identity") for kmer_size in conf_range("kmer", step=2)],
-        [f"correct/synthetic.e{mean_id}.c{config['coverage']}/{corrector}/reads.stats" for mean_id in conf_range("identity") for corrector in config['corrector']],
-        [f"correct/synthetic.e{mean_id}.c{config['coverage']}/br/reads.k{kmer_size}.len_id.tsv" for mean_id in conf_range("identity") for kmer_size in conf_range("kmer", step=2)],
-        [f"correct/synthetic.e{mean_id}.c{config['coverage']}/{corrector}/reads.len_id.tsv" for mean_id in conf_range("identity") for corrector in config['corrector']],
-
-        
-rule correct_yeast:
-    input:
-        #[f"correct/yeast/elector/br/reads.k{kmer_size}/log" for kmer_size in conf_range("kmer", step=2)],
-        #[f"correct/yeast/elector/{corrector}/reads/log" for corrector in config['corrector']],
-        [f"correct/yeast/br/reads.k{kmer_size}.stats" for kmer_size in conf_range("kmer", step=2)],
-        [f"correct/yeast/{corrector}/reads.stats" for corrector in config['corrector']],
-        [f"correct/yeast/br/reads.k{kmer_size}.len_id.tsv" for kmer_size in conf_range("kmer", step=2)],
-        [f"correct/yeast/{corrector}/reads.len_id.tsv" for corrector in config['corrector']],
-
-    
-rule correct_metagenome:
-    input:
-        #[f"correct/metagenome/elector/br/reads.k{kmer_size}/log" for kmer_size in conf_range("kmer", step=2)],
-        #[f"correct/metagenome/elector/{corrector}/reads/log" for corrector in config['corrector']],
-        [f"correct/metagenome/br/reads.k{kmer_size}.stats" for kmer_size in conf_range("kmer", step=2)],
-        [f"correct/metagenome/{corrector}/reads.stats" for corrector in config['corrector']],
-        [f"correct/metagenome/br/reads.k{kmer_size}.len_id.tsv" for kmer_size in conf_range("kmer", step=2)],
-        [f"correct/metagenome/{corrector}/reads.len_id.tsv" for corrector in config['corrector']],
-       
 
 rule correct_all:
     input:
-        rules.correct_bacteria.input,
-        rules.correct_bacteria7.input,
-        rules.correct_bacteria5.input,
-        rules.correct_synthetic.input,
-        rules.correct_yeast.input,
-        rules.correct_metagenome.input,
+        count_files("bacteria"),
+        count_files("bacteria5"),
+        count_files("bacteria7"),
+        count_files("yeast"),
+        count_files("metagenome"),
+        (count_files(f"synthetic.e{mean_id}.c{config['coverage']}") for mean_id in conf_range("identity")),
+        (count_files(f"celegans.e{config['celegans_identity']}.c{coverage}") for coverage in conf_range("celegans_coverage")),
     
 

@@ -3,8 +3,15 @@ import os
 ##############################
 # Generate range from config #
 ##############################
-def conf_range(name, step=1):
-    return range(config[name + "_begin"], config[name + "_end"], step)
+def conf_range(name):
+    local = config[name]
+
+    if "list" in local:
+        return local["list"]
+    
+    step = local["step"] if "step" in local else 1
+    
+    return range(local["begin"], local["end"], step)
 
 ######################################
 # Compute estimation of memory usage #
@@ -35,3 +42,44 @@ def br_memory_usage(kmer_size):
         return 2048
 
 
+def count_files(dataset):
+    for kmer_size in conf_range("kmer"):
+        yield f"count/{dataset}/pcon/reads.k{kmer_size}.pcon"
+        yield f"count/{dataset}/pcon_cd/reads.k{kmer_size}.pcon"
+        yield f"count/{dataset}/kmc/reads.k{kmer_size}.kmc_suf"
+        yield f"count/{dataset}/jellyfish/reads.k{kmer_size}.jf"
+        yield f"count/{dataset}/kmc_cd/reads.k{kmer_size}.csv"
+        yield f"count/{dataset}/jellyfish_cd/reads.k{kmer_size}.csv"
+
+    
+def correct_files(dataset):
+    for kmer_size in conf_range("kmer"):
+        #f"correct/{dataset}/elector/br/reads.k{kmer_size}/log"
+        yield f"correct/{dataset}/br/reads.k{kmer_size}.stats"
+        yield f"correct/{dataset}/br/reads.k{kmer_size}.len_id.tsv"
+
+    for corrector in config['corrector']:
+        #f"correct/{dataset}/elector/{corrector}/reads/log"
+        yield f"correct/{dataset}/{corrector}/reads.stats"
+        yield f"correct/{dataset}/{corrector}/reads.len_id.tsv"
+
+        
+def filter_files(dataset):    
+        yield f"filter/{dataset}/quast/raw/reads/report.txt"
+
+        for kmer_size in conf_range("kmer"):
+            for ratio in conf_range("ratio"):
+                yield f"filter/{dataset}/quast/kmrf/reads.k{kmer_size}.r{ratio}/report.txt"
+                yield f"filter/{dataset}/identity/kmrf/reads.k{kmer_size}.r{ratio}.tsv"
+
+        for quality in conf_range("filtlong_qual"):
+            yield f"filter/{dataset}/identity/filtlong/reads.q{quality}.tsv"
+            yield f"filter/{dataset}/quast/filtlong/reads.q{quality}/report.txt"
+
+            
+def polish_files(dataset):
+    yield f"polish/{dataset}/quast/polish/report.txt"
+    
+    for kmer_size in conf_range("kmer"):
+        for abundance in conf_range("abundance"):
+            yield f"polish/{dataset}/quast/polish.k{kmer_size}.a{abundance}/report.txt"

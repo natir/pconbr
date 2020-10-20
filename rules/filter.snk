@@ -146,78 +146,13 @@ rule evaluate_filter:
     shell:
         "minimap2 -x map10k -t {threads} -c {input.ref} {input.reads} 2> {log} | ./script/read_length_identity.py > {output} 2>> {log}"
 
-
-rule filter_bacteria:
-    input:
-        f"filter/bacteria/quast/raw/reads/report.txt",
-
-        [f"filter/bacteria/quast/kmrf/reads.k{kmer_size}.r{ratio}/report.txt" for kmer_size in conf_range("kmer", step=2) for ratio in conf_range("ratio", 5)],
-        [f"filter/bacteria/identity/kmrf/reads.k{kmer_size}.r{ratio}.tsv" for kmer_size in conf_range("kmer", step=2) for ratio in conf_range("ratio", 5)],
-
-        [f"filter/bacteria/quast/filtlong/reads.q{quality}/report.txt" for quality in conf_range("filtlong_qual")],
-        [f"filter/bacteria/identity/filtlong/reads.q{quality}.tsv" for quality in conf_range("filtlong_qual")],
-
-
-rule filter_bacteria7:
-    input:
-        f"filter/bacteria7/quast/raw/reads/report.txt",
-
-        [f"filter/bacteria7/quast/kmrf/reads.k{kmer_size}.r{ratio}/report.txt" for kmer_size in conf_range("kmer", step=2) for ratio in conf_range("ratio", 5)],
-        [f"filter/bacteria7/identity/kmrf/reads.k{kmer_size}.r{ratio}.tsv" for kmer_size in conf_range("kmer", step=2) for ratio in conf_range("ratio", 5)],
-
-        [f"filter/bacteria7/quast/filtlong/reads.q{quality}/report.txt" for quality in conf_range("filtlong_qual")],
-        [f"filter/bacteria7/identity/filtlong/reads.q{quality}.tsv" for quality in conf_range("filtlong_qual")],
-
-
-rule filter_bacteria5:
-    input:
-        f"filter/bacteria5/quast/raw/reads/report.txt",
-        
-        [f"filter/bacteria5/quast/kmrf/reads.k{kmer_size}.r{ratio}/report.txt" for kmer_size in conf_range("kmer", step=2) for ratio in conf_range("ratio", 5)],
-        [f"filter/bacteria5/identity/kmrf/reads.k{kmer_size}.r{ratio}.tsv" for kmer_size in conf_range("kmer", step=2) for ratio in conf_range("ratio", 5)],
-
-        [f"filter/bacteria5/quast/filtlong/reads.q{quality}/report.txt" for quality in conf_range("filtlong_qual")],
-        [f"filter/bacteria5/identity/filtlong/reads.q{quality}.tsv" for quality in conf_range("filtlong_qual")],
-
-        
-rule filter_synthetic:
-    input:
-        [f"filter/synthetic.e{mean_id}.c{config['coverage']}/quast/raw/reads/report.txt" for mean_id in conf_range("identity")],
-        
-        [f"filter/synthetic.e{mean_id}.c{config['coverage']}/quast/kmrf/reads.k{kmer_size}.r{ratio}/report.txt" for mean_id in conf_range("identity") for kmer_size in conf_range("kmer", step=2) for ratio in conf_range("ratio", 5)],
-        [f"filter/synthetic.e{mean_id}.c{config['coverage']}/identity/kmrf/reads.k{kmer_size}.r{ratio}.tsv" for mean_id in conf_range("identity") for kmer_size in conf_range("kmer", step=2) for ratio in conf_range("ratio", 5)],
-
-         [f"filter/synthetic.e{mean_id}.c{config['coverage']}/quast/filtlong/reads.q{quality}/report.txt" for mean_id in conf_range("identity") for quality in conf_range("filtlong_qual")],
-        [f"filter/synthetic.e{mean_id}.c{config['coverage']}/identity/filtlong/reads.q{quality}.tsv" for mean_id in conf_range("identity") for quality in conf_range("filtlong_qual")],
-
-        
-rule filter_yeast:
-    input:
-        f"filter/yeast/quast/raw/reads/report.txt",
-        
-        [f"filter/yeast/quast/kmrf/reads.k{kmer_size}.r{ratio}/report.txt" for kmer_size in conf_range("kmer", step=2) for ratio in conf_range("ratio", 5)],
-        [f"filter/yeast/identity/kmrf/reads.k{kmer_size}.r{ratio}.tsv" for kmer_size in conf_range("kmer", step=2) for ratio in conf_range("ratio", 5)],
-
-        [f"filter/yeast/quast/filtlong/reads.q{quality}/report.txt" for quality in conf_range("filtlong_qual")],
-        [f"filter/yeast/identity/filtlong/reads.q{quality}.tsv" for quality in conf_range("filtlong_qual")],
-
-        
-rule filter_metagenome:
-    input:
-        f"filter/metagenome/quast/raw/reads/report.txt",
-        
-        [f"filter/metagenome/quast/kmrf/reads.k{kmer_size}.r{ratio}/report.txt" for kmer_size in conf_range("kmer", step=2) for ratio in conf_range("ratio", 5)],
-        [f"filter/metagenome/identity/kmrf/reads.k{kmer_size}.r{ratio}.tsv" for kmer_size in conf_range("kmer", step=2) for ratio in conf_range("ratio", 5)],
-
-        [f"filter/metagenome/quast/filtlong/reads.q{quality}/report.txt" for quality in conf_range("filtlong_qual")],
-        [f"filter/metagenome/identity/filtlong/reads.q{quality}.tsv" for quality in conf_range("filtlong_qual")],
-
         
 rule filter_all:
     input:
-        rules.filter_bacteria.input,
-        rules.filter_bacteria7.input,
-        rules.filter_bacteria5.input,
-        rules.filter_synthetic.input,
-        rules.filter_yeast.input,
-        rules.filter_metagenome.input,
+        filter_files("bacteria"),
+        filter_files("bacteria5"),
+        filter_files("bacteria7"),
+        filter_files("yeast"),
+        filter_files("metagenome"),
+        (filter_files(f"synthetic.e{mean_id}.c{config['coverage']}") for mean_id in conf_range("identity")),
+        (filter_files(f"celegans.e{config['celegans_identity']}.c{coverage}") for coverage in conf_range("celegans_coverage")),

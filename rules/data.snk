@@ -171,6 +171,42 @@ rule metagenome_reference:
     shell:
         "curl https://raw.githubusercontent.com/al-mcintyre/mCaller_analysis_scripts/master/assemblies/bsubtilis_pb.fasta https://raw.githubusercontent.com/al-mcintyre/mCaller_analysis_scripts/master/assemblies/efaecalis_pb.fasta https://raw.githubusercontent.com/al-mcintyre/mCaller_analysis_scripts/master/assemblies/ecoli_pb.fasta https://raw.githubusercontent.com/al-mcintyre/mCaller_analysis_scripts/master/assemblies/lmonocytogenes_pb.fasta https://raw.githubusercontent.com/al-mcintyre/mCaller_analysis_scripts/master/assemblies/paeruginosa_pb.fasta https://raw.githubusercontent.com/al-mcintyre/mCaller_analysis_scripts/master/assemblies/scerevisiae_pb.fasta https://raw.githubusercontent.com/al-mcintyre/mCaller_analysis_scripts/master/assemblies/senterica_pb.fasta https://raw.githubusercontent.com/al-mcintyre/mCaller_analysis_scripts/master/assemblies/saureus_pb.fasta | seqtk seq -A - >{output} 2> {log}"
 
+
+rule celegans_reference:
+    output:
+        "data/celegans/reference.fasta"
+
+    log:
+        "log/data/celegans_reference.txt"
+        
+    conda:
+        f"../{config['env_mode']}/seqtk.yaml"
+
+    shell:
+        "curl https://ftp.ncbi.nlm.nih.gov/genomes/refseq/invertebrate/Caenorhabditis_elegans/latest_assembly_versions/GCF_000002985.6_WBcel235/GCF_000002985.6_WBcel235_genomic.fna.gz 2> {log}| seqtk seq -A - > {output} 2>> {log}"
+
+        
+
+rule generate_celegans_synthetic_reads:
+    input:
+        "data/celegans/reference.fasta"
+        
+    output:
+        reads = "data/celegans.e{mean_id}.c{coverage}/reads.fasta",
+        ref = "data/celegans.e{mean_id}.c{coverage}/reference.fasta",
+        
+    log:
+        "log/data/badread_synthetic.e{mean_id}.c{coverage}.txt"
+        
+    conda:
+        f"../{config['env_mode']}/badread.yaml"
+        
+    shell:
+        """
+        ln -s $(pwd)/{input} $(pwd)/{output.ref} 2>&1 > {log}
+        badread simulate --reference {output.ref} --quantity {wildcards.coverage}x --identity {wildcards.mean_id},100,5 --error_model nanopore --seed 42 | seqtk seq -A - > {output.reads} 2> {log}
+        """
+
         
 rule data_bacteria:
     input:
