@@ -112,7 +112,7 @@ rule generate_synthetic_reads:
         f"../{config['env_mode']}/badread.yaml"
         
     shell:
-        "./script/multi-thread-badread.sh {wildcards.coverage} {threads} {input} {wildcards.mead_id} {output} 2>&1 > {log}"
+        "./script/multi-thread-badread.sh {wildcards.coverage} {threads} {input} {wildcards.mean_id} {output} 2>&1 > {log}"
 
         
 # genoscope yeast
@@ -210,7 +210,7 @@ rule generate_celegans_synthetic_reads:
     shell:
         """
         ln -s $(pwd)/{input} $(pwd)/{output.ref} 2>&1 > {log}
-        ./script/multi-thread-badread.sh {wildcards.coverage} {threads} {input} {wildcards.mead_id} {output} 2>&1 > {log}
+        ./script/multi-thread-badread.sh {wildcards.coverage} {threads} {input} {wildcards.mean_id} {output} 2>&1 > {log}
         """
 
         
