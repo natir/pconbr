@@ -186,12 +186,12 @@ rule correct_length_identity:
 
 rule correct_all:
     input:
-        count_files("bacteria"),
-        count_files("bacteria5"),
-        count_files("bacteria7"),
-        count_files("yeast"),
-        count_files("metagenome"),
-        (count_files(f"synthetic.e{mean_id}.c{config['coverage']}") for mean_id in conf_range("identity")),
-        (count_files(f"celegans.e{config['celegans_identity']}.c{coverage}") for coverage in conf_range("celegans_coverage")),
+        correct_files("bacteria"),
+        correct_files("bacteria5"),
+        correct_files("bacteria7"),
+        correct_files("yeast"),
+        correct_files("metagenome"),
+        (correct_files(f"synthetic.e{mean_id}.c{config['coverage']}") for mean_id in conf_range("identity")),
+        (correct_files(f"celegans.e{config['celegans_identity']}.c{coverage}") for coverage in conf_range("celegans_coverage")),
     
 
