@@ -54,12 +54,13 @@ def count_files(dataset):
     
 def correct_files(dataset):
     for kmer_size in conf_range("kmer"):
-        #f"correct/{dataset}/elector/br/reads.k{kmer_size}/log"
+        yield f"correct/{dataset}/elector/br/reads.k{kmer_size}/log"
         yield f"correct/{dataset}/br/reads.k{kmer_size}.stats"
         yield f"correct/{dataset}/br/reads.k{kmer_size}.len_id.tsv"
 
     for corrector in config['corrector']:
-        #f"correct/{dataset}/elector/{corrector}/reads/log"
+        if corrector != "necat":
+            yield f"correct/{dataset}/elector/{corrector}/reads/log"
         yield f"correct/{dataset}/{corrector}/reads.stats"
         yield f"correct/{dataset}/{corrector}/reads.len_id.tsv"
 

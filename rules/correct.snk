@@ -74,8 +74,10 @@ rule consent:
         config['max_threads']
         
     shell:
-        "CONSENT-correct --in {input} --out {output} --type ONT 2>&1 > {log}"
-
+        """
+        #module load gcc/8.1.0
+        CONSENT-correct --in {input} --out {output} --type ONT 2>&1 > {log}
+        """
 
 rule necat:
     input:
@@ -130,7 +132,8 @@ rule elector:
         "log/correct/elector/{dataset}_{corrector}_{type}{params}.txt"
         
     params:
-        output = "correct/{dataset}/elector/{corrector}/{type}{params}"
+        output = "correct/{dataset}/elector/{corrector}/{type}{params}",
+        corrector = lambda wcd: "" if wcd.corrector == "br" else f"-corrector {wcd.corrector}"
         
     conda:
         f"../{config['env_mode']}/elector.yaml"
@@ -139,7 +142,7 @@ rule elector:
         config['max_threads']
         
     shell:
-        "elector -reference {input.reference} -uncorrected {input.raw} -corrected {input.correct} -threads {threads} -corrector {wildcards.corrector} -simulator real -output {params.output} 2>&1 > {log}"
+        "elector -reference {input.reference} -uncorrected {input.raw} -corrected {input.correct} -threads {threads} {params.corrector} -simulator real -output {params.output} 2>&1 > {log}"
 
 
 rule correct_error_rate:
