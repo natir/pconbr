@@ -99,3 +99,30 @@ def get_data_bench(filter, dataset, params):
 
     return utils.get_bench_data(path)
     
+
+def get_error_rate(filter, dataset, params):
+    path = f"filter/{dataset}/{filter}/reads{params}.stats"
+
+    return utils.get_error_rate(path)
+
+
+def dataframe_stats():
+    data = list()
+
+    d2error = {d: e for (d, e) in map(lambda x: (x, utils.get_error_rate_raw(x)), utils.get_data_set("data")) if e is not None}
+         
+    for dataset in d2error.keys():
+        for kmer_size in range(13, 21, 2):
+            for ratio in range(70, 100, 5):
+                error_rate = get_error_rate("kmrf", dataset, f".k{kmer_size}.r{ratio}")
+
+                if error_rate is not None:
+                    data.append((dataset, f"kmrf.k{kmer_size}.r{ratio}", error_rate, d2error[dataset]))
+                
+        for qual in range(90, 100):
+            error_rate = get_error_rate("filtlong", dataset, f".q{qual}")
+
+            if error_rate is not None:
+                data.append((dataset, f"filtlong.q{qual}", error_rate, d2error[dataset]))
+                
+    return pandas.DataFrame(data, columns=['dataset', 'filter', 'corrected', 'raw'])

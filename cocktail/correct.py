@@ -78,17 +78,17 @@ def get_data_bench(corrector, dataset, params):
 def dataframe_stats():
     data = list()
     
-    d2error = {d: e for (d, e) in map(lambda x: (x, get_error_rate_raw(x)), utils.get_data_set("data")) if e is not None}
+    d2error = {d: e for (d, e) in map(lambda x: (x, utils.get_error_rate_raw(x)), utils.get_data_set("data")) if e is not None}
        
     for dataset in d2error.keys():
         for kmer_size in range(13, 21, 2):
-            error_rate = get_error_rate_correct("br", dataset, f".k{kmer_size}")
+            error_rate = get_error_rate("br", dataset, f".k{kmer_size}")
 
             if error_rate is not None:
                 data.append((dataset, f"br_k{kmer_size}", error_rate, d2error[dataset]))
                 
         for corrector in ["canu", "consent", "necat"]:
-            error_rate = get_error_rate_correct(corrector, dataset, "")
+            error_rate = get_error_rate(corrector, dataset, "")
 
             if error_rate is not None:
                 data.append((dataset, corrector, error_rate, d2error[dataset]))
@@ -96,26 +96,8 @@ def dataframe_stats():
     return pandas.DataFrame(data, columns=['dataset', 'corrector', 'corrected', 'raw'])
 
 
-def get_error_rate_correct(corrector, dataset, params):
+def get_error_rate(corrector, dataset, params):
     path = f"correct/{dataset}/{corrector}/reads{params}.stats"
 
-    return get_error_rate(path)
-
-
-def get_error_rate_raw(dataset):
-    path = f"data/{dataset}/reads.stats"
-
-    return get_error_rate(path)
-
-
-def get_error_rate(path):
-    if not os.path.isfile(path):
-        return None
-    
-    with open(path) as fh:
-        for line in fh:
-            if line.startswith("SN\terror rate:"):
-                return float(line.split("\t")[2])
-
-    return None
+    return utils.get_error_rate(path)
 

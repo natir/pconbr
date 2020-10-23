@@ -69,10 +69,12 @@ def filter_files(dataset):
 
         for kmer_size in conf_range("kmer"):
             for ratio in conf_range("ratio"):
-                yield f"filter/{dataset}/quast/kmrf/reads.k{kmer_size}.r{ratio}/report.txt"
+                yield f"filter/{dataset}/kmrf/reads.k{kmer_size}.r{ratio}.stats"
                 yield f"filter/{dataset}/identity/kmrf/reads.k{kmer_size}.r{ratio}.tsv"
-
+                yield f"filter/{dataset}/quast/kmrf/reads.k{kmer_size}.r{ratio}/report.txt"
+                
         for quality in conf_range("filtlong_qual"):
+            yield f"filter/{dataset}/filtlong/reads.q{quality}.stats"
             yield f"filter/{dataset}/identity/filtlong/reads.q{quality}.tsv"
             yield f"filter/{dataset}/quast/filtlong/reads.q{quality}/report.txt"
 

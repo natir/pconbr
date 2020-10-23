@@ -67,3 +67,22 @@ def get_data_set(step):
     for entry in os.scandir(step):
         if entry.is_dir():
             yield entry.name
+
+
+def get_error_rate_raw(dataset):
+    path = f"data/{dataset}/reads.stats"
+
+    return get_error_rate(path)
+
+
+def get_error_rate(path):
+    if not os.path.isfile(path):
+        return None
+    
+    with open(path) as fh:
+        for line in fh:
+            if line.startswith("SN\terror rate:"):
+                return float(line.split("\t")[2])
+
+    return None
+
