@@ -169,11 +169,7 @@ rule count_ref:
         
 rule count_all:
     input:
-        count_files("bacteria"),
-        count_files("bacteria5"),
-        count_files("bacteria7"),
-        count_files("yeast"),
-        count_files("metagenome"),
+        (count_files(d) for d in config["real_dataset"]),
         (count_files(f"synthetic.e{mean_id}.c{config['coverage']}") for mean_id in conf_range("identity")),
         (count_files(f"celegans.e{config['celegans_identity']}.c{coverage}") for coverage in conf_range("celegans_coverage")),
         rules.count_ref.input,

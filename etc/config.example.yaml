@@ -53,5 +53,9 @@ genomeSize:
 # Select corrector to compare against br
 corrector: ["canu", "consent", "necat"]
 
+# Select dataset
+real_dataset: ["bacteria", "bacteria5", "bacteria7", "yeast", "metagenome"]
+
+
 # Control maximal number of threads
 max_threads: 16

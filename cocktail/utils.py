@@ -36,7 +36,7 @@ def group_scatter(df, x, y, color=None, shape=None, title="", xtitle="", ytitle=
     if color:
         fig = fig.encode(color=color)
         
-    if shape is not None:
+    if shape:
         fig = fig.encode(shape=shape)
 
     return fig
@@ -55,10 +55,11 @@ def group_line(df, x, y, color=None, shape=None, column=None, title="", xtitle="
     if color:
         fig = fig.encode(color=color)
         
-    if shape is not None:
+    if shape:
+        print("PROUT")
         fig = fig.encode(shape=shape)
 
-    if column is not None:
+    if column:
         fig = fig.encode(column=column)
     
     return fig

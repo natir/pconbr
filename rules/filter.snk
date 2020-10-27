@@ -170,10 +170,6 @@ rule filter_error_rate:
         
 rule filter_all:
     input:
-        filter_files("bacteria"),
-        filter_files("bacteria5"),
-        filter_files("bacteria7"),
-        filter_files("yeast"),
-        filter_files("metagenome"),
+        (filter_files(d) for d in config["real_dataset"]),
         (filter_files(f"synthetic.e{mean_id}.c{config['coverage']}") for mean_id in conf_range("identity")),
         (filter_files(f"celegans.e{config['celegans_identity']}.c{coverage}") for coverage in conf_range("celegans_coverage")),

@@ -9,7 +9,7 @@ def dataframe():
     data = list()
     
     for counter in ["pcon", "kmc", "jellyfish"]:
-        for dataset in ["bacteria", "yeast", "metagenome", "bacteria5", "bacteria7"]:
+        for dataset in utils.get_data_set("data"):
             for kmer_size in range(13, 21, 2):
                 (time, memory) = get_data(counter, dataset, "reads", kmer_size)
                 size = utils.get_file_size(dataset)

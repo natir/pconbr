@@ -105,10 +105,6 @@ rule quast_polish:
 
 rule polish_all:
     input:
-        polish_files("bacteria"),
-        polish_files("bacteria5"),
-        polish_files("bacteria7"),
-        polish_files("yeast"),
-        polish_files("metagenome"),
+        (polish_files(d) for d in config["real_dataset"]),
         (polish_files(f"synthetic.e{mean_id}.c{config['coverage']}") for mean_id in conf_range("identity")),
         (polish_files(f"celegans.e{config['celegans_identity']}.c{coverage}") for coverage in conf_range("celegans_coverage")),
