@@ -81,27 +81,14 @@ rule bacteria5_reference:
         "ln -s $(pwd)/{input} $(pwd)/{output} 2>&1 > {log}"
 
         
-rule synthetic_reference:
-    input:
-        "data/bacteria/reference.fasta",
-
-    log:
-        "log/data/synthetic.e{mean_id}.c{coverage}.txt"
-
-    output:
-        "data/synthetic.e{mean_id}.c{coverage}/reference.fasta",
-
-    shell:
-        "ln -s $(pwd)/{input} $(pwd)/{output} 2>&1 > {log}"
-
-        
 rule generate_synthetic_reads:
     input:
-        "data/synthetic.e{mean_id}.c{coverage}/reference.fasta",
+        "data/bacteria/reference.fasta",
         
     output:
-        "data/synthetic.e{mean_id}.c{coverage}/reads.fasta",
-        
+        reads = "data/synthetic.e{mean_id}.c{coverage}/reads.fasta",
+        ref = "data/synthetic.e{mean_id}.c{coverage}/reference.fasta",
+           
     log:
         "log/data/badread_synthetic.e{mean_id}.c{coverage}.txt"
 
@@ -112,9 +99,12 @@ rule generate_synthetic_reads:
         f"../{config['env_mode']}/badread.yaml"
         
     shell:
-        "./script/multi-thread-badread.sh {wildcards.coverage} {threads} {input} {wildcards.mean_id} {output} 2>&1 > {log}"
+        """
+        ln -s $(pwd)/{input} $(pwd)/{output.ref} 2>&1 > {log}
+        ./script/multi-thread-badread.sh {wildcards.coverage} {threads} {output.ref} {wildcards.mean_id} {output.reads} 2>&1 > {log}
+        """
 
-        
+    
 # genoscope yeast
 rule yeast_reads:
     output:
@@ -210,7 +200,7 @@ rule generate_celegans_synthetic_reads:
     shell:
         """
         ln -s $(pwd)/{input} $(pwd)/{output.ref} 2>&1 > {log}
-        ./script/multi-thread-badread.sh {wildcards.coverage} {threads} {input} {wildcards.mean_id} {output} 2>&1 > {log}
+        ./script/multi-thread-badread.sh {wildcards.coverage} {threads} {output.ref} {wildcards.mean_id} {output.reads} 2>&1 > {log}
         """
 
         

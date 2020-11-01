@@ -54,8 +54,9 @@ genomeSize:
 corrector: ["canu", "consent", "necat"]
 
 # Select dataset
-real_dataset: ["bacteria", "bacteria5", "bacteria7", "yeast", "metagenome"]
-
+# add synthetic to skip E. coli synthetic reads
+# add celegans to skip C. elegans synthetic reads
+skip_dataset: []
 
 # Control maximal number of threads
 max_threads: 16

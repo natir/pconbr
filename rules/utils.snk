@@ -86,3 +86,17 @@ def polish_files(dataset):
     for kmer_size in conf_range("kmer"):
         for abundance in conf_range("abundance"):
             yield f"polish/{dataset}/quast/polish.k{kmer_size}.a{abundance}/report.txt"
+
+
+def get_dataset():
+    for d in ["bacteria", "bacteria5", "bacteria7", "metagenome", "yeast"]:
+        if d not in config["skip_dataset"]:
+            yield d
+
+    if "synthetic" not in config["skip_dataset"]:
+        for mean_id in conf_range("identity"):
+            yield f"synthetic.e{mean_id}.c{config['coverage']}"
+
+    if "celegans" not in config["skip_dataset"]:
+        for coverage in conf_range("celegans_coverage"):
+            yield f"celegans.e{config['celegans_identity']}.c{coverage}"
