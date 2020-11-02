@@ -7,4 +7,4 @@ channels:
   - http://conda.repo.test.hhu.de/conda-forge
 
 dependencies:
-  - elector = 1.0.3
+  - elector = 1.0.4
