@@ -107,6 +107,66 @@ rule kmc_cd:
         kmc_dump {params.kmc_out} {output} 2>&1 >> {log}
         """
 
+rule kmc_disk:
+    input:
+        "data/{dataset}/{prefix}.fasta"
+
+    output:
+        "count/{dataset}/kmc_disk/{prefix}.k{kmer_size}.kmc_suf"
+
+    log:
+        "log/count/kmc_disk/{dataset}_{prefix}.k{kmer_size}.txt"
+        
+    benchmark:
+        "count/bench/kmc_disk/{dataset}_{prefix}.k{kmer_size}.tsv"
+
+    params:
+        work_dir = lambda wcd: f"tmp/kmc_disk/{wcd.dataset}_{wcd.prefix}_{wcd.kmer_size}",
+        kmc_out = lambda wcd: f"count/{wcd.dataset}/kmc_disk/{wcd.prefix}.k{wcd.kmer_size}"
+
+    threads:
+        config['max_threads']
+        
+    conda:
+        f"../{config['env_mode']}/kmc.yaml"
+        
+    shell:
+        """
+        mkdir -p {params.work_dir}
+        kmc -k{wildcards.kmer_size} -t{threads} -fa {input} {params.kmc_out} {params.work_dir} 2>&1 > {log}
+        """
+
+        
+rule kmc_disk_cd:
+    input:
+        "data/{dataset}/{prefix}.fasta"
+
+    output:
+        "count/{dataset}/kmc_disk_cd/{prefix}.k{kmer_size}.csv"
+
+    log:
+        "log/count/kmc_disk_cd/{dataset}_{prefix}.k{kmer_size}.txt"
+        
+    benchmark:
+        "count/bench/kmc_disk_cd/{dataset}_{prefix}.k{kmer_size}.tsv"
+
+    params:
+        work_dir = lambda wcd: f"tmp/kmc_disk_cd/{wcd.dataset}_{wcd.prefix}_{wcd.kmer_size}",
+        kmc_out = lambda wcd: f"count/{wcd.dataset}/kmc_disk_cd/{wcd.prefix}.k{wcd.kmer_size}"
+
+    threads:
+        config['max_threads']
+        
+    conda:
+        f"../{config['env_mode']}/kmc.yaml"
+        
+    shell:
+        """
+        mkdir -p {params.work_dir}
+        kmc -k{wildcards.kmer_size} -t{threads} -fa {input} {params.kmc_out} {params.work_dir} 2>&1 > {log}
+        kmc_dump {params.kmc_out} {output} 2>&1 >> {log}
+        """
+        
 
 rule jellyfish:
     input:

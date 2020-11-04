@@ -8,7 +8,7 @@ from . import utils
 def dataframe():
     data = list()
     
-    for counter in ["pcon", "kmc", "jellyfish"]:
+    for counter in ["pcon", "pcon_cd", "kmc", "kmc_cd", "kmc_disk", "kmc_disk_cd", "jellyfish", "jellyfish_cd"]:
         for dataset in utils.get_data_set("data"):
             for kmer_size in range(13, 21, 2):
                 (time, memory) = get_data(counter, dataset, "reads", kmer_size)

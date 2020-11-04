@@ -47,8 +47,10 @@ def count_files(dataset):
         yield f"count/{dataset}/pcon/reads.k{kmer_size}.pcon"
         yield f"count/{dataset}/pcon_cd/reads.k{kmer_size}.pcon"
         yield f"count/{dataset}/kmc/reads.k{kmer_size}.kmc_suf"
-        yield f"count/{dataset}/jellyfish/reads.k{kmer_size}.jf"
         yield f"count/{dataset}/kmc_cd/reads.k{kmer_size}.csv"
+        yield f"count/{dataset}/kmc_disk/reads.k{kmer_size}.kmc_suf"
+        yield f"count/{dataset}/kmc_disk_cd/reads.k{kmer_size}.csv"
+        yield f"count/{dataset}/jellyfish/reads.k{kmer_size}.jf"
         yield f"count/{dataset}/jellyfish_cd/reads.k{kmer_size}.csv"
 
     
