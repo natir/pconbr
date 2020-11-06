@@ -60,8 +60,7 @@ rule redbean_raw:
         
     params:
         prefix = "filter/{dataset}/redbean/raw/reads/dbg",
-        genome_size = lambda wcd: config["genomeSize"][wcd.dataset] if wcd.dataset in config["genomeSize"] else config["genomeSize"]["bacteria"],
-        
+        genome_size = lambda wcd: genome_size(wcd),
     threads:
         config['max_threads']
 
@@ -87,7 +86,7 @@ rule readbean:
         
     params:
         prefix = "filter/{dataset}/redbean/{filter}/{type}{params}/dbg",
-        genome_size = lambda wcd: config["genomeSize"][wcd.dataset] if wcd.dataset in config["genomeSize"] else config["genomeSize"]["bacteria"],
+        genome_size = lambda wcd: genome_size(wcd)
         
     threads:
         config['max_threads']

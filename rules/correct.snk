@@ -38,7 +38,7 @@ rule canu:
     params:
         prefix = lambda wcd: f"{wcd.type}{wcd.params}",
         work_dir = lambda wcd: f"tmp/canu/{wcd.dataset}_{wcd.params}/",
-        genome_size = lambda wcd: config["genomeSize"][wcd.dataset] if wcd.dataset in config["genomeSize"] else config["genomeSize"]["bacteria"],
+        genome_size = lambda wcd: genome_size(wcd),
         canu_correct_out = lambda wcd: f"tmp/canu/{wcd.dataset}_{wcd.params}/{wcd.type}{wcd.params}.correctedReads.fasta.gz",
 
     conda:
@@ -49,7 +49,7 @@ rule canu:
         
     shell:
         """
-        canu -nanopore {input} -p {params.prefix} -d {params.work_dir} -correct useGrid=false executiveThreads={threads} genomeSize={params.genome_size} 2>&1 > {log}
+        canu -nanopore {input} -p {params.prefix} -d {params.work_dir} -correct useGrid=false stopOnReadQuality=false corOutCoverage=500 executiveThreads={threads} genomeSize={params.genome_size} 2>&1 > {log}
         seqtk seq -A {params.canu_correct_out} > {output} 2>> {log}
         """
 
@@ -97,7 +97,7 @@ rule necat:
         work_dir = lambda wcd: f"tmp/necat/{wcd.dataset}_{wcd.type}{wcd.params}/",
         coverage = "100000",
         input_abs_path = lambda wcd: os.path.abspath(f"data/{wcd.dataset}/{wcd.type}.fasta"),
-        genome_size = lambda wcd: config["genomeSize"][wcd.dataset] if wcd.dataset in config["genomeSize"] else config["genomeSize"]["bacteria"],
+        genome_size = lambda wcd: genome_size(wcd),
         
     conda:
         f"../{config['env_mode']}/necat.yaml"

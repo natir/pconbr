@@ -41,6 +41,18 @@ def br_memory_usage(kmer_size):
     else:
         return 2048
 
+#######################
+# Get the genome size #
+#######################
+def genome_size(wcd):
+    if wcd.dataset in config["genomeSize"]:
+        return config["genomeSize"][wcd.dataset]
+    elif wcd.dataset.startswith("synthetic"):
+        return config["genomeSize"]["bacteria"]
+    elif wcd.dataset.startswith("celegans"):
+        return config["genomeSize"]["celegans"]
+    else:
+        return config["genomeSize"]["bacteria"]
 
 def count_files(dataset):
     for kmer_size in conf_range("kmer"):
