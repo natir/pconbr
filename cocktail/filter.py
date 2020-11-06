@@ -126,3 +126,31 @@ def dataframe_stats():
                 data.append((dataset, f"filtlong.q{qual}", error_rate, d2error[dataset]))
                 
     return pandas.DataFrame(data, columns=['dataset', 'filter', 'corrected', 'raw'])
+
+
+def assembly_data():
+    data = list()
+
+    for dataset in utils.get_data_set("data"):
+        res = get_quast_info(dataset, "raw", "")
+        if res is not None:
+            data.append((dataset, "raw", "", *res))
+
+    for filter in ["filtlong", "kmrf"]:
+        for k in range(13, 21, 2):
+            for ratio in range(70, 100, 5):
+                res = get_quast_info(dataset, filter, f".k{k}.r{ratio}")
+                if res is not None:
+                    data.append((dataset, filter, f".k{k}.r{ratio}", *res))
+
+    return pandas.DataFrame(data, columns=["dataset", "filter", "kmer_size",
+                                           "abundance", "nb_contigs",
+                                           "nb_misassemblies", "unaligned_length",
+                                           "genome_fraction", "nb_mismatches",
+                                           "nb_indels", "largest_alignment",
+                                           "NGA50"])
+
+def get_quast_info(dataset, filter, params):
+    path = f"filter/{dataset}/quast/{filter}/reads{params}/report.tsv"
+
+    return utils.get_quast_info(path)

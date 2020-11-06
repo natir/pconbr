@@ -1,6 +1,7 @@
 import os
 import csv
 import math
+import collections
 
 import altair
 
@@ -87,3 +88,34 @@ def get_error_rate(path):
 
     return None
 
+
+def get_quast_info(path):
+    if not os.path.isfile(path):
+        return None
+
+    ret = collections.namedtuple(["nb_contigs", "nb_misassemblies", "unaligned_length",
+                                  "genome_fraction", "nb_mismatches", "nb_indels",
+                                  "largest_alignment", "NGA50"])
+    
+    with open(path) as fh:
+        reader = csv.reader(path, delimiter='\t')
+
+        for row in reader:
+            if row[0] == "# contigs":
+                ret.nb_contigs = int(row[1])
+            elif row[0] == "# misassemblies":
+                ret.nb_misassemblies = int(row[1])
+            elif row[0] == "Unaligned length":
+                ret.unaligned_length = int(row[1])
+            elif row[0] == "Genome fraction (%)":
+                ret.genome_fraction = float(row[1])
+            elif row[0] == "# mismatches per 100 kbp":
+                ret.nb_mismatches = float(row[1])
+            elif row[0] == "# indels per 100 kbp":
+                ret.nb_indels = float(row[1])
+            elif row[0] == "Largest alignment":
+                ret.largest_alignment = int(row[1])
+            elif row[0] == "NGA50":
+                ret.NGA50 = int(row[1])
+                    
+    return ret
