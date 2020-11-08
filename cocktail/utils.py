@@ -57,7 +57,6 @@ def group_line(df, x, y, color=None, shape=None, column=None, title="", xtitle="
         fig = fig.encode(color=color)
         
     if shape:
-        print("PROUT")
         fig = fig.encode(shape=shape)
 
     if column:
@@ -129,21 +128,16 @@ def fig_layout(figs, cols):
         if end > len(figs):
             end = len(figs)
 
-        print(i, end)
         line = None
         for f in figs[i:end]:
             if line is None:
                 line = f
-                print("start line", line)
             else:
                 line |= f
-                print("continue line", line)
 
         if fig is None:
-            print("start fig", fig)
             fig = line
         else:
-            print("continue fig", fig)
             fig &= line
         
     return fig
