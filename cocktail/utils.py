@@ -65,9 +65,7 @@ def group_line(df, x, y, color=None, shape=None, column=None, title="", xtitle="
     return fig
 
 def get_data_set(step):
-    for entry in os.scandir(step):
-        if entry.is_dir():
-            yield entry.name
+    return sorted([entry.name for entry in os.scandir(step) if entry.is_dir()])
 
 
 def get_error_rate_raw(dataset):
@@ -92,32 +90,42 @@ def get_quast_info(path):
     if not os.path.isfile(path):
         return None
 
-    ret = collections.namedtuple(["nb_contigs", "nb_misassemblies", "unaligned_length",
-                                  "genome_fraction", "nb_mismatches", "nb_indels",
-                                  "largest_alignment", "NGA50"])
-    
+    QuastResult = collections.namedtuple('QuastResult', ["nb_contigs",
+                                                         "nb_misassemblies",
+                                                         "unaligned_length",
+                                                         "genome_fraction",
+                                                         "nb_mismatches",
+                                                         "nb_indels",
+                                                         "largest_alignment",
+                                                         "NGA50"])
+
+    ret = QuastResult(None, None, None, None, None, None, None, None)
+
     with open(path) as fh:
-        reader = csv.reader(path, delimiter='\t')
+        reader = csv.reader(fh, delimiter='\t')
 
         for row in reader:
             if row[0] == "# contigs":
-                ret.nb_contigs = int(row[1])
+                ret = ret._replace(nb_contigs=int(row[1]))
             elif row[0] == "# misassemblies":
-                ret.nb_misassemblies = int(row[1])
+                ret = ret._replace(nb_misassemblies=int(row[1]))
             elif row[0] == "Unaligned length":
-                ret.unaligned_length = int(row[1])
+                ret = ret._replace(unaligned_length=int(row[1]))
             elif row[0] == "Genome fraction (%)":
-                ret.genome_fraction = float(row[1])
+                ret = ret._replace(genome_fraction=float(row[1]))
             elif row[0] == "# mismatches per 100 kbp":
-                ret.nb_mismatches = float(row[1])
+                ret = ret._replace(nb_mismatches=float(row[1]))
             elif row[0] == "# indels per 100 kbp":
-                ret.nb_indels = float(row[1])
+                ret = ret._replace(nb_indels=float(row[1]))
             elif row[0] == "Largest alignment":
-                ret.largest_alignment = int(row[1])
+                ret = ret._replace(largest_alignment=int(row[1]))
             elif row[0] == "NGA50":
-                ret.NGA50 = int(row[1])
-                    
-    return ret
+                ret = ret._replace(NGA50=int(row[1]))
+
+    if any((e is None for e in ret)):
+        return None
+    else:
+        return ret
 
 
 def fig_layout(figs, cols):

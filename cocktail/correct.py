@@ -17,7 +17,7 @@ def dataframe_elector():
                 data.append((f"br_k{kmer_size}", dataset, precision, recall))
     
     for corrector in ["canu", "consent", "necat"]:
-        for dataset in ["bacteria", "yeast", "metagenome"]:
+        for dataset in utils.get_data_set("data"):
                 (precision, recall) = get_data_elector(corrector, dataset, None)
                 
                 if precision is not None and recall is not None:

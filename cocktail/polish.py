@@ -10,7 +10,7 @@ def assembly_data():
     for dataset in utils.get_data_set("data"):
         res = get_quast_info(dataset, "")
         if res is not None:
-            data.append(dataset, "raw", "raw", *res)
+            data.append((dataset, "raw", "raw", *res))
 
         for k in range(13, 21, 2):
             for a in range(10, 31):
@@ -26,6 +26,6 @@ def assembly_data():
 
         
 def get_quast_info(dataset, params):
-    path = f"polish/{dataset}/quast/polish{params}/"
-
+    path = f"polish/{dataset}/quast/polish{params}/report.tsv"
+    
     return utils.get_quast_info(path)
