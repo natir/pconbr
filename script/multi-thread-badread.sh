@@ -25,7 +25,7 @@ function main() {
 
     wait
 
-    cat temp_${pid}_*.fastq | seqtk seq -A - > ${output}
+    cat temp_${pid}_*.fastq | seqtk seq -A - | sed -e 's/^\(>[^[:space:]]*\).*/\1/' > ${output}
     rm temp_${pid}_*.fastq
 
     cat temp_${pid}_*.log
