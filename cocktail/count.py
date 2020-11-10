@@ -11,13 +11,13 @@ def dataframe():
     for counter in ["pcon", "pcon_cd", "kmc", "kmc_cd", "kmc_disk", "kmc_disk_cd", "jellyfish", "jellyfish_cd"]:
         for dataset in utils.get_data_set("data"):
             for kmer_size in range(13, 21, 2):
-                (time, memory) = get_data(counter, dataset, "reads", kmer_size)
+                (time, memory, mean_load) = get_data(counter, dataset, "reads", kmer_size)
                 size = utils.get_file_size(dataset)
                 
                 if time is not None:
-                    data.append((counter, dataset, str(kmer_size), time, memory, size))
+                    data.append((counter, dataset, str(kmer_size), time, memory, mean_load, size))
 
-    return pandas.DataFrame(data, columns=['counter', 'dataset', 'kmer_size', 'time', 'memory', 'size'])
+    return pandas.DataFrame(data, columns=['counter', 'dataset', 'kmer_size', 'time', 'memory', 'mean_load','size'])
 
     
 def get_data(counter, dataset, prefix, kmer_size):

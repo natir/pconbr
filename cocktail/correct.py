@@ -55,18 +55,18 @@ def dataframe_bench():
         
     for dataset in d2size.keys():
         for kmer_size in range(13, 21, 2):
-            (time, memory) = get_data_bench("br", dataset, f".k{kmer_size}")
+            (time, memory, mean_load) = get_data_bench("br", dataset, f".k{kmer_size}")
 
             if time is not None:
-                data.append((dataset, f"br_k{kmer_size}", time, memory, d2size[dataset]))
+                data.append((dataset, f"br_k{kmer_size}", time, memory, mean_load, d2size[dataset]))
                 
         for corrector in ["canu", "consent", "necat"]:
-            (time, memory) = get_data_bench(corrector, dataset, "")
+            (time, memory, mean_load) = get_data_bench(corrector, dataset, "")
 
             if time is not None:
-                data.append((dataset, corrector, time, memory, d2size[dataset]))
+                data.append((dataset, corrector, time, memory, mean_load, d2size[dataset]))
                 
-    return pandas.DataFrame(data, columns=['dataset', 'corrector', 'time', 'memory', 'size'])
+    return pandas.DataFrame(data, columns=['dataset', 'corrector', 'time', 'memory', 'mean_load', 'size'])
 
 
 def get_data_bench(corrector, dataset, params):

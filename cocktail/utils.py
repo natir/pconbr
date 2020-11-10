@@ -10,9 +10,9 @@ def get_bench_data(path):
         with open(path) as fh:
             reader = csv.DictReader(fh, delimiter='\t')
             row = next(reader)
-            return (float(row["s"]), float(row["max_rss"]))
+            return (float(row["s"]), float(row["max_rss"]), float(row["mean_load"]))
     else:
-        return (None, None)
+        return (None, None, None)
 
 
 def get_file_size(dataset):
@@ -106,21 +106,45 @@ def get_quast_info(path):
 
         for row in reader:
             if row[0] == "# contigs":
-                ret = ret._replace(nb_contigs=int(row[1]))
+                try:
+                    ret = ret._replace(nb_contigs=int(row[1]))
+                except ValueError:
+                    pass
             elif row[0] == "# misassemblies":
-                ret = ret._replace(nb_misassemblies=int(row[1]))
+                try:
+                    ret = ret._replace(nb_misassemblies=int(row[1]))
+                except ValueError:
+                    pass
             elif row[0] == "Unaligned length":
-                ret = ret._replace(unaligned_length=int(row[1]))
+                try:
+                    ret = ret._replace(unaligned_length=int(row[1]))
+                except ValueError:
+                    pass
             elif row[0] == "Genome fraction (%)":
-                ret = ret._replace(genome_fraction=float(row[1]))
+                try:
+                    ret = ret._replace(genome_fraction=float(row[1]))
+                except ValueError:
+                    pass
             elif row[0] == "# mismatches per 100 kbp":
-                ret = ret._replace(nb_mismatches=float(row[1]))
+                try:
+                    ret = ret._replace(nb_mismatches=float(row[1]))
+                except ValueError:
+                    pass
             elif row[0] == "# indels per 100 kbp":
-                ret = ret._replace(nb_indels=float(row[1]))
+                try:
+                    ret = ret._replace(nb_indels=float(row[1]))
+                except ValueError:
+                    pass
             elif row[0] == "Largest alignment":
-                ret = ret._replace(largest_alignment=int(row[1]))
+                try:
+                    ret = ret._replace(largest_alignment=int(row[1]))
+                except ValueError:
+                    pass
             elif row[0] == "NGA50":
-                ret = ret._replace(NGA50=int(row[1]))
+                try:
+                    ret = ret._replace(NGA50=int(row[1]))
+                except ValueError:
+                    pass
 
     if any((e is None for e in ret)):
         return None

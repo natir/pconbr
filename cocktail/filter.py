@@ -77,21 +77,21 @@ def dataframe_bench():
 
     for dataset in ["bacteria", "yeast", "metagenome", "bacteria5", "bacteria7"]:
         for qual in range(90, 100):
-            (time, memory) = get_data_bench("filtlong", dataset, f"q{qual}")
+            (time, memory, mean_load) = get_data_bench("filtlong", dataset, f"q{qual}")
             size = utils.get_file_size(dataset)
                 
             if time is not None:
-                data.append(("filtlong", dataset, f"q{qual}", time, memory, size))
+                data.append(("filtlong", dataset, f"q{qual}", time, memory, mean_load, size))
 
         for kmer_size in range(13, 21, 2):
             for ratio in range(70, 100, 5):
-                (time, memory) = get_data_bench("kmrf", dataset, f"k{kmer_size}.r{ratio}")
+                (time, memory, mean_load) = get_data_bench("kmrf", dataset, f"k{kmer_size}.r{ratio}")
                 size = utils.get_file_size(dataset)
                 
                 if time is not None:
-                    data.append(("kmrf", dataset, f"k{kmer_size}.r{ratio}", time, memory, size))
+                    data.append(("kmrf", dataset, f"k{kmer_size}.r{ratio}", time, memory, mean_load, size))
                     
-    return pandas.DataFrame(data, columns=['filter', 'dataset', 'params', 'time', 'memory', 'size'])
+    return pandas.DataFrame(data, columns=['filter', 'dataset', 'params', 'time', 'memory', 'mean_load', 'size'])
 
 
 def get_data_bench(filter, dataset, params):
@@ -141,10 +141,10 @@ def assembly_data():
             for ratio in range(70, 100, 5):
                 res = get_quast_info(dataset, filter, f".k{k}.r{ratio}")
                 if res is not None:
-                    data.append((dataset, filter, f".k{k}.r{ratio}", *res))
+                    data.append((dataset, filter, f"k{k}.r{ratio}", *res))
 
-    return pandas.DataFrame(data, columns=["dataset", "filter", "kmer_size",
-                                           "abundance", "nb_contigs",
+    return pandas.DataFrame(data, columns=["dataset", "filter", "params",
+                                           "nb_contigs",
                                            "nb_misassemblies", "unaligned_length",
                                            "genome_fraction", "nb_mismatches",
                                            "nb_indels", "largest_alignment",
