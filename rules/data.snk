@@ -10,7 +10,7 @@ rule bacteria_reads:
         f"../{config['env_mode']}/fastq-dump.yaml"
         
     shell:
-        "fastq-dump  --fasta --stdout ERR3890216 | seqtk seq -A - > {output} 2>&1 > {log}"
+        "fastq-dump  --fasta --stdout ERR3890216 2> {log} | seqtk seq -A - 2>> {log} | sed -e 's/^\(>[^[:space:]]*\).*/\1/' > {output} >> {log}"
 
 rule bacteria_reference:
     output:
@@ -23,7 +23,7 @@ rule bacteria_reference:
         f"../{config['env_mode']}/seqtk.yaml"
         
     shell:
-        "curl ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/005/845/GCF_000005845.2_ASM584v2/GCF_000005845.2_ASM584v2_genomic.fna.gz 2> {log} | seqtk seq -A - > {output} 2>> {log}"
+        "curl ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/005/845/GCF_000005845.2_ASM584v2/GCF_000005845.2_ASM584v2_genomic.fna.gz 2>> {log} | seqtk seq -A - 2>> {log} | sed -e 's/^\(>[^[:space:]]*\).*/\1/' > {output} 2>> {log}"
 
                 
 rule bacteria7_reads:
@@ -37,7 +37,7 @@ rule bacteria7_reads:
         f"../{config['env_mode']}/seqtk.yaml"
         
     shell:
-        "curl https://s3-eu-west-1.amazonaws.com/pfigshare-u-files/21623145/ecolk12mg1655_R10_3_guppy_345_HAC.fastq.gz 2> {log}| seqtk seq -A - > {output} 2>> {log}" 
+        "curl https://s3-eu-west-1.amazonaws.com/pfigshare-u-files/21623145/ecolk12mg1655_R10_3_guppy_345_HAC.fastq.gz 2> {log} | seqtk seq -A - 2>> {log} | sed -e 's/^\(>[^[:space:]]*\).*/\1/' > {output} 2>> {log}"
 
 
 rule bacteria7_reference:
@@ -64,7 +64,7 @@ rule bacteria5_reads:
         f"../{config['env_mode']}/seqtk.yaml"
         
     shell:
-        "curl 'https://ucefbb2684ceae6cf25ebcdf73c9.dl.dropboxusercontent.com/cd/0/get/A_8o5jl1NQQ0f5eMgQSUQKYfh_r4--ua8uh34jLANFWlX6Fq5wsf6DtozTJcY6WmNqvN_qHN_5tVrU8oXbhHFeuAfwpi7SXVtEfVpUZ6bgOLMuJlJ2geBH5uKuIa5Br5-Zk/file?_download_id=6457037878771431022489736601760941277660406941049858629655782127&_notify_domain=www.dropbox.com&dl=1' 2> {log} | seqtk seq -A - > {output} 2>> {log}" 
+        "curl 'https://ucefbb2684ceae6cf25ebcdf73c9.dl.dropboxusercontent.com/cd/0/get/A_8o5jl1NQQ0f5eMgQSUQKYfh_r4--ua8uh34jLANFWlX6Fq5wsf6DtozTJcY6WmNqvN_qHN_5tVrU8oXbhHFeuAfwpi7SXVtEfVpUZ6bgOLMuJlJ2geBH5uKuIa5Br5-Zk/file?_download_id=6457037878771431022489736601760941277660406941049858629655782127&_notify_domain=www.dropbox.com&dl=1' 2> {log} | seqtk seq -A - 2>> {log}  | sed -e 's/^\(>[^[:space:]]*\).*/\1/' > {output} 2>> {log}" 
 
 
 rule bacteria5_reference:
@@ -148,7 +148,7 @@ rule metagenome_reads:
         f"../{config['env_mode']}/seqtk.yaml"
         
     shell:
-        "curl https://nanopore.s3.climb.ac.uk/Zymo-GridION-Even-3Peaks-Native-R10-guppy_r10_large_v0.1alpha.fq.gz 2> {log}| seqtk seq -A - > {output} 2>> {log}"
+        "curl https://nanopore.s3.climb.ac.uk/Zymo-GridION-Even-3Peaks-Native-R10-guppy_r10_large_v0.1alpha.fq.gz 2> {log}| seqtk seq -A - 2>> {log}  | sed -e 's/^\(>[^[:space:]]*\).*/\1/' > {output} 2>> {log}"
 
         
 rule metagenome_reference:
@@ -176,7 +176,7 @@ rule celegans_reference:
         f"../{config['env_mode']}/seqtk.yaml"
 
     shell:
-        "curl https://ftp.ncbi.nlm.nih.gov/genomes/refseq/invertebrate/Caenorhabditis_elegans/latest_assembly_versions/GCF_000002985.6_WBcel235/GCF_000002985.6_WBcel235_genomic.fna.gz 2> {log}| seqtk seq -A - > {output} 2>> {log}"
+        "curl https://ftp.ncbi.nlm.nih.gov/genomes/refseq/invertebrate/Caenorhabditis_elegans/latest_assembly_versions/GCF_000002985.6_WBcel235/GCF_000002985.6_WBcel235_genomic.fna.gz 2> {log}| seqtk seq -A - 2>> {log} | sed -e 's/^\(>[^[:space:]]*\).*/\1/' > {output} 2>> {log}"
 
         
 
