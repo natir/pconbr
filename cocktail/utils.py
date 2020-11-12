@@ -48,7 +48,7 @@ def group_line(df, x, y, color=None, shape=None, column=None, title="", xtitle="
     xrange = (math.floor(df[x].min() * 100) / 100, math.ceil(df[x].max() * 100) / 100)
     yrange = (math.floor(df[y].min() * 100) / 100, math.ceil(df[y].max() * 100) / 100)
 
-    fig = altair.Chart(df, title=title).mark_line(point=point).encode(
+    fig = altair.Chart(df, title=title).mark_line(point=point, strokeWidth=1).encode(
         x=altair.X(x, scale=altair.Scale(domain=xrange), title=xtitle),
         y=altair.Y(y, scale=altair.Scale(domain=yrange), title=ytitle)
     )

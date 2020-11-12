@@ -42,15 +42,13 @@ rule dataset_length_identity:
 
 rule stats_all_error_rate:
     input:
-        [f"data/{dataset}/reads.stats" for dataset in ["bacteria", "bacteria5", "bacteria7", "yeast", "metagenome"]],
-        [f"data/synthetic.e{mean_id}.c{config['coverage']}/reads.stats" for mean_id in conf_range("identity")],
+        [f"data/{dataset}/reads.stats" for dataset in get_dataset()],
 
         
 rule stats_length_identity:
     input:
-        [f"data/{dataset}/reads.len_id.tsv" for dataset in ["bacteria", "bacteria5", "bacteria7", "yeast", "metagenome"]],
-        [f"data/synthetic.e{mean_id}.c{config['coverage']}/reads.len_id.tsv" for mean_id in conf_range("identity")],
-
+        [f"data/{dataset}/reads.len_id.tsv" for dataset in get_dataset()],
+        
         
 rule stats_all:
     input:
