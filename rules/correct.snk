@@ -49,7 +49,7 @@ rule canu:
         
     shell:
         """
-        canu -nanopore {input} -p {params.prefix} -d {params.work_dir} -correct useGrid=false corOutCoverage=2000 executiveThreads={threads} genomeSize={params.genome_size} 2>&1 > {log}
+        canu -nanopore {input} -p {params.prefix} -d {params.work_dir} -correct useGrid=false corOutCoverage=2000 corMemory=20 executiveThreads={threads} genomeSize={params.genome_size} 2>&1 > {log}
         seqtk seq -A {params.canu_correct_out} > {output} 2>> {log}
         """
 

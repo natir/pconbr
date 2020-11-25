@@ -78,21 +78,24 @@
 
     "canu":
     {
-	"mem_mb": "184320"
+	"mem_mb": "65536",
+	"run_hrs": "24"
     },
 
     "consent":
     {
-	"mem_mb": "184320"
+	"mem_mb": "65536",
+	"run_hrs": "24"
     },
    
     "necat":
     {
-	"mem_mb": "184320"
+	"mem_mb": "65536",
+	"run_hrs": "24"
     },
     
     "elector":
     {
-	"mem_mb": "184320"
+	"mem_mb": "65536"
     }
 }
