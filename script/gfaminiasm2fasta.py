@@ -13,10 +13,10 @@ def main(args = None):
     parser.add_argument("fasta")
 
     args = vars(parser.parse_args(args))
-    
+
     gfa = args["gfa"]
     fasta = args["fasta"]
-    
+
     with open(fasta, "w") as fh_out:
         with open(gfa) as fh:
             for line in fh:

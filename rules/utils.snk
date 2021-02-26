@@ -1,4 +1,5 @@
 import os
+import itertools
 
 ##############################
 # Generate range from config #
@@ -8,38 +9,31 @@ def conf_range(name):
 
     if "list" in local:
         return local["list"]
-    
+
     step = local["step"] if "step" in local else 1
-    
+
     return range(local["begin"], local["end"], step)
+
 
 ######################################
 # Compute estimation of memory usage #
 ######################################
 import math
 
+
 def pcon_memory_usage(kmer_size):
     if kmer_size >= 11:
-        return 2048 + math.ceil(
-            1.2 *
-            (
-                1 << (kmer_size * 2 - 21)
-            )
-        )
+        return 2048 + math.ceil(1.2 * (1 << (kmer_size * 2 - 21)))
     else:
         return 2048
 
 
 def br_memory_usage(kmer_size):
     if kmer_size >= 13:
-        return 2048 + math.ceil(
-            1.2 *
-            (
-                1 << (kmer_size * 2 - 24)
-            )
-        )
+        return 2048 + math.ceil(1.2 * (1 << (kmer_size * 2 - 24)))
     else:
         return 2048
+
 
 #######################
 # Get the genome size #
@@ -54,6 +48,7 @@ def genome_size(wcd):
     else:
         return config["genomeSize"]["bacteria"]
 
+
 def count_files(dataset):
     for kmer_size in conf_range("kmer"):
         yield f"count/{dataset}/pcon/reads.k{kmer_size}.pcon"
@@ -65,41 +60,63 @@ def count_files(dataset):
         yield f"count/{dataset}/jellyfish/reads.k{kmer_size}.jf"
         yield f"count/{dataset}/jellyfish_cd/reads.k{kmer_size}.csv"
 
-    
+
 def correct_files(dataset):
     for kmer_size in conf_range("kmer"):
         yield f"correct/{dataset}/elector/br/reads.k{kmer_size}/log"
         yield f"correct/{dataset}/br/reads.k{kmer_size}.stats"
         yield f"correct/{dataset}/br/reads.k{kmer_size}.len_id.tsv"
 
-    for corrector in config['corrector']:
+    for corrector in config["corrector"]:
         if corrector != "necat":
             yield f"correct/{dataset}/elector/{corrector}/reads/log"
         yield f"correct/{dataset}/{corrector}/reads.stats"
         yield f"correct/{dataset}/{corrector}/reads.len_id.tsv"
 
-        
-def filter_files(dataset):    
-        yield f"filter/{dataset}/quast/raw/reads/report.txt"
 
-        for kmer_size in conf_range("kmer"):
-            for ratio in conf_range("ratio"):
-                yield f"filter/{dataset}/kmrf/reads.k{kmer_size}.r{ratio}.stats"
-                yield f"filter/{dataset}/identity/kmrf/reads.k{kmer_size}.r{ratio}.tsv"
-                yield f"filter/{dataset}/quast/kmrf/reads.k{kmer_size}.r{ratio}/report.txt"
-                
-        for quality in conf_range("filtlong_qual"):
-            yield f"filter/{dataset}/filtlong/reads.q{quality}.stats"
-            yield f"filter/{dataset}/identity/filtlong/reads.q{quality}.tsv"
-            yield f"filter/{dataset}/quast/filtlong/reads.q{quality}/report.txt"
+def filter_files(dataset):
+    yield f"filter/{dataset}/quast/raw/reads/report.txt"
 
-            
+    for kmer_size in conf_range("kmer"):
+        for ratio in conf_range("ratio"):
+            yield f"filter/{dataset}/kmrf/reads.k{kmer_size}.r{ratio}.stats"
+            yield f"filter/{dataset}/identity/kmrf/reads.k{kmer_size}.r{ratio}.tsv"
+            yield f"filter/{dataset}/quast/kmrf/reads.k{kmer_size}.r{ratio}/report.txt"
+
+            for quality in conf_range("filtlong_qual"):
+                yield f"filter/{dataset}/filtlong/reads.q{quality}.stats"
+                yield f"filter/{dataset}/identity/filtlong/reads.q{quality}.tsv"
+                yield f"filter/{dataset}/quast/filtlong/reads.q{quality}/report.txt"
+
+
 def polish_files(dataset):
     yield f"polish/{dataset}/quast/polish/report.txt"
-    
+
     for kmer_size in conf_range("kmer"):
         for abundance in conf_range("abundance"):
             yield f"polish/{dataset}/quast/polish.k{kmer_size}.a{abundance}/report.txt"
+
+
+def br_eval(dataset):
+    abu_methods = list()
+    abu_methods.append("first-minimum")
+    for method in ["rarefaction", "percent-most", "percent-least"]:
+        for p in range(10, 40, 10):
+            abu_methods.append(f"{method}_{p/100}")
+
+    for kmer_size in ["15", "17"]:
+        for abundance_m in abu_methods:
+            for method in ["one", "two", "greedy", "gap_size", "graph"]:
+                #yield f"br_eval/elector/{dataset}/reads.k{kmer_size}.m{method}.a{abundance_m}/log"
+                yield f"br_eval/stats/{dataset}/reads.k{kmer_size}.m{method}.a{abundance_m}.stats"
+
+            for method in itertools.permutations(
+                ["one", "two", "greedy", "gap_size", "graph"]
+            ):
+                method = "-".join(method)
+
+                #yield f"br_eval/elector/{dataset}/reads.k{kmer_size}.m{method}.a{abundance_m}/log"
+                yield f"br_eval/stats/{dataset}/reads.k{kmer_size}.m{method}.a{abundance_m}.stats"
 
 
 def get_dataset():

@@ -1,0 +1,77 @@
+rule br_br_eval:
+    input:
+        "data/{dataset}/{prefix}.fasta"
+
+    output:
+        "br_eval/correct/{dataset}/{prefix}.k{kmer_size}.m{method}.a{abundance_m}.fasta"
+
+    params:
+        method = lambda wcd: wcd.method.replace("-", " "),
+        
+    log:
+        "log/br_eval/correct/{dataset}/{prefix}.k{kmer_size}.m{method}.a{abundance_m}.txt"
+        
+    benchmark:
+        "br_eval/bench/br/{dataset}/{prefix}.k{kmer_size}.m{method}.a{abundance_m}.tsv"
+        
+    resources:
+        mem_mb = lambda wcd: pcon_memory_usage(int(wcd.kmer_size)) + br_memory_usage(int(wcd.kmer_size))
+
+    threads:
+        config['max_threads']
+        
+    shell:
+        "br -i {input} -o {output} -k {wildcards.kmer_size} -t {threads} -m {params.method} -A {wildcards.abundance_m} -vvv 2>&1 > {log}"
+
+        
+rule elector_br_eval:
+    input:
+        raw = "data/{dataset}/{prefix}.fasta",
+        correct = "br_eval/correct/{dataset}/{prefix}.k{kmer_size}.m{method}.a{abundance_m}.fasta",
+        reference = "data/{dataset}/reference.fasta",
+
+    output:
+        "br_eval/elector/{dataset}/{prefix}.k{kmer_size}.m{method}.a{abundance_m}/log"
+        
+    log:
+        "log/br_eval/elector/{dataset}/{prefix}.k{kmer_size}.m{method}.a{abundance_m}.txt"
+        
+    params:
+        output = "br_eval/elector/{dataset}/{prefix}.k{kmer_size}.m{method}.a{abundance_m}/log",
+        
+    conda:
+        f"../{config['env_mode']}/elector.yaml"
+
+    threads:
+        config['max_threads']
+        
+    shell:
+        "elector -reference {input.reference} -uncorrected {input.raw} -corrected {input.correct} -threads {threads} -simulator real -noplot -output {params.output} 2>&1 > {log}"
+
+
+rule error_rate_br_eval:
+    input:
+        reads = "br_eval/correct/{dataset}/{prefix}.k{kmer_size}.m{method}.a{abundance_m}.fasta",
+        ref = "data/{dataset}/reference.fasta"
+
+    output:
+        "br_eval/stats/{dataset}/{prefix}.k{kmer_size}.m{method}.a{abundance_m}.stats"
+        
+    log:
+        "log/br_eval/error_rate/{dataset}/{prefix}.k{kmer_size}.m{method}.a{abundance_m}.stats"
+
+    threads:
+        config['max_threads']
+
+    conda:
+        f"../{config['env_mode']}/minimap.yaml"
+        
+    shell:
+        "minimap2 -x map10k -t {threads} -a {input.ref} {input.reads} 2> {log} | samtools stats 2> {log} | grep '^SN' > {output} 2> {log}"
+
+        
+rule br_eval_all:
+    input:
+        (br_eval(d) for d in ["bacteria", "bacteria5", "bacteria7", "metagenome", "yeast"]),
+        (br_eval(f"synthetic.e{mean_id}.c{config['coverage']}") for mean_id in conf_range("identity")),
+

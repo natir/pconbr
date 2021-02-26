@@ -7,6 +7,7 @@ include: "rules/count.snk"
 include: "rules/correct.snk"
 include: "rules/filter.snk"
 include: "rules/polish.snk"
+include: "rules/br_eval.snk"
 include: "rules/stats.snk"
 
 wildcard_constraints:
@@ -27,3 +28,4 @@ rule all:
         rules.filter_all.input,
         rules.polish_all.input,
         rules.stats_all.input,
+        rules.br_eval_all.input,
